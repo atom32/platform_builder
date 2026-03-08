@@ -1,0 +1,64 @@
+[gd_scene load_steps=2 format=3 uid="uid://build_menu_scene_v3"]
+
+[ext_resource type="Script" path="res://ui/build_menu.gd" id="1_build_menu"]
+
+[node name="BuildMenu" type="Control"]
+clip_children = 2
+layout_mode = 3
+anchors_preset = 0
+offset_right = 200.0
+offset_bottom = 250.0
+mouse_filter = 2
+script = ExtResource("1_build_menu")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "Select Platform Type"
+horizontal_alignment = 1
+
+[node name="RD" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "R&D (50 Mat, 10 Fuel)"
+
+[node name="Support" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "Support (30 Mat, 40 Fuel)"
+
+[node name="Combat" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "Combat (40 Mat, 30 Fuel)"
+
+[node name="Intel" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "Intel (35 Mat, 25 Fuel)"
+
+[node name="Medical" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "Medical (25 Mat, 25 Fuel)"
+
+[connection signal="pressed" from="Panel/VBoxContainer/RD" to="." method="_on_rd_selected"]
+[connection signal="pressed" from="Panel/VBoxContainer/Support" to="." method="_on_support_selected"]
+[connection signal="pressed" from="Panel/VBoxContainer/Combat" to="." method="_on_combat_selected"]
+[connection signal="pressed" from="Panel/VBoxContainer/Intel" to="." method="_on_intel_selected"]
+[connection signal="pressed" from="Panel/VBoxContainer/Medical" to="." method="_on_medical_selected"]

@@ -1,44 +1,375 @@
 extends Node
 class_name PlatformGenerator
 
-## Procedurally generates random modules on platforms
+## Rule-based platform procedural generation system
+## Uses templates and module library for consistent, themed generation
 
-## Module types
-enum ModuleType {
-	RADAR,
-	ANTENNA,
-	CRANE,
-	PIPES,
-	CONTAINER
-}
-
-## Generate random modules on a platform
-static func generate_platform(platform_node: Node3D):
+## Generate platform based on type
+static func generate_platform(platform_node: Node3D, platform_type: String = "R&D"):
 	var rng = RandomNumberGenerator.new()
 	rng.randomize()
 
-	# Random number of modules (2-5)
-	var module_count = rng.randi_range(2, 5)
+	# Get template for this platform type
+	var template = PlatformTemplates.get_template(platform_type)
+	if template == null:
+		print("Warning: No template found for platform type: ", platform_type)
+		template = PlatformTemplates.get_template("R&D")  # Fallback
 
-	for i in range(module_count):
-		_create_random_module(platform_node, rng)
+	# Generation pipeline
+	_create_platform_base(platform_node, template)
+	_apply_top_modules(platform_node, template, rng)
+	_apply_middle_modules(platform_node, template, rng)
+	_apply_edge_modules(platform_node, template, rng)
+	_randomize_details(platform_node, template, rng)
 
-## Generate HQ castle structure (3-tier fortress)
+	print("Generated ", platform_type, " platform with template-based modules")
+
+## Generate HQ with castle structure
 static func generate_hq_castle(platform_node: Node3D):
-	# Layer 1: Base platform with corner towers
+	var rng = RandomNumberGenerator.new()
+	rng.randomize()
+
+	# HQ uses special 3-tier structure
 	_create_hq_layer_1(platform_node)
-
-	# Layer 2: Main building block
 	_create_hq_layer_2(platform_node)
-
-	# Layer 3: Control tower and radar
 	_create_hq_layer_3(platform_node)
 
-	print("HQ Castle generated: 3-tier structure")
+	# Add some procedural details
+	var template = PlatformTemplates.get_template("HQ")
+	_add_hq_details(platform_node, template, rng)
+
+	print("HQ Castle generated: 3-tier structure with procedural details")
+
+## Create platform base with themed color
+static func _create_platform_base(parent: Node3D, template: Dictionary):
+	var base = MeshInstance3D.new()
+	var cylinder = CylinderMesh.new()
+	cylinder.top_radius = 3.5
+	cylinder.bottom_radius = 3.5
+	cylinder.height = 0.8
+	cylinder.radial_segments = 6
+	base.mesh = cylinder
+	base.position = Vector3(0, 0.4, 0)
+
+	var material = StandardMaterial3D.new()
+	material.albedo_color = PlatformTemplates.get_base_color(template)
+	base.set_surface_override_material(0, material)
+
+	parent.add_child(base)
+
+## Apply top layer modules (high visibility structures)
+static func _apply_top_modules(parent: Node3D, template: Dictionary, rng: RandomNumberGenerator):
+	var modules = PlatformTemplates.get_random_modules(template, "top", rng)
+	var positions = _get_top_positions(modules.size(), rng)
+
+	for i in range(modules.size()):
+		var module_id = modules[i]
+		var module_data = ModuleLibrary.get_module(module_id)
+		if module_data == null:
+			continue
+
+		var pos = positions[i] if i < positions.size() else _get_random_top_position(rng)
+		_create_module(parent, module_data, pos, rng)
+
+## Apply middle layer modules (floor structures)
+static func _apply_middle_modules(parent: Node3D, template: Dictionary, rng: RandomNumberGenerator):
+	var modules = PlatformTemplates.get_random_modules(template, "middle", rng)
+
+	for module_id in modules:
+		var module_data = ModuleLibrary.get_module(module_id)
+		if module_data == null:
+			continue
+
+		var pos = _get_random_middle_position(rng)
+		_create_module(parent, module_data, pos, rng)
+
+## Apply edge modules (attached to platform edges)
+static func _apply_edge_modules(parent: Node3D, template: Dictionary, rng: RandomNumberGenerator):
+	var edge_slots = PlatformTemplates.get_edge_slot_positions()
+	var available_slots = edge_slots.duplicate()
+
+	# Shuffle slots for random placement
+	available_slots.shuffle()
+
+	var modules = PlatformTemplates.get_random_modules(template, "edge", rng)
+
+	for i in range(min(modules.size(), available_slots.size())):
+		var module_id = modules[i]
+		var module_data = ModuleLibrary.get_module(module_id)
+		if module_data == null:
+			continue
+
+		var slot_index = edge_slots.find(available_slots[i])
+		var pos = available_slots[i]
+		var rotation = PlatformTemplates.get_edge_slot_rotation(slot_index)
+
+		_create_edge_module(parent, module_data, pos, rotation, rng)
+
+## Add small random details for variety
+static func _randomize_details(parent: Node3D, template: Dictionary, rng: RandomNumberGenerator):
+	# Add small details like vents, small boxes, pipes
+	var detail_count = rng.randi_range(2, 5)
+
+	for i in range(detail_count):
+		var detail_type = rng.randi_range(0, 2)
+		var pos = _get_random_detail_position(rng)
+
+		match detail_type:
+			0:  # Small vent
+				_create_small_vent(parent, pos, rng)
+			1:  # Small box
+				_create_small_box(parent, pos, rng)
+			2:  # Small pipe
+				_create_small_pipe(parent, pos, rng)
+
+## Create a single module
+static func _create_module(
+	parent: Node3D,
+	module_data: Dictionary,
+	position: Vector3,
+	rng: RandomNumberGenerator
+):
+	var mesh_instance = MeshInstance3D.new()
+
+	# Create mesh based on type
+	var mesh_type = ModuleLibrary.get_mesh_type(module_data)
+	var scale = ModuleLibrary.get_scale(module_data)
+	var height = ModuleLibrary.get_height(module_data)
+	_create_mesh_for_type(mesh_instance, mesh_type, scale)
+
+	# Position
+	mesh_instance.position = Vector3(position.x, height, position.z)
+
+	# Rotation
+	var can_rotate = ModuleLibrary.get_can_rotate(module_data)
+	var fixed_angles = ModuleLibrary.get_fixed_angles(module_data)
+	if can_rotate:
+		if fixed_angles.is_empty():
+			mesh_instance.rotation_degrees = Vector3(0, rng.randf_range(0, 360), 0)
+		else:
+			var angle = fixed_angles.pick_random()
+			mesh_instance.rotation_degrees = Vector3(0, angle, 0)
+
+	# Color
+	var material = StandardMaterial3D.new()
+	var color_options = ModuleLibrary.get_color_options(module_data)
+	var color = color_options.pick_random()
+	material.albedo_color = color
+	mesh_instance.set_surface_override_material(0, material)
+
+	parent.add_child(mesh_instance)
+
+## Create edge module (attached to platform edge)
+static func _create_edge_module(
+	parent: Node3D,
+	module_data: Dictionary,
+	position: Vector3,
+	rotation_degrees: float,
+	rng: RandomNumberGenerator
+):
+	var mesh_instance = MeshInstance3D.new()
+
+	# Create mesh based on type
+	var mesh_type = ModuleLibrary.get_mesh_type(module_data)
+	var scale = ModuleLibrary.get_scale(module_data)
+	var height = ModuleLibrary.get_height(module_data)
+	_create_mesh_for_type(mesh_instance, mesh_type, scale)
+
+	# Position at edge
+	mesh_instance.position = Vector3(position.x, height, position.z)
+
+	# Rotation - edge modules face outward
+	var base_rotation = rotation_degrees
+	var can_rotate = ModuleLibrary.get_can_rotate(module_data)
+	var fixed_angles = ModuleLibrary.get_fixed_angles(module_data)
+	if can_rotate and not fixed_angles.is_empty():
+		base_rotation += fixed_angles.pick_random()
+	mesh_instance.rotation_degrees = Vector3(0, base_rotation, 0)
+
+	# Color
+	var material = StandardMaterial3D.new()
+	var color_options = ModuleLibrary.get_color_options(module_data)
+	var color = color_options.pick_random()
+	material.albedo_color = color
+	mesh_instance.set_surface_override_material(0, material)
+
+	parent.add_child(mesh_instance)
+
+## Create mesh for specific type
+static func _create_mesh_for_type(mesh_instance: MeshInstance3D, mesh_type: int, scale: Vector3):
+	match mesh_type:
+		ModuleLibrary.MeshType.CYLINDER:
+			var cylinder = CylinderMesh.new()
+			cylinder.top_radius = scale.x / 2.0
+			cylinder.bottom_radius = scale.x / 2.0
+			cylinder.height = scale.y
+			mesh_instance.mesh = cylinder
+
+		ModuleLibrary.MeshType.BOX:
+			var box = BoxMesh.new()
+			box.size = scale
+			mesh_instance.mesh = box
+
+		ModuleLibrary.MeshType.DISH:
+			# Create radar dish (inverted cone approximation)
+			var dish = CylinderMesh.new()
+			dish.top_radius = scale.x / 4.0
+			dish.bottom_radius = scale.x / 2.0
+			dish.height = scale.y
+			dish.radial_segments = 16
+			mesh_instance.mesh = dish
+
+		ModuleLibrary.MeshType.ANTENNA:
+			var antenna = CylinderMesh.new()
+			antenna.top_radius = scale.x / 2.0
+			antenna.bottom_radius = scale.x / 2.0
+			antenna.height = scale.y
+			mesh_instance.mesh = antenna
+
+		ModuleLibrary.MeshType.CRANE:
+			var crane = BoxMesh.new()
+			crane.size = scale
+			mesh_instance.mesh = crane
+
+		ModuleLibrary.MeshType.PIPE_CLUSTER:
+			var pipe = CylinderMesh.new()
+			pipe.top_radius = scale.x / 2.0
+			pipe.bottom_radius = scale.x / 2.0
+			pipe.height = scale.y
+			mesh_instance.mesh = pipe
+
+		ModuleLibrary.MeshType.CONTAINER:
+			var container = BoxMesh.new()
+			container.size = scale
+			mesh_instance.mesh = container
+
+		ModuleLibrary.MeshType.SOLAR_PANEL:
+			var panel = BoxMesh.new()
+			panel.size = scale
+			mesh_instance.mesh = panel
+
+		ModuleLibrary.MeshType.VENT:
+			var vent = CylinderMesh.new()
+			vent.top_radius = scale.x / 2.0
+			vent.bottom_radius = scale.x / 2.0
+			vent.height = scale.y
+			mesh_instance.mesh = vent
+
+		ModuleLibrary.MeshType.SATELLITE_DISH:
+			var sat_dish = CylinderMesh.new()
+			sat_dish.top_radius = scale.x / 6.0
+			sat_dish.bottom_radius = scale.x / 2.0
+			sat_dish.height = scale.y
+			sat_dish.radial_segments = 24
+			mesh_instance.mesh = sat_dish
+
+		ModuleLibrary.MeshType.HELIPAD:
+			var pad = BoxMesh.new()
+			pad.size = scale
+			mesh_instance.mesh = pad
+
+		ModuleLibrary.MeshType.TURRET:
+			var turret = BoxMesh.new()
+			turret.size = scale
+			mesh_instance.mesh = turret
+
+		ModuleLibrary.MeshType.COMMS_ARRAY:
+			# Create tower with multiple elements
+			var tower = CylinderMesh.new()
+			tower.top_radius = scale.x / 3.0
+			tower.bottom_radius = scale.x / 2.0
+			tower.height = scale.y
+			mesh_instance.mesh = tower
+
+## Get positions for top modules (spread out, not too close to center)
+static func _get_top_positions(count: int, rng: RandomNumberGenerator) -> Array[Vector3]:
+	var positions: Array[Vector3] = []
+	var radius = 2.0  # Distance from center
+
+	for i in range(count):
+		var angle = (PI * 2 / count) * i + rng.randf_range(-0.3, 0.3)
+		var x = cos(angle) * radius
+		var z = sin(angle) * radius
+		positions.append(Vector3(x, 0, z))
+
+	return positions
+
+## Get random position for top module
+static func _get_random_top_position(rng: RandomNumberGenerator) -> Vector3:
+	var radius = rng.randf_range(1.0, 2.5)
+	var angle = rng.randf_range(0, PI * 2)
+	return Vector3(cos(angle) * radius, 0, sin(angle) * radius)
+
+## Get random position for middle module
+static func _get_random_middle_position(rng: RandomNumberGenerator) -> Vector3:
+	var x = rng.randf_range(-2.5, 2.5)
+	var z = rng.randf_range(-2.5, 2.5)
+
+	# Keep away from very center
+	if abs(x) < 0.8 and abs(z) < 0.8:
+		if abs(x) < abs(z):
+			x = 1.5 if x >= 0 else -1.5
+		else:
+			z = 1.5 if z >= 0 else -1.5
+
+	return Vector3(x, 0, z)
+
+## Get random position for small detail
+static func _get_random_detail_position(rng: RandomNumberGenerator) -> Vector3:
+	var x = rng.randf_range(-3.0, 3.0)
+	var z = rng.randf_range(-3.0, 3.0)
+	return Vector3(x, 0, z)
+
+## Create small vent detail
+static func _create_small_vent(parent: Node3D, pos: Vector3, rng: RandomNumberGenerator):
+	var vent = MeshInstance3D.new()
+	var cylinder = CylinderMesh.new()
+	cylinder.top_radius = 0.15
+	cylinder.bottom_radius = 0.15
+	cylinder.height = 0.3
+	vent.mesh = cylinder
+	vent.position = Vector3(pos.x, 0.15, pos.z)
+
+	var material = StandardMaterial3D.new()
+	material.albedo_color = Color(0.4, 0.4, 0.45)
+	vent.set_surface_override_material(0, material)
+
+	parent.add_child(vent)
+
+## Create small box detail
+static func _create_small_box(parent: Node3D, pos: Vector3, rng: RandomNumberGenerator):
+	var box = MeshInstance3D.new()
+	var box_mesh = BoxMesh.new()
+	box_mesh.size = Vector3(0.4, 0.25, 0.4)
+	box.mesh = box_mesh
+	box.position = Vector3(pos.x, 0.125, pos.z)
+
+	var material = StandardMaterial3D.new()
+	material.albedo_color = Color(0.5, 0.48, 0.45)
+	box.set_surface_override_material(0, material)
+
+	parent.add_child(box)
+
+## Create small pipe detail
+static func _create_small_pipe(parent: Node3D, pos: Vector3, rng: RandomNumberGenerator):
+	var pipe = MeshInstance3D.new()
+	var cylinder = CylinderMesh.new()
+	cylinder.top_radius = 0.08
+	cylinder.bottom_radius = 0.08
+	cylinder.height = 0.6
+	pipe.mesh = cylinder
+	pipe.position = Vector3(pos.x, 0.3, pos.z)
+
+	var material = StandardMaterial3D.new()
+	material.albedo_color = Color(0.6, 0.5, 0.4)
+	pipe.set_surface_override_material(0, material)
+
+	parent.add_child(pipe)
+
+# ===== HQ LAYER FUNCTIONS =====
 
 ## Create Layer 1 - Base with corner towers
 static func _create_hq_layer_1(parent: Node3D):
-	# Corner towers at hexagon corners
 	var corners = [
 		Vector3(3.5, 0.5, 0),
 		Vector3(1.75, 0.5, 3),
@@ -175,86 +506,23 @@ static func _create_hq_layer_3(parent: Node3D):
 
 		parent.add_child(antenna)
 
-## Create a single random module
-static func _create_random_module(parent: Node3D, rng: RandomNumberGenerator):
-	var module_type = rng.randi_range(0, ModuleType.size() - 1)
-	var mesh_instance = MeshInstance3D.new()
+## Add procedural details to HQ
+static func _add_hq_details(parent: Node3D, template: Dictionary, rng: RandomNumberGenerator):
+	# Add edge modules to HQ
+	var edge_slots = PlatformTemplates.get_edge_slot_positions()
+	var available_slots = edge_slots.duplicate()
+	available_slots.shuffle()
 
-	# Set mesh based on type
-	match module_type:
-		ModuleType.RADAR:
-			_create_radar(mesh_instance)
-		ModuleType.ANTENNA:
-			_create_antenna(mesh_instance)
-		ModuleType.CRANE:
-			_create_crane(mesh_instance)
-		ModuleType.PIPES:
-			_create_pipes(mesh_instance)
-		ModuleType.CONTAINER:
-			_create_container(mesh_instance)
+	var modules = PlatformTemplates.get_random_modules(template, "edge", rng)
 
-	# Random position within platform bounds
-	var x = rng.randf_range(-3.5, 3.5)
-	var z = rng.randf_range(-3.5, 3.5)
-	var y = 0.5  # Start at platform surface
+	for i in range(min(modules.size(), available_slots.size())):
+		var module_id = modules[i]
+		var module_data = ModuleLibrary.get_module(module_id)
+		if module_data == null:
+			continue
 
-	mesh_instance.position = Vector3(x, y, z)
+		var slot_index = edge_slots.find(available_slots[i])
+		var pos = available_slots[i]
+		var rotation = PlatformTemplates.get_edge_slot_rotation(slot_index)
 
-	# Random rotation (0-360 degrees)
-	var rotation_degrees = rng.randf_range(0, 360)
-	mesh_instance.rotation_degrees = Vector3(0, rotation_degrees, 0)
-
-	# Randomize color slightly for variety
-	var material = StandardMaterial3D.new()
-	material.albedo_color = _get_random_color(rng)
-	mesh_instance.set_surface_override_material(0, material)
-
-	parent.add_child(mesh_instance)
-
-## Create radar module (dish on pole)
-static func _create_radar(mesh_instance: MeshInstance3D):
-	var cylinder = CylinderMesh.new()
-	cylinder.top_radius = 0.3
-	cylinder.bottom_radius = 0.3
-	cylinder.height = 2.0
-	mesh_instance.mesh = cylinder
-
-## Create antenna module (tall thin pole)
-static func _create_antenna(mesh_instance: MeshInstance3D):
-	var cylinder = CylinderMesh.new()
-	cylinder.top_radius = 0.1
-	cylinder.bottom_radius = 0.1
-	cylinder.height = 4.0
-	mesh_instance.mesh = cylinder
-
-## Create crane module (tall box structure)
-static func _create_crane(mesh_instance: MeshInstance3D):
-	var box = BoxMesh.new()
-	box.size = Vector3(0.5, 5.0, 0.5)
-	mesh_instance.mesh = box
-
-## Create pipes module (cluster of small cylinders)
-static func _create_pipes(mesh_instance: MeshInstance3D):
-	var cylinder = CylinderMesh.new()
-	cylinder.top_radius = 0.2
-	cylinder.bottom_radius = 0.2
-	cylinder.height = 1.5
-	mesh_instance.mesh = cylinder
-
-## Create container module (small box)
-static func _create_container(mesh_instance: MeshInstance3D):
-	var box = BoxMesh.new()
-	box.size = Vector3(1.5, 1.0, 1.5)
-	mesh_instance.mesh = box
-
-## Get random industrial color
-static func _get_random_color(rng: RandomNumberGenerator) -> Color:
-	var colors = [
-		Color(0.6, 0.6, 0.6),  # Gray
-		Color(0.7, 0.5, 0.3),  # Rust orange
-		Color(0.4, 0.4, 0.5),  # Blue-gray
-		Color(0.5, 0.5, 0.5),  # Dark gray
-		Color(0.8, 0.7, 0.4),  # Yellow-tan
-		Color(0.3, 0.3, 0.35)  # Dark metal
-	]
-	return colors[rng.randi() % colors.size()]
+		_create_edge_module(parent, module_data, pos, rotation, rng)

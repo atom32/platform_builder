@@ -12,6 +12,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Assets folder organization
 - Config and data folder placeholders
 
+### Changed
+- **Platform Generator Refactor**
+  - Rule-based template system for platform generation
+  - Module library with 13 module types (radar, antenna, crane, pipes, container, turret, solar_panel, vent, satellite_dish, helipad, comms_array, fuel_tank, defenses_emplacement)
+  - Platform templates for each type (HQ, R&D, Combat, Support, Intel, Medical)
+  - Three-layer generation: top, middle, and edge modules
+  - Six edge slots per platform for attachments
+  - Themed color palettes (industrial, tech, military, medical)
+  - Platforms now visually represent their function
+
 ## [0.1.0] - 2026-03-09
 
 ### Added

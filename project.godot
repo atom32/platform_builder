@@ -21,6 +21,8 @@ ResourceSystem="*res://scripts/resource_system.gd"
 PlatformData="*res://scripts/platform_data.gd"
 ExpeditionSystem="*res://scripts/expedition_system.gd"
 TextData="*res://scripts/text_data.gd"
+ModuleLibrary="*res://scripts/module_library.gd"
+PlatformTemplates="*res://scripts/platform_templates.gd"
 
 [physics]
 

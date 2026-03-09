@@ -59,11 +59,11 @@ func _ready():
 	if mesh_node:
 		PlatformVisuals.apply_hexagon_visuals(mesh_node, platform_type)
 
-	# Generate procedural modules
+	# Generate procedural modules using template-based system
 	if platform_type == "HQ":
 		PlatformGenerator.generate_hq_castle(self)
 	else:
-		PlatformGenerator.generate_platform(self)
+		PlatformGenerator.generate_platform(self, platform_type)
 
 	# Connect production timer and start it
 	production_timer.timeout.connect(_on_production_timeout)

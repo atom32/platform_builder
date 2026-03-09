@@ -11,18 +11,16 @@ var all_platforms: Array[Platform] = []
 
 var platform_scene = preload("res://scenes/platform.tscn")
 var build_menu_scene = preload("res://ui/build_menu.tscn")
+var expedition_menu_scene = preload("res://ui/expedition_menu.tscn")
 
 var build_menu: BuildMenu = null
 var department_system: DepartmentSystem = null
+var combo_system: ComboSystem = null
+var expedition_system: ExpeditionSystem = null
+var expedition_menu: ExpeditionMenu = null
 
-## Platform build costs
-var build_costs = {
-	"R&D": {"materials": 50, "fuel": 10},
-	"Support": {"materials": 30, "fuel": 40},
-	"Combat": {"materials": 40, "fuel": 30},
-	"Intel": {"materials": 35, "fuel": 25},
-	"Medical": {"materials": 25, "fuel": 25}
-}
+## Base size limit
+const MAX_PLATFORMS: int = 100
 
 ## Camera dragging
 var is_dragging_camera: bool = false
@@ -31,7 +29,10 @@ var last_mouse_position: Vector2
 func _ready():
 	_spawn_hq()
 	_create_department_system()
+	_create_combo_system()
+	_create_expedition_system()
 	_create_build_menu()
+	_create_expedition_menu()
 	_setup_click_detection()
 
 	print("=== Mother Base Tree System ===")
@@ -42,6 +43,20 @@ func _ready():
 func _create_department_system():
 	department_system = DepartmentSystem.new()
 	add_child(department_system)
+
+func _create_combo_system():
+	combo_system = ComboSystem.new()
+	add_child(combo_system)
+
+func _create_expedition_system():
+	# Use the autoload instance
+	expedition_system = ExpeditionSystem
+	expedition_system.set_base_system(self)
+
+func _create_expedition_menu():
+	expedition_menu = expedition_menu_scene.instantiate() as ExpeditionMenu
+	add_child(expedition_menu)
+	expedition_menu.expedition_launched.connect(_on_expedition_launched)
 
 func _create_build_menu():
 	build_menu = build_menu_scene.instantiate() as BuildMenu
@@ -76,14 +91,24 @@ func _input(event):
 	if event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if not is_dragging_camera:
-				if not (build_menu and build_menu.visible):
-					# Only handle click if menu is not open
+				if not (build_menu and build_menu.visible) and not (expedition_menu and expedition_menu.visible):
+					# Only handle click if menus are not open
 					_handle_click(event.position)
 
 	# Handle menu cancellation with ESC
 	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
 		if build_menu and build_menu.visible:
 			build_menu.hide_menu()
+		elif expedition_menu and expedition_menu.visible:
+			expedition_menu.hide_menu()
+
+	# Handle expedition menu toggle (E key)
+	if event is InputEventKey and event.pressed and event.keycode == KEY_E:
+		if expedition_menu:
+			if expedition_menu.visible:
+				expedition_menu.hide_menu()
+			else:
+				open_expedition_menu()
 
 	# Handle camera drag movement
 	if event is InputEventMouseMotion and is_dragging_camera:
@@ -200,14 +225,20 @@ func _on_platform_selected(platform_type: String, slot: BuildSlot):
 func build_child_platform(parent_platform: Platform, slot: BuildSlot, platform_type: String) -> Platform:
 	var parent_ref = parent_platform  # Store reference before building
 
+	# Check base size limit
+	if all_platforms.size() >= MAX_PLATFORMS:
+		print("Base has reached maximum platform count (%d)" % MAX_PLATFORMS)
+		build_failed.emit("base_full")
+		return null
+
 	# Check if parent can accept more children
 	if not parent_platform.can_accept_child():
 		print("Parent platform is full (6/6 children)")
 		build_failed.emit("parent_full")
 		return null
 
-	# Check build costs
-	var cost = build_costs[platform_type]
+	# Check build costs (data-driven)
+	var cost = PlatformData.get_build_cost(platform_type)
 	var materials_cost = cost["materials"]
 	var fuel_cost = cost["fuel"]
 
@@ -248,7 +279,11 @@ func build_child_platform(parent_platform: Platform, slot: BuildSlot, platform_t
 		parent_platform.get_child_platform_count(),
 		Platform.MAX_CHILDREN
 	])
+	print("  Base Size: %d/%d" % [all_platforms.size(), MAX_PLATFORMS])
 	print("==================================================")
+
+	# Check for new combos
+	_check_combos()
 
 	return platform
 
@@ -257,3 +292,23 @@ func get_total_platform_count() -> int:
 
 func get_hq() -> Platform:
 	return hq_platform
+
+## Check all platforms for active combos
+func _check_combos():
+	if combo_system:
+		combo_system.check_combos(all_platforms)
+		print_combos()
+
+## Print active combos (for debugging)
+func print_combos():
+	if combo_system:
+		combo_system.print_active_combos()
+
+## Handle expedition launch
+func _on_expedition_launched(mission_id: String):
+	print("Expedition %s launched from base system" % mission_id)
+
+## Open expedition menu (called from UI or hotkey)
+func open_expedition_menu():
+	if expedition_menu:
+		expedition_menu.show_menu()

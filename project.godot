@@ -18,6 +18,8 @@ config/icon="res://icon.svg"
 [autoload]
 
 ResourceSystem="*res://scripts/resource_system.gd"
+PlatformData="*res://scripts/platform_data.gd"
+ExpeditionSystem="*res://scripts/expedition_system.gd"
 
 [physics]
 

@@ -45,6 +45,13 @@ func _update_button_states():
 	if parent_platform:
 		parent_full = not parent_platform.can_accept_child()
 
+	# Get build costs from data (data-driven)
+	var rd_cost = PlatformData.get_build_cost("R&D")
+	var support_cost = PlatformData.get_build_cost("Support")
+	var combat_cost = PlatformData.get_build_cost("Combat")
+	var intel_cost = PlatformData.get_build_cost("Intel")
+	var medical_cost = PlatformData.get_build_cost("Medical")
+
 	# Update all buttons based on parent capacity
 	# Buttons are only disabled if parent is full (6/6 children)
 	rd_button.disabled = parent_full
@@ -61,11 +68,11 @@ func _update_button_states():
 		intel_button.text = "Intel (Parent Full)"
 		medical_button.text = "Medical (Parent Full)"
 	else:
-		rd_button.text = "R&D - 50 Mat, 10 Fuel"
-		support_button.text = "Support - 30 Mat, 40 Fuel"
-		combat_button.text = "Combat - 40 Mat, 30 Fuel"
-		intel_button.text = "Intel - 35 Mat, 25 Fuel"
-		medical_button.text = "Medical - 25 Mat, 25 Fuel"
+		rd_button.text = "R&D - %d Mat, %d Fuel" % [rd_cost["materials"], rd_cost["fuel"]]
+		support_button.text = "Support - %d Mat, %d Fuel" % [support_cost["materials"], support_cost["fuel"]]
+		combat_button.text = "Combat - %d Mat, %d Fuel" % [combat_cost["materials"], combat_cost["fuel"]]
+		intel_button.text = "Intel - %d Mat, %d Fuel" % [intel_cost["materials"], intel_cost["fuel"]]
+		medical_button.text = "Medical - %d Mat, %d Fuel" % [medical_cost["materials"], medical_cost["fuel"]]
 
 func hide_menu():
 	visible = false

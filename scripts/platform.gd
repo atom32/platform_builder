@@ -29,6 +29,9 @@ var build_slots: Array[BuildSlot] = []
 ## Maximum children per platform
 const MAX_CHILDREN: int = 6
 
+## Platform tags (from PlatformData)
+var tags: Array = []
+
 ## Slot positions relative to this platform (radius = 15)
 var slot_positions: Array[Vector3] = [
 	Vector3(15, 0, 0),
@@ -65,30 +68,15 @@ func _ready():
 	# Hide all build slots initially
 	_hide_all_build_slots()
 
-## Set production rates based on platform type
+## Set production rates based on platform type (data-driven)
 func _set_production_rates():
-	match platform_type:
-		"HQ":
-			materials_production = 0
-			fuel_production = 0
-		"R&D":
-			materials_production = 2
-			fuel_production = 0
-		"Support":
-			materials_production = 0
-			fuel_production = 2
-		"Combat":
-			materials_production = 1
-			fuel_production = 1
-		"Intel":
-			materials_production = 0
-			fuel_production = 1
-		"Medical":
-			materials_production = 1
-			fuel_production = 0
-		_:
-			materials_production = 0
-			fuel_production = 0
+	materials_production = PlatformData.get_materials_production(platform_type)
+	fuel_production = PlatformData.get_fuel_production(platform_type)
+	tags = PlatformData.get_tags(platform_type)
+
+	print("%s: Production rates set - Materials: %d, Fuel: %d, Tags: %s" % [
+		platform_type, materials_production, fuel_production, tags
+	])
 
 ## Create build slots around this platform
 func _create_build_slots():
@@ -170,3 +158,21 @@ func _hide_all_build_slots():
 	for slot in build_slots:
 		if slot:
 			slot.hide_mesh()
+
+## Get this platform's tags
+func get_tags() -> Array:
+	return tags
+
+## Get neighboring platforms (same level, within range)
+func get_neighbors(all_platforms: Array[Platform], range: float = 20.0) -> Array[Platform]:
+	var neighbors: Array[Platform] = []
+
+	for platform in all_platforms:
+		if platform == self:
+			continue
+
+		var distance = platform.position.distance_to(self.position)
+		if distance <= range and distance > 0:
+			neighbors.append(platform)
+
+	return neighbors

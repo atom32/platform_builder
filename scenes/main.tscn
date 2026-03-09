@@ -25,13 +25,18 @@ ambient_light_energy = 0.8
 tonemap_mode = 2
 tonemap_exposure = 1.0
 
-[sub_resource type="BoxMesh" id="BoxMesh_ocean"]
-size = Vector3(500, 1, 500)
+[sub_resource type="PlaneMesh" id="PlaneMesh_ocean"]
+size = Vector2(500, 500)
+subdivide_width = 100
+subdivide_depth = 100
+orientation = 2
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ocean"]
-albedo_color = Color(0.1, 0.3, 0.5, 1)
-metallic = 0.0
-roughness = 0.8
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ocean"]
+shader = Shader("res://shaders/ocean_shader.gdshader")
+shader_param/water_color = Color(0.1, 0.3, 0.5, 1)
+shader_param/wave_speed = 1.0
+shader_param/wave_height = 0.3
+shader_param/wave_frequency = 2.0
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_main")
@@ -50,8 +55,8 @@ shadow_enabled = true
 
 [node name="Ocean" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.5, 0)
-mesh = SubResource("BoxMesh_ocean")
-surface_material_override/0 = SubResource("StandardMaterial3D_ocean")
+mesh = SubResource("PlaneMesh_ocean")
+surface_material_override/0 = SubResource("ShaderMaterial_ocean")
 
 [node name="Base" type="Node3D" parent="."]
 script = ExtResource("2_base")

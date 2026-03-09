@@ -8,9 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Project structure and documentation
-- Assets folder organization
-- Config and data folder placeholders
+- **Staff System (Iteration 10)**
+  - New resources: GMP (Global Money Points), staff_count, bed_capacity
+  - Staff recruitment system (50 GMP per staff, requires available bed)
+  - Department assignment system (R&D, Combat, Support, Intel, Medical)
+  - Staff upkeep system (1 Material per staff per minute)
+  - Department bonuses: R&D (+10% research speed per staff), Combat (+0.5 combat power per staff)
+  - Bed capacity from platforms: Support (+5 beds), Medical (+3 beds)
+  - Efficiency penalty when upkeep not paid
+
+- **Notification System**
+  - Temporary on-screen notifications (5 second auto-dismiss)
+  - Messages for staff recruitment, department assignment, expeditions, upkeep
+  - Visual fade-out effect
+  - Right-aligned notification container
 
 ### Changed
 - **Platform Generator Refactor**

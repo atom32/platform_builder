@@ -1,9 +1,12 @@
-[gd_scene load_steps=3 format=3 uid="uid://hud_scene"]
+[gd_scene load_steps=4 format=3 uid="uid://hud_scene"]
 
 [ext_resource type="Script" path="res://ui/hud.gd" id="1_hud"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_resource"]
 font_size = 24
+
+[sub_resource type="LabelSettings" id="LabelSettings_notification"]
+font_size = 18
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
@@ -12,7 +15,7 @@ script = ExtResource("1_hud")
 offset_left = 20.0
 offset_top = 20.0
 offset_right = 320.0
-offset_bottom = 240.0
+offset_bottom = 300.0
 
 [node name="MaterialsLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
@@ -23,6 +26,16 @@ text = "Materials: 0"
 layout_mode = 2
 label_settings = SubResource("LabelSettings_resource")
 text = "Fuel: 0"
+
+[node name="GMPLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+label_settings = SubResource("LabelSettings_resource")
+text = "GMP: 0"
+
+[node name="StaffLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+label_settings = SubResource("LabelSettings_resource")
+text = "Staff: 0/0"
 
 [node name="BaseSizeLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
@@ -43,3 +56,16 @@ text = "Expeditions: 0 (Press E)"
 layout_mode = 2
 label_settings = SubResource("LabelSettings_resource")
 text = "Combat: 0"
+
+[node name="NotificationContainer" type="VBoxContainer" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = -400.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 20.0
+grow_horizontal = 0
+alignment = 2

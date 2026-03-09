@@ -14,7 +14,7 @@ var build_menu_scene = preload("res://ui/build_menu.tscn")
 var expedition_menu_scene = preload("res://ui/expedition_menu.tscn")
 
 var build_menu: BuildMenu = null
-var department_system: DepartmentSystem = null
+var department_system: Node = null
 var combo_system: ComboSystem = null
 var expedition_system: ExpeditionManager = null
 var expedition_menu: ExpeditionMenu = null
@@ -41,8 +41,12 @@ func _ready():
 	print("Click yellow circles to expand!")
 
 func _create_department_system():
-	department_system = DepartmentSystem.new()
-	add_child(department_system)
+	# Use the autoload instance
+	department_system = get_node_or_null("/root/DepartmentSystem")
+	if department_system:
+		print("DepartmentSystem autoload found")
+	else:
+		print("WARNING: DepartmentSystem autoload not found")
 
 func _create_combo_system():
 	combo_system = ComboSystem.new()
@@ -52,6 +56,12 @@ func _create_expedition_system():
 	# Use the autoload instance
 	expedition_system = get_node("/root/ExpeditionSystem")
 	expedition_system.set_base_system(self)
+
+	# Connect expedition signals for notifications
+	if expedition_system:
+		expedition_system.expedition_started.connect(_on_expedition_started)
+		expedition_system.expedition_completed.connect(_on_expedition_completed)
+		expedition_system.expedition_failed.connect(_on_expedition_failed)
 
 func _create_expedition_menu():
 	expedition_menu = expedition_menu_scene.instantiate() as ExpeditionMenu
@@ -283,6 +293,14 @@ func build_child_platform(parent_platform: Platform, slot: BuildSlot, platform_t
 	# Check for new combos
 	_check_combos()
 
+	# Update bed capacity based on new platform
+	_update_bed_capacity()
+
+	# Show notification
+	var notification_system = get_node_or_null("/root/NotificationSystem")
+	if notification_system:
+		notification_system.show_platform_built(platform_type)
+
 	return platform
 
 func get_total_platform_count() -> int:
@@ -306,7 +324,34 @@ func print_combos():
 func _on_expedition_launched(mission_id: String):
 	print("Expedition %s launched from base system" % mission_id)
 
+## Handle expedition started
+func _on_expedition_started(mission_id: String):
+	var mission_name = TextData.expedition_name(mission_id)
+	var notification_system = get_node_or_null("/root/NotificationSystem")
+	if notification_system:
+		notification_system.show_expedition_started(mission_name)
+
+## Handle expedition completed
+func _on_expedition_completed(mission_id: String, rewards: Dictionary):
+	var mission_name = TextData.expedition_name(mission_id)
+	var materials = rewards.get("materials", 0)
+	var fuel = rewards.get("fuel", 0)
+	var notification_system = get_node_or_null("/root/NotificationSystem")
+	if notification_system:
+		notification_system.show_expedition_completed(mission_name, materials, fuel)
+
+## Handle expedition failed
+func _on_expedition_failed(mission_id: String, reason: String):
+	var mission_name = TextData.expedition_name(mission_id)
+	var notification_system = get_node_or_null("/root/NotificationSystem")
+	if notification_system:
+		notification_system.show_expedition_failed(mission_name)
+
 ## Open expedition menu (called from UI or hotkey)
 func open_expedition_menu():
 	if expedition_menu:
 		expedition_menu.show_menu()
+
+## Update bed capacity based on all platforms
+func _update_bed_capacity():
+	ResourceSystem.calculate_bed_capacity(all_platforms)

@@ -4,10 +4,13 @@ extends CanvasLayer
 
 @onready var materials_label = $VBoxContainer/MaterialsLabel
 @onready var fuel_label = $VBoxContainer/FuelLabel
+@onready var gmp_label = $VBoxContainer/GMPLabel
+@onready var staff_label = $VBoxContainer/StaffLabel
 @onready var base_size_label = $VBoxContainer/BaseSizeLabel
 @onready var combo_label = $VBoxContainer/ComboLabel
 @onready var expedition_label = $VBoxContainer/ExpeditionLabel
 @onready var combat_power_label = $VBoxContainer/CombatPowerLabel
+@onready var notification_container = $NotificationContainer
 
 ## Update interval for resource display
 var update_timer: float = 0.0
@@ -16,12 +19,23 @@ var update_interval: float = 0.5  # Update twice per second
 ## Reference to base system
 var base_system: Base = null
 
+## Reference to department system
+var department_system: Node = null
+
+## Notification settings
+const NOTIFICATION_LIFETIME: float = 5.0  # Seconds
+var notifications: Array = []
+
 func _ready():
 	# Validate that label nodes exist
 	if not materials_label:
 		push_error("MaterialsLabel not found in HUD scene!")
 	if not fuel_label:
 		push_error("FuelLabel not found in HUD scene!")
+	if not gmp_label:
+		push_error("GMPLabel not found in HUD scene!")
+	if not staff_label:
+		push_error("StaffLabel not found in HUD scene!")
 	if not base_size_label:
 		push_error("BaseSizeLabel not found in HUD scene!")
 	if not combo_label:
@@ -34,21 +48,30 @@ func _ready():
 	# Get reference to base system
 	base_system = get_node("/root/Main/Base")
 
+	# Get reference to department system
+	department_system = get_node_or_null("/root/DepartmentSystem")
+
 func _process(delta):
 	update_timer += delta
 	if update_timer >= update_interval:
 		update_resource_display()
 		update_base_info()
 		update_expedition_info()
+		update_staff_info()
 		update_timer = 0.0
+
+	# Update notifications
+	_update_notifications(delta)
 
 ## Update the resource labels with current values
 func update_resource_display():
-	if materials_label and fuel_label:
+	if materials_label and fuel_label and gmp_label:
 		var mats = ResourceSystem.get_materials()
 		var fuel = ResourceSystem.get_fuel()
+		var gmp = ResourceSystem.get_gmp()
 		materials_label.text = TextData.format("ui_materials", [mats])
 		fuel_label.text = TextData.format("ui_fuel", [fuel])
+		gmp_label.text = "GMP: %d" % gmp
 
 ## Update base information (size and combos)
 func update_base_info():
@@ -73,3 +96,59 @@ func update_expedition_info():
 		if combat_power_label:
 			var combat_power = base_system.expedition_system.get_combat_power()
 			combat_power_label.text = TextData.format("ui_combat", [combat_power])
+
+## Update staff information
+func update_staff_info():
+	if staff_label:
+		var staff = ResourceSystem.get_staff_count()
+		var beds = ResourceSystem.get_bed_capacity()
+		staff_label.text = "Staff: %d/%d" % [staff, beds]
+
+## ===== NOTIFICATION SYSTEM =====
+
+## Show a temporary notification message
+func show_notification(message: String, duration: float = NOTIFICATION_LIFETIME):
+	var notification_label = Label.new()
+	notification_label.text = message
+	notification_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	notification_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+
+	# Create font settings for notification
+	var settings = LabelSettings.new()
+	settings.font_size = 18
+	notification_label.label_settings = settings
+
+	# Add to container
+	notification_container.add_child(notification_label)
+
+	# Track notification
+	var notification_data = {
+		"label": notification_label,
+		"timer": duration,
+		"max_time": duration
+	}
+	notifications.append(notification_data)
+
+	print("[Notification] %s" % message)
+
+## Update notifications (called every frame)
+func _update_notifications(delta: float):
+	var i = 0
+	while i < notifications.size():
+		var notif = notifications[i]
+		notif["timer"] -= delta
+
+		# Fade out effect
+		var progress = notif["timer"] / notif["max_time"]
+		var label = notif["label"]
+		if label and label is Label:
+			label.modulate.a = progress
+
+		# Remove expired notifications
+		if notif["timer"] <= 0:
+			if label and label.get_parent():
+				label.get_parent().remove_child(label)
+				label.queue_free()
+			notifications.remove_at(i)
+		else:
+			i += 1

@@ -99,3 +99,12 @@ static func difficulty_name(difficulty: String) -> String:
 		"hard": return "Hard"
 		"expert": return "Expert"
 		_: return difficulty.capitalize()
+
+## Expedition mission name helper (maps mission_id to display name)
+static func expedition_name(mission_id: String) -> String:
+	match mission_id:
+		"supply_raid": return "Gather Resources"
+		"scout_patrol": return "Scout Territory"
+		"hostile_takeover": return "Raid Enemy Outpost"
+		"base_defense": return "Defend Base"
+		_: return mission_id.capitalize()

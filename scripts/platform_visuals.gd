@@ -49,8 +49,8 @@ static func apply_hexagon_visuals(mesh_instance: MeshInstance3D, platform_type: 
 	_create_support_pillars(mesh_instance, platform_type)
 
 ## Create 6 support pillars at hexagon corners (oil rig style)
-static func _create_support_pillars(platform_mesh: MeshInstance3D, platform_type: String):
-	var platform_node = platform_mesh.get_parent()
+static func _create_support_pillars(mesh_instance: MeshInstance3D, platform_type: String):
+	var platform_node = mesh_instance.get_parent()
 	if not platform_node:
 		return
 

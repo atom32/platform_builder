@@ -9,6 +9,7 @@ class_name Platform
 @export var production_value: int = 10
 
 @onready var production_timer = $ProductionTimer
+@onready var mesh_node = $Mesh
 
 ## Production rates per second (base values, multiplied by level)
 var materials_production: int = 0
@@ -52,6 +53,10 @@ func _ready():
 
 	# Set production rates based on platform type
 	_set_production_rates()
+
+	# Apply hexagon shape and color tint
+	if mesh_node:
+		PlatformVisuals.apply_hexagon_visuals(mesh_node, platform_type)
 
 	# Generate procedural modules for non-HQ platforms
 	if platform_type != "HQ":
@@ -152,6 +157,38 @@ func get_production() -> int:
 func upgrade():
 	level += 1
 	print("%s upgraded to Level %d" % [platform_type, level])
+
+## Apply color tinting based on platform type
+func apply_platform_colors():
+	if not mesh_node:
+		return
+
+	var material = mesh_node.mesh.surface_get_material(0)
+	if not material:
+		material = StandardMaterial3D.new()
+		mesh_node.set_surface_override_material(0, material)
+
+	# Get base color
+	var base_color = Color(0.5, 0.5, 0.5)  # Default gray
+
+	# Apply tint based on platform type
+	match platform_type:
+		"HQ":
+			base_color = Color(0.3, 0.3, 0.35)  # Dark metal
+		"R&D":
+			base_color = Color(0.7, 0.7, 0.3)  # Yellow tint
+		"Combat":
+			base_color = Color(0.7, 0.3, 0.3)  # Red tint
+		"Support":
+			base_color = Color(0.3, 0.5, 0.7)  # Blue tint
+		"Intel":
+			base_color = Color(0.6, 0.3, 0.7)  # Purple tint
+		"Medical":
+			base_color = Color(0.3, 0.7, 0.4)  # Green tint
+		_:
+			base_color = Color(0.5, 0.5, 0.5)  # Default gray
+
+	material.albedo_color = base_color
 
 ## Hide all build slots
 func _hide_all_build_slots():

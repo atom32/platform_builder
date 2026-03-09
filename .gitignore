@@ -1,3 +1,39 @@
 # Godot 4+ specific ignores
+
+# Editor data
 .godot/
+
+# Android export templates
 /android/
+
+# Script unique identifiers (ignore for team collaboration)
+# Remove this line if you're the only developer
+*.uid
+
+# Imported resources (auto-generated)
+*.import
+
+# Export presets
+.export.cfg
+
+# Temporary files
+*.tmp
+*~
+
+# Operating system files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Mono/C# specific
+.mono/
+temp/
+tmp/
+
+# Project-specific temp directories
+/tmp/
+/temp/

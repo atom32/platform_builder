@@ -4,14 +4,32 @@
 [ext_resource type="Script" path="res://scripts/base.gd" id="2_base"]
 [ext_resource type="PackedScene" uid="uid://hud_scene" path="res://ui/hud.tscn" id="3_hud"]
 
+[sub_resource type="ProceduralSky" id="ProceduralSky_sky"]
+sky_horizon_color = Color(0.64625, 0.655, 0.670, 1)
+sky_radial_begin = 0.01
+sky_radial_end = 2.0
+sky_ground_horizon_color = Color(0.64625, 0.655, 0.670, 1)
+ground_horizon_color = Color(0.64625, 0.655, 0.670, 1)
+
+[sub_resource type="Environment" id="Environment_environment"]
+background_mode = 2
+sky = SubResource("ProceduralSky_sky")
+sky_custom_fov = 0.0
+ground_color = Color(0, 0, 0, 1)
+
 [sub_resource type="BoxMesh" id="BoxMesh_ocean"]
-size = Vector3(200, 1, 200)
+size = Vector3(500, 1, 500)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ocean"]
-albedo_color = Color(0.1, 0.4, 0.7, 1)
+albedo_color = Color(0.1, 0.3, 0.5, 1)
+metallic = 0.0
+roughness = 0.8
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_main")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_environment")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 40, 40)

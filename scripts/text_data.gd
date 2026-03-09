@@ -1,95 +1,10 @@
 extends Node
-class_name TextData
-
 ## Text data system for internationalization (i18n)
 ## All game text is centralized here for easy translation
 
-## UI Text
-const UI = {
-	# HUD
-	hud_materials = "Materials: %d"
-	hud_fuel = "Fuel: %d"
-	hud_base = "Base: %d/%d"
-	hud_combos = "Combos: %d"
-	hud_expeditions = "Expeditions: %d (Press E)"
-	hud_combat = "Combat: %d"
-
-	# Build Menu
-	build_parent_full = "%s (Parent Full)"
-	build_cost_format = "%s - %d Mat, %d Fuel"
-
-	# Expedition Menu
-	expedition_title = "Expeditions"
-	expedition_combat_power = "Combat Power: %d"
-	expedition_in_progress = "%s\nIn Progress (%ds)\nDifficulty: %s"
-	expedition_available = "%s\n%s\nPower: %d/%d | Duration: %ds | Difficulty: %s\nRewards: %d Mat, %d Fuel"
-	expedition_locked = "%s\nLOCKED - Need %d Combat Power (have %d)"
-	expedition_close = "X"
-}
-
-## Platform Type Names
-const PLATFORM_TYPES = {
-	hq = "HQ"
-	rd = "R&D"
-	support = "Support"
-	combat = "Combat"
-	intel = "Intel"
-	medical = "Medical"
-}
-
-## Messages
-const MESSAGES = {
-	# Platform building
-	build_success_title = "BUILD SUCCESS"
-	build_success_details = "  Type: %s Platform\n  Parent: %s\n  Cost: %d Materials, %d Fuel\n  Parent Children: %d/%d\n  Base Size: %d/%d"
-	build_failed_base_full = "Base has reached maximum platform count (%d)"
-	build_failed_parent_full = "Parent platform is full (6/6 children)"
-	build_failed_materials = "Not enough resources: Need %d Materials (have %d)"
-	build_failed_fuel = "Not enough resources: Need %d Fuel (have %d)"
-
-	# Platform production
-	production_rates = "%s: Production rates set - Materials: %d, Fuel: %d, Tags: %s"
-	platform_upgraded = "%s upgraded to Level %d"
-
-	# Platform slots
-	slots_created = "%s: Created %d build slots"
-	child_added = "%s: Added child %s (total children: %d/%d)"
-
-	# System messages
-	hq_spawned = "HQ Platform spawned at center"
-	combo_detected = "Combo detected: %s (%s)"
-	combo_removed = "Combo removed: %s"
-	expedition_started = "Expedition started: %s"
-	expedition_completed = "Expedition completed: %s - Rewards: %d Materials, %d Fuel"
-	expedition_failed = "Expedition failed: %s - Insufficient combat power"
-}
-
-## Expedition Missions
-const EXPEDITIONS = {
-	gather_resources_name = "Gather Resources"
-	gather_resources_desc = "Send team to collect materials"
-
-	scout_territory_name = "Scout Territory"
-	scout_territory_desc = "Explore nearby areas"
-
-	raid_enemy_outpost_name = "Raid Enemy Outpost"
-	raid_enemy_outpost_desc = "Attack enemy base for resources"
-
-	defend_base_name = "Defend Base"
-	defend_base_desc = "Repel incoming enemy attack"
-}
-
-## Difficulty Names
-const DIFFICULTY = {
-	easy = "Easy"
-	medium = "Medium"
-	hard = "Hard"
-	expert = "Expert"
-}
-
 ## Get formatted text with parameters
-static func get(key: String, args: Array = []) -> String:
-	var text = _get_text_from_key(key)
+static func format(key: String, args: Array = []) -> String:
+	var text = _get_raw_text(key)
 
 	if args.size() > 0:
 		text = text % args
@@ -98,51 +13,89 @@ static func get(key: String, args: Array = []) -> String:
 
 ## Get raw text without formatting
 static func get_raw(key: String) -> String:
-	return _get_text_from_key(key)
+	return _get_raw_text(key)
 
-## Internal helper to traverse dictionary and get text
-static func _get_text_from_key(key: String) -> String:
-	var parts = key.split("_")
-	var category = parts[0]
-	var text_key = key.substr(category.length() + 1)
+## Internal helper to get text by key
+static func _get_raw_text(key: String) -> String:
+	match key:
+		# UI - HUD
+		"ui_materials": return "Materials: %d"
+		"ui_fuel": return "Fuel: %d"
+		"ui_base": return "Base: %d/%d"
+		"ui_combos": return "Combos: %d"
+		"ui_expeditions": return "Expeditions: %d (Press E)"
+		"ui_combat": return "Combat: %d"
 
-	match category:
-		"ui":
-			if UI.has(text_key):
-				return UI[text_key]
-		"platform":
-			if PLATFORM_TYPES.has(text_key):
-				return PLATFORM_TYPES[text_key]
-		"msg":
-			if MESSAGES.has(text_key):
-				return MESSAGES[text_key]
-		"expedition":
-			if EXPEDITIONS.has(text_key):
-				return EXPEDITIONS[text_key]
-		"difficulty":
-			if DIFFICULTY.has(text_key):
-				return DIFFICULTY[text_key]
+		# UI - Build Menu
+		"ui_build_parent_full": return "%s (Parent Full)"
+		"ui_build_cost_format": return "%s - %d Mat, %d Fuel"
 
-	# Fallback: return key if not found
-	push_warning("Text key not found: %s" % key)
-	return key
+		# UI - Expedition Menu
+		"ui_expedition_title": return "Expeditions"
+		"ui_expedition_combat_power": return "Combat Power: %d"
+		"ui_expedition_in_progress": return "%s\nIn Progress (%ds)\nDifficulty: %s"
+		"ui_expedition_available": return "%s\n%s\nPower: %d/%d | Duration: %ds | Difficulty: %s\nRewards: %d Mat, %d Fuel"
+		"ui_expedition_locked": return "%s\nLOCKED - Need %d Combat Power (have %d)"
+		"ui_expedition_close": return "X"
+
+		# Messages - Platform Building
+		"msg_build_success_title": return "BUILD SUCCESS"
+		"msg_build_success_details": return "  Type: %s Platform\n  Parent: %s\n  Cost: %d Materials, %d Fuel\n  Parent Children: %d/%d\n  Base Size: %d/%d"
+		"msg_build_failed_base_full": return "Base has reached maximum platform count (%d)"
+		"msg_build_failed_parent_full": return "Parent platform is full (6/6 children)"
+		"msg_build_failed_materials": return "Not enough resources: Need %d Materials (have %d)"
+		"msg_build_failed_fuel": return "Not enough resources: Need %d Fuel (have %d)"
+
+		# Messages - Platform Production
+		"msg_production_rates": return "%s: Production rates set - Materials: %d, Fuel: %d, Tags: %s"
+		"msg_platform_upgraded": return "%s upgraded to Level %d"
+
+		# Messages - Platform Slots
+		"msg_slots_created": return "%s: Created %d build slots"
+		"msg_child_added": return "%s: Added child %s (total children: %d/%d)"
+
+		# Messages - System
+		"msg_hq_spawned": return "HQ Platform spawned at center"
+		"msg_combo_detected": return "Combo detected: %s (%s)"
+		"msg_combo_removed": return "Combo removed: %s"
+		"msg_expedition_started": return "Expedition started: %s"
+		"msg_expedition_completed": return "Expedition completed: %s - Rewards: %d Materials, %d Fuel"
+		"msg_expedition_failed": return "Expedition failed: %s - Insufficient combat power"
+
+		# Expedition Missions
+		"expedition_gather_resources_name": return "Gather Resources"
+		"expedition_gather_resources_desc": return "Send team to collect materials"
+		"expedition_scout_territory_name": return "Scout Territory"
+		"expedition_scout_territory_desc": return "Explore nearby areas"
+		"expedition_raid_enemy_outpost_name": return "Raid Enemy Outpost"
+		"expedition_raid_enemy_outpost_desc": return "Attack enemy base for resources"
+		"expedition_defend_base_name": return "Defend Base"
+		"expedition_defend_base_desc": return "Repel incoming enemy attack"
+
+		# Difficulty
+		"difficulty_easy": return "Easy"
+		"difficulty_medium": return "Medium"
+		"difficulty_hard": return "Hard"
+		"difficulty_expert": return "Expert"
+
+		_: return "MISSING_TEXT: %s" % key
 
 ## Platform type name helper
 static func platform_type_name(type: String) -> String:
 	match type:
-		"HQ": return PLATFORM_TYPES.hq
-		"R&D": return PLATFORM_TYPES.rd
-		"Support": return PLATFORM_TYPES.support
-		"Combat": return PLATFORM_TYPES.combat
-		"Intel": return PLATFORM_TYPES.intel
-		"Medical": return PLATFORM_TYPES.medical
+		"HQ": return "HQ"
+		"R&D": return "R&D"
+		"Support": return "Support"
+		"Combat": return "Combat"
+		"Intel": return "Intel"
+		"Medical": return "Medical"
 		_: return type
 
 ## Difficulty name helper
 static func difficulty_name(difficulty: String) -> String:
 	match difficulty:
-		"easy": return DIFFICULTY.easy
-		"medium": return DIFFICULTY.medium
-		"hard": return DIFFICULTY.hard
-		"expert": return DIFFICULTY.expert
+		"easy": return "Easy"
+		"medium": return "Medium"
+		"hard": return "Hard"
+		"expert": return "Expert"
 		_: return difficulty.capitalize()

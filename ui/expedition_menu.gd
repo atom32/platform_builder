@@ -66,14 +66,14 @@ func _update_mission_list():
 			# Check if already active
 			if expedition_system.active_expeditions.has(mission_id):
 				var time_remaining = expedition_system.get_expedition_time_remaining(mission_id)
-				button.text = TextData.get("ui_expedition_in_progress", [
+				button.text = TextData.format("ui_expedition_in_progress", [
 					mission["display_name"],
 					time_remaining,
 					TextData.difficulty_name(mission["difficulty"])
 				])
 				button.disabled = true
 			else:
-				button.text = TextData.get("ui_expedition_available", [
+				button.text = TextData.format("ui_expedition_available", [
 					mission["display_name"],
 					mission["description"],
 					current_combat_power,
@@ -86,7 +86,7 @@ func _update_mission_list():
 		else:
 			# Mission not available (insufficient combat power)
 			button.disabled = true
-			button.text = TextData.get("ui_expedition_locked", [
+			button.text = TextData.format("ui_expedition_locked", [
 				mission["display_name"],
 				mission["required_combat_power"],
 				current_combat_power
@@ -95,7 +95,7 @@ func _update_mission_list():
 func _update_combat_power():
 	if combat_power_label:
 		var combat_power = expedition_system.get_combat_power()
-		combat_power_label.text = TextData.get("ui_expedition_combat_power", [combat_power])
+		combat_power_label.text = TextData.format("ui_expedition_combat_power", [combat_power])
 
 func _on_mission_button_clicked(button: Button):
 	var mission_id = button.get_meta("mission_id")

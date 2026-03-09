@@ -82,7 +82,7 @@ func _set_production_rates():
 	fuel_production = PlatformData.get_fuel_production(platform_type)
 	tags = PlatformData.get_tags(platform_type)
 
-	print(TextData.get("msg_production_rates", [
+	print(TextData.format("msg_production_rates", [
 		platform_type, materials_production, fuel_production, tags
 	]))
 
@@ -98,7 +98,7 @@ func _create_build_slots():
 		add_child(slot)
 		build_slots.append(slot)
 
-	print(TextData.get("msg_slots_created", [platform_type, build_slots.size()]))
+	print(TextData.format("msg_slots_created", [platform_type, build_slots.size()]))
 
 ## Called every second by the ProductionTimer
 func _on_production_timeout():
@@ -128,7 +128,7 @@ func add_child_platform(platform: Platform, slot: BuildSlot):
 	slot.occupy()
 	slot.hide_mesh()
 
-	print(TextData.get("msg_child_added", [
+	print(TextData.format("msg_child_added", [
 		platform_type, platform.platform_type, child_platforms.size(), MAX_CHILDREN
 	]))
 
@@ -163,7 +163,7 @@ func get_production() -> int:
 
 func upgrade():
 	level += 1
-	print(TextData.get("msg_platform_upgraded", [platform_type, level]))
+	print(TextData.format("msg_platform_upgraded", [platform_type, level]))
 
 ## Apply color tinting based on platform type
 func apply_platform_colors():

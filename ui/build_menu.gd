@@ -57,17 +57,17 @@ func _update_button_states():
 
 	# Update button text to show status
 	if parent_full:
-		rd_button.text = TextData.get("ui_build_parent_full", [TextData.platform_type_name("R&D")])
-		support_button.text = TextData.get("ui_build_parent_full", [TextData.platform_type_name("Support")])
-		combat_button.text = TextData.get("ui_build_parent_full", [TextData.platform_type_name("Combat")])
-		intel_button.text = TextData.get("ui_build_parent_full", [TextData.platform_type_name("Intel")])
-		medical_button.text = TextData.get("ui_build_parent_full", [TextData.platform_type_name("Medical")])
+		rd_button.text = TextData.format("ui_build_parent_full", [TextData.platform_type_name("R&D")])
+		support_button.text = TextData.format("ui_build_parent_full", [TextData.platform_type_name("Support")])
+		combat_button.text = TextData.format("ui_build_parent_full", [TextData.platform_type_name("Combat")])
+		intel_button.text = TextData.format("ui_build_parent_full", [TextData.platform_type_name("Intel")])
+		medical_button.text = TextData.format("ui_build_parent_full", [TextData.platform_type_name("Medical")])
 	else:
-		rd_button.text = TextData.get("ui_build_cost_format", [TextData.platform_type_name("R&D"), rd_cost["materials"], rd_cost["fuel"]])
-		support_button.text = TextData.get("ui_build_cost_format", [TextData.platform_type_name("Support"), support_cost["materials"], support_cost["fuel"]])
-		combat_button.text = TextData.get("ui_build_cost_format", [TextData.platform_type_name("Combat"), combat_cost["materials"], combat_cost["fuel"]])
-		intel_button.text = TextData.get("ui_build_cost_format", [TextData.platform_type_name("Intel"), intel_cost["materials"], intel_cost["fuel"]])
-		medical_button.text = TextData.get("ui_build_cost_format", [TextData.platform_type_name("Medical"), medical_cost["materials"], medical_cost["fuel"]])
+		rd_button.text = TextData.format("ui_build_cost_format", [TextData.platform_type_name("R&D"), rd_cost["materials"], rd_cost["fuel"]])
+		support_button.text = TextData.format("ui_build_cost_format", [TextData.platform_type_name("Support"), support_cost["materials"], support_cost["fuel"]])
+		combat_button.text = TextData.format("ui_build_cost_format", [TextData.platform_type_name("Combat"), combat_cost["materials"], combat_cost["fuel"]])
+		intel_button.text = TextData.format("ui_build_cost_format", [TextData.platform_type_name("Intel"), intel_cost["materials"], intel_cost["fuel"]])
+		medical_button.text = TextData.format("ui_build_cost_format", [TextData.platform_type_name("Medical"), medical_cost["materials"], medical_cost["fuel"]])
 
 func hide_menu():
 	visible = false

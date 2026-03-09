@@ -2,6 +2,15 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Important Rules
+
+**NO EMOJIS ALLOWED** - All documentation, comments, and communication must be emoji-free. This includes:
+- Code comments
+- Documentation files (README.md, CHANGELOG.md, etc.)
+- CLAUDE.md
+- Commit messages
+- Any other text content in this repository
+
 ## Project Overview
 
 This is a **Godot 4.6** prototype game project inspired by the Mother Base system from Metal Gear Solid V.
@@ -20,40 +29,34 @@ This is a **Godot 4.6** prototype game project inspired by the Mother Base syste
 
 ### Development Progress
 
-**Iteration 1 - COMPLETE** ✅
-- Ocean scene with blue plane
+**Iteration 1 - COMPLETE** - Ocean scene with blue plane
 - HQ platform (gray box)
 - Top-down camera
 
-**Iteration 2 - COMPLETE** ✅
-- Platform scene with type, level, production_value
+**Iteration 2 - COMPLETE** - Platform scene with type, level, production_value
 - Base manager that spawns HQ and manages platforms
 - 6 build slots around HQ in circular formation
 - Click detection on build slots (prints to console)
 
-**Iteration 3 - COMPLETE** ✅
-- Build system: Click slot → spawn platform
+**Iteration 3 - COMPLETE** - Build system: Click slot → spawn platform
 - Platform type "R&D" (hardcoded)
 - Slot occupation tracking (occupied slots can't be clicked)
 - Slot mesh hidden when platform is built
 - Platform properties: type, level=1, production_value=10
 
-**Iteration 4 - COMPLETE** ✅
-- Procedural platform generation with random modules
+**Iteration 4 - COMPLETE** - Procedural platform generation with random modules
 - 5 module types: Radar, Antenna, Crane, Pipes, Container
 - Random positions (-3.5 to 3.5), random rotation (0-360°)
 - Random industrial colors for variety
 - Camera zoom with mouse wheel (15-80 distance range)
 
-**Iteration 5 - COMPLETE** ✅
-- Resource system with Materials and Fuel
+**Iteration 5 - COMPLETE** - Resource system with Materials and Fuel
 - Global ResourceSystem singleton (autoload)
 - Platforms produce resources every second
 - Production rates: R&D (+2 Materials), Support (+2 Fuel)
 - Console output every 5 seconds showing totals
 
-**Iteration 6 - COMPLETE** ✅
-- Basic UI with resource display (top-left corner)
+**Iteration 6 - COMPLETE** - Basic UI with resource display (top-left corner)
 - HUD updates twice per second
 - Platform build costs implemented
 - R&D Platform: 50 Materials + 10 Fuel
@@ -71,8 +74,7 @@ This is a **Godot 4.6** prototype game project inspired by the Mother Base syste
 - Department system maintained (6 platforms per department type)
 - Starting resources increased to 200 Materials, 100 Fuel
 
-**Prototype Complete!** 🎉
-All core systems implemented for the prototype.
+**Prototype Complete!** All core systems implemented for the prototype.
 
 ### Scope Limitations (Prototype Only)
 - NO combat
@@ -111,24 +113,12 @@ godot --path /Users/ning/proj-0308
 
 ```
 /scenes          - Scene files (.tscn)
-    main.tscn    - Main game scene ✅
-    platform.tscn - Platform scene ✅
-    build_slot.tscn - Build slot scene ✅
-
+    main.tscn    - Main game scene     platform.tscn - Platform scene     build_slot.tscn - Build slot scene 
 /scripts         - Game logic scripts (.gd)
-    main.gd      - Main game controller ✅
-    base.gd      - Base system ✅
-    platform.gd  - Platform logic ✅
-    build_slot.gd - Build slot logic ✅
-    platform_generator.gd - Procedural generation ✅
-    resource_system.gd - Resource management ✅ (Autoload singleton)
+    main.gd      - Main game controller     base.gd      - Base system     platform.gd  - Platform logic     build_slot.gd - Build slot logic     platform_generator.gd - Procedural generation     resource_system.gd - Resource management ✅ (Autoload singleton)
 
 /ui              - User interface scenes
-    hud.tscn     - Resource HUD ✅
-    hud.gd       - HUD controller ✅
-    build_menu.tscn - Build menu ✅
-    build_menu.gd - Build menu controller ✅
-```
+    hud.tscn     - Resource HUD     hud.gd       - HUD controller     build_menu.tscn - Build menu     build_menu.gd - Build menu controller ```
 
 ## Current Implementation Details
 

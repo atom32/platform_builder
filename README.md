@@ -12,14 +12,14 @@ Build and manage a sea-based Mother Base with a tree-like expansion system. Cons
 
 ### Implemented Features
 
-- ✅ Tree-based platform expansion (unlimited growth potential)
-- ✅ 6 platform types: HQ, R&D, Combat, Support, Intel, Medical
-- ✅ Resource system (Materials and Fuel) with auto-production
-- ✅ Procedural platform generation for visual variety
-- ✅ Combo system based on platform adjacency
-- ✅ Expedition system for resource gathering
-- ✅ Data-driven architecture for easy balancing
-- ✅ Build size limits (100 platforms max)
+- Tree-based platform expansion (unlimited growth potential)
+- 6 platform types: HQ, R&D, Combat, Support, Intel, Medical
+- Resource system (Materials and Fuel) with auto-production
+- Procedural platform generation for visual variety
+- Combo system based on platform adjacency
+- Expedition system for resource gathering
+- Data-driven architecture for easy balancing
+- Build size limits (100 platforms max)
 
 ## How to Run
 

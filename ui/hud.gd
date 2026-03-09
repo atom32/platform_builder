@@ -47,8 +47,8 @@ func update_resource_display():
 	if materials_label and fuel_label:
 		var mats = ResourceSystem.get_materials()
 		var fuel = ResourceSystem.get_fuel()
-		materials_label.text = "Materials: %d" % mats
-		fuel_label.text = "Fuel: %d" % fuel
+		materials_label.text = TextData.get("ui_materials", [mats])
+		fuel_label.text = TextData.get("ui_fuel", [fuel])
 
 ## Update base information (size and combos)
 func update_base_info():
@@ -56,20 +56,20 @@ func update_base_info():
 		# Update base size
 		if base_size_label:
 			var current_size = base_system.get_total_platform_count()
-			base_size_label.text = "Base: %d/%d" % [current_size, base_system.MAX_PLATFORMS]
+			base_size_label.text = TextData.get("ui_base", [current_size, base_system.MAX_PLATFORMS])
 
 		# Update combo count
 		if combo_label and base_system.combo_system:
 			var combo_count = base_system.combo_system.get_combo_count()
-			combo_label.text = "Combos: %d" % combo_count
+			combo_label.text = TextData.get("ui_combos", [combo_count])
 
 ## Update expedition information
 func update_expedition_info():
 	if base_system and base_system.expedition_system:
 		var expedition_count = base_system.expedition_system.get_active_expedition_count()
-		expedition_label.text = "Expeditions: %d (Press E)" % expedition_count
+		expedition_label.text = TextData.get("ui_expeditions", [expedition_count])
 
 		# Update combat power
 		if combat_power_label:
 			var combat_power = base_system.expedition_system.get_combat_power()
-			combat_power_label.text = "Combat: %d" % combat_power
+			combat_power_label.text = TextData.get("ui_combat", [combat_power])

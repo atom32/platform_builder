@@ -34,13 +34,14 @@ const MAX_CHILDREN: int = 6
 var tags: Array = []
 
 ## Slot positions relative to this platform (radius = 15)
+## Aligned with hexagon's 6 corners (rotated 30° to match platform hexagon)
 var slot_positions: Array[Vector3] = [
-	Vector3(15, 0, 0),
-	Vector3(-15, 0, 0),
-	Vector3(0, 0, 15),
-	Vector3(0, 0, -15),
-	Vector3(10.5, 0, 10.5),
-	Vector3(-10.5, 0, -10.5)
+	Vector3(15, 0, 0),           # 0° (right)
+	Vector3(7.5, 0, 13),         # 60° (upper right)
+	Vector3(-7.5, 0, 13),        # 120° (upper left)
+	Vector3(-15, 0, 0),          # 180° (left)
+	Vector3(-7.5, 0, -13),       # 240° (lower left)
+	Vector3(7.5, 0, -13)         # 300° (lower right)
 ]
 
 func _ready():
@@ -58,8 +59,10 @@ func _ready():
 	if mesh_node:
 		PlatformVisuals.apply_hexagon_visuals(mesh_node, platform_type)
 
-	# Generate procedural modules for non-HQ platforms
-	if platform_type != "HQ":
+	# Generate procedural modules
+	if platform_type == "HQ":
+		PlatformGenerator.generate_hq_castle(self)
+	else:
 		PlatformGenerator.generate_platform(self)
 
 	# Connect production timer and start it
@@ -79,9 +82,9 @@ func _set_production_rates():
 	fuel_production = PlatformData.get_fuel_production(platform_type)
 	tags = PlatformData.get_tags(platform_type)
 
-	print("%s: Production rates set - Materials: %d, Fuel: %d, Tags: %s" % [
+	print(TextData.get("msg_production_rates", [
 		platform_type, materials_production, fuel_production, tags
-	])
+	]))
 
 ## Create build slots around this platform
 func _create_build_slots():
@@ -95,7 +98,7 @@ func _create_build_slots():
 		add_child(slot)
 		build_slots.append(slot)
 
-	print("%s: Created %d build slots" % [platform_type, build_slots.size()])
+	print(TextData.get("msg_slots_created", [platform_type, build_slots.size()]))
 
 ## Called every second by the ProductionTimer
 func _on_production_timeout():
@@ -121,9 +124,13 @@ func add_child_platform(platform: Platform, slot: BuildSlot):
 	platform.parent_platform = self
 	build_slots.erase(slot)
 
-	print("%s: Added child %s (total children: %d/%d)" % [
+	# Mark slot as occupied and hide its mesh
+	slot.occupy()
+	slot.hide_mesh()
+
+	print(TextData.get("msg_child_added", [
 		platform_type, platform.platform_type, child_platforms.size(), MAX_CHILDREN
-	])
+	]))
 
 ## Get number of child platforms
 func get_child_platform_count() -> int:
@@ -156,7 +163,7 @@ func get_production() -> int:
 
 func upgrade():
 	level += 1
-	print("%s upgraded to Level %d" % [platform_type, level])
+	print(TextData.get("msg_platform_upgraded", [platform_type, level]))
 
 ## Apply color tinting based on platform type
 func apply_platform_colors():

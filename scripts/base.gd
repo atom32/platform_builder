@@ -72,7 +72,7 @@ func _spawn_hq():
 	add_child(hq_platform)
 	all_platforms.append(hq_platform)
 
-	print("HQ Platform spawned at center")
+	print(TextData.get("msg_hq_spawned"))
 
 func _setup_click_detection():
 	set_process_input(true)
@@ -227,13 +227,13 @@ func build_child_platform(parent_platform: Platform, slot: BuildSlot, platform_t
 
 	# Check base size limit
 	if all_platforms.size() >= MAX_PLATFORMS:
-		print("Base has reached maximum platform count (%d)" % MAX_PLATFORMS)
+		print(TextData.get("msg_build_failed_base_full", [MAX_PLATFORMS]))
 		build_failed.emit("base_full")
 		return null
 
 	# Check if parent can accept more children
 	if not parent_platform.can_accept_child():
-		print("Parent platform is full (6/6 children)")
+		print(TextData.get("msg_build_failed_parent_full"))
 		build_failed.emit("parent_full")
 		return null
 
@@ -244,13 +244,13 @@ func build_child_platform(parent_platform: Platform, slot: BuildSlot, platform_t
 
 	# Check resources
 	if not ResourceSystem.spend_materials(materials_cost):
-		print("Not enough resources: Need %d Materials (have %d)" % [materials_cost, ResourceSystem.get_materials()])
+		print(TextData.get("msg_build_failed_materials", [materials_cost, ResourceSystem.get_materials()]))
 		build_failed.emit("materials")
 		return null
 
 	if not ResourceSystem.spend_fuel(fuel_cost):
 		ResourceSystem.add_materials(materials_cost)
-		print("Not enough resources: Need %d Fuel (have %d)" % [fuel_cost, ResourceSystem.get_fuel()])
+		print(TextData.get("msg_build_failed_fuel", [fuel_cost, ResourceSystem.get_fuel()]))
 		build_failed.emit("fuel")
 		return null
 
@@ -270,17 +270,15 @@ func build_child_platform(parent_platform: Platform, slot: BuildSlot, platform_t
 	# Register to parent
 	parent_platform.add_child_platform(platform, slot)
 
-	print("==================================================")
-	print("BUILD SUCCESS")
-	print("  Type: %s Platform" % platform_type)
-	print("  Parent: %s" % parent_platform.platform_type)
-	print("  Cost: %d Materials, %d Fuel" % [materials_cost, fuel_cost])
-	print("  Parent Children: %d/%d" % [
+	print(TextData.get("msg_build_success_details", [
+		platform_type,
+		parent_platform.platform_type,
+		materials_cost, fuel_cost,
 		parent_platform.get_child_platform_count(),
-		Platform.MAX_CHILDREN
-	])
-	print("  Base Size: %d/%d" % [all_platforms.size(), MAX_PLATFORMS])
-	print("==================================================")
+		Platform.MAX_CHILDREN,
+		all_platforms.size(),
+		MAX_PLATFORMS
+	]))
 
 	# Check for new combos
 	_check_combos()

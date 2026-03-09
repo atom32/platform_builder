@@ -5,17 +5,25 @@
 [ext_resource type="PackedScene" uid="uid://hud_scene" path="res://ui/hud.tscn" id="3_hud"]
 
 [sub_resource type="ProceduralSky" id="ProceduralSky_sky"]
-sky_horizon_color = Color(0.64625, 0.655, 0.670, 1)
+sky_horizon_color = Color(0.4, 0.6, 0.9, 1)
 sky_radial_begin = 0.01
 sky_radial_end = 2.0
-sky_ground_horizon_color = Color(0.64625, 0.655, 0.670, 1)
-ground_horizon_color = Color(0.64625, 0.655, 0.670, 1)
+sky_ground_horizon_color = Color(0.5, 0.7, 0.9, 1)
+ground_horizon_color = Color(0.6, 0.75, 0.95, 1)
+sun_energy = 10.0
+sun_latitude = 35.0
+sun_longitude = 45.0
 
 [sub_resource type="Environment" id="Environment_environment"]
 background_mode = 2
 sky = SubResource("ProceduralSky_sky")
 sky_custom_fov = 0.0
-ground_color = Color(0, 0, 0, 1)
+ground_color = Color(0.2, 0.3, 0.4, 1)
+ambient_light_source = 1
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.8
+tonemap_mode = 2
+tonemap_exposure = 1.0
 
 [sub_resource type="BoxMesh" id="BoxMesh_ocean"]
 size = Vector3(500, 1, 500)
@@ -35,8 +43,13 @@ environment = SubResource("Environment_environment")
 transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 40, 40)
 fov = 60.0
 
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, -0.75, 0.433013, 0, 0, 0)
+light_energy = 1.0
+shadow_enabled = true
+
 [node name="Ocean" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.5, 0)
 mesh = SubResource("BoxMesh_ocean")
 surface_material_override/0 = SubResource("StandardMaterial3D_ocean")
 

@@ -3,14 +3,17 @@ class_name ExpeditionMenu
 
 signal expedition_launched(mission_id: String)
 
-@onready var close_button = $VBoxContainer/Header/CloseButton
-@onready var mission_list = $VBoxContainer/ScrollContainer/MissionList
-@onready var combat_power_label = $VBoxContainer/CombatPowerLabel
-@onready var expedition_system = ExpeditionSystem
+@onready var close_button = $Panel/VBoxContainer/Header/CloseButton
+@onready var mission_list = $Panel/VBoxContainer/ScrollContainer/MissionList
+@onready var combat_power_label = $Panel/VBoxContainer/CombatPowerLabel
 
+var expedition_system: ExpeditionManager
 var mission_buttons: Dictionary = {}
 
 func _ready():
+	# Get reference to ExpeditionSystem autoload singleton
+	expedition_system = get_node("/root/ExpeditionSystem")
+
 	close_button.pressed.connect(_on_close_clicked)
 
 	# Create mission buttons

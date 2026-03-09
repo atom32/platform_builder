@@ -1,5 +1,5 @@
 extends Node
-class_name ExpeditionSystem
+class_name ExpeditionManager
 
 ## Manages expeditions and missions
 

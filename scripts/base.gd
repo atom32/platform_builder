@@ -16,7 +16,7 @@ var expedition_menu_scene = preload("res://ui/expedition_menu.tscn")
 var build_menu: BuildMenu = null
 var department_system: DepartmentSystem = null
 var combo_system: ComboSystem = null
-var expedition_system: ExpeditionSystem = null
+var expedition_system: ExpeditionManager = null
 var expedition_menu: ExpeditionMenu = null
 
 ## Base size limit
@@ -50,7 +50,7 @@ func _create_combo_system():
 
 func _create_expedition_system():
 	# Use the autoload instance
-	expedition_system = ExpeditionSystem
+	expedition_system = get_node("/root/ExpeditionSystem")
 	expedition_system.set_base_system(self)
 
 func _create_expedition_menu():

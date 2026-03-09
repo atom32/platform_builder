@@ -9,11 +9,17 @@ signal slot_clicked(slot: BuildSlot)
 var is_occupied: bool = false
 
 @onready var mesh_node = $Mesh
+@onready var area_3d = $Area3D
 
 func _ready():
 	# Validate that mesh node exists
 	if not mesh_node:
 		push_error("Mesh node not found in BuildSlot scene!")
+		return
+
+	# Validate that Area3D exists
+	if not area_3d:
+		push_error("Area3D not found in BuildSlot scene!")
 		return
 
 func on_clicked():
@@ -32,7 +38,13 @@ func get_occupied() -> bool:
 func hide_mesh():
 	if mesh_node:
 		mesh_node.visible = false
+	# Disable collision detection when hidden
+	if area_3d:
+		area_3d.collision_layer = 0
 
 func show_mesh():
 	if mesh_node:
 		mesh_node.visible = true
+	# Enable collision detection when visible (layer 2 = build slots)
+	if area_3d:
+		area_3d.collision_layer = 2

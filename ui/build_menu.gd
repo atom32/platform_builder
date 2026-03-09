@@ -15,12 +15,7 @@ var base_system: Base = null
 @onready var medical_button = $Panel/VBoxContainer/Medical
 
 func _ready():
-	# Connect all buttons
-	rd_button.pressed.connect(_on_rd_selected)
-	support_button.pressed.connect(_on_support_selected)
-	combat_button.pressed.connect(_on_combat_selected)
-	intel_button.pressed.connect(_on_intel_selected)
-	medical_button.pressed.connect(_on_medical_selected)
+	# Button signals are already connected in build_menu.tscn
 
 	# Hide menu initially
 	hide()

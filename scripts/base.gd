@@ -199,10 +199,6 @@ func _on_platform_selected(platform_type: String, slot: BuildSlot):
 
 func build_child_platform(parent_platform: Platform, slot: BuildSlot, platform_type: String) -> Platform:
 	var parent_ref = parent_platform  # Store reference before building
-	# Check department capacity FIRST
-	if not department_system.can_build(platform_type):
-		build_failed.emit("department_full")
-		return null
 
 	# Check if parent can accept more children
 	if not parent_platform.can_accept_child():
@@ -240,20 +236,14 @@ func build_child_platform(parent_platform: Platform, slot: BuildSlot, platform_t
 	add_child(platform)
 	all_platforms.append(platform)
 
-	# Register to parent and department
+	# Register to parent
 	parent_platform.add_child_platform(platform, slot)
-	department_system.register_platform(platform)
 
 	print("==================================================")
 	print("BUILD SUCCESS")
 	print("  Type: %s Platform" % platform_type)
 	print("  Parent: %s" % parent_platform.platform_type)
 	print("  Cost: %d Materials, %d Fuel" % [materials_cost, fuel_cost])
-	print("  Department: %s (%d/%d)" % [
-		platform_type,
-		department_system.get_department_count(platform_type),
-		department_system.MAX_PLATFORMS_PER_DEPT
-	])
 	print("  Parent Children: %d/%d" % [
 		parent_platform.get_child_platform_count(),
 		Platform.MAX_CHILDREN

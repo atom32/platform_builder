@@ -43,23 +43,20 @@ func _input(event):
 			_zoom_out()
 
 func _zoom_in():
-	# Move camera closer along its offset direction
-	var current_distance = camera_offset.length()
+	# Move camera closer - scale down the position vector
+	var current_distance = camera.position.length()
 	if current_distance > zoom_min_distance:
 		var new_distance = max(current_distance - zoom_speed, zoom_min_distance)
-		camera_offset = camera_offset.normalized() * new_distance
-		_update_camera_position()
+		var scale_factor = new_distance / current_distance
+		camera.position = camera.position * scale_factor
 
 func _zoom_out():
-	# Move camera away along its offset direction
-	var current_distance = camera_offset.length()
+	# Move camera away - scale up the position vector
+	var current_distance = camera.position.length()
 	if current_distance < zoom_max_distance:
 		var new_distance = min(current_distance + zoom_speed, zoom_max_distance)
-		camera_offset = camera_offset.normalized() * new_distance
-		_update_camera_position()
-
-func _update_camera_position():
-	camera.position = camera_offset
+		var scale_factor = new_distance / current_distance
+		camera.position = camera.position * scale_factor
 
 func _on_build_failed(reason: String):
 	# Build failure is already logged in base.gd, no need to duplicate

@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Staff System (Iteration 10.5)**
+  - Individual Staff entity with unique ID, name, skill level, and specialty
+  - Staff recruitment creates individual Staff entities with random names
+  - Recruit Pool system for unassigned staff
+  - Staff Management UI (Press U) with TabContainer interface
+  - Recruits tab: View and assign unassigned staff to departments
+  - Departments tab: View all department assignments
+  - Dismiss tab: View and dismiss staff to reduce upkeep
+  - Staff can now be tracked individually with their attributes
+
+- **Staff System (Iteration 10)**
 - **Staff System (Iteration 10)**
   - New resources: GMP (Global Money Points), staff_count, bed_capacity
   - Staff recruitment system (50 GMP per staff, requires available bed)

@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://main_scene"]
+[gd_scene load_steps=7 format=3 uid="uid://main_scene"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/base.gd" id="2_base"]
 [ext_resource type="PackedScene" uid="uid://hud_scene" path="res://ui/hud.tscn" id="3_hud"]
-[ext_resource type="Shader" path="res://shaders/ocean_shader.gdshader" id="4_shader"]
+[ext_resource type="PackedScene" uid="uid://mstaff_menu" path="res://ui/staff_menu.tscn" id="4_staff_menu"]
+[ext_resource type="Shader" path="res://shaders/ocean_shader.gdshader" id="5_shader"]
 
 [sub_resource type="ProceduralSky" id="ProceduralSky_sky"]
 sky_horizon_color = Color(0.4, 0.6, 0.9, 1)
@@ -32,7 +33,7 @@ subdivide_width = 100
 subdivide_depth = 100
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ocean"]
-shader = ExtResource("4_shader")
+shader = ExtResource("5_shader")
 shader_param/water_color = Color(0.1, 0.3, 0.5, 1)
 shader_param/wave_speed = 1.0
 shader_param/wave_height = 0.3
@@ -62,3 +63,5 @@ surface_material_override/0 = SubResource("ShaderMaterial_ocean")
 script = ExtResource("2_base")
 
 [node name="HUD" parent="." instance=ExtResource("3_hud")]
+
+[node name="StaffMenu" parent="." instance=ExtResource("4_staff_menu")]

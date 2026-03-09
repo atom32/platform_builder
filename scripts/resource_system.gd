@@ -111,8 +111,15 @@ func recruit_staff() -> bool:
 			notification_system.show_staff_recruit_failed_no_gmp()
 		return false
 
-	add_staff(1)
-	return true
+	# Create the staff entity through DepartmentSystem
+	var dept_system = get_node_or_null("/root/DepartmentSystem")
+	if dept_system:
+		dept_system.add_staff()
+		# Also update the staff count
+		add_staff(1)
+		return true
+
+	return false
 
 ## Calculate bed capacity from platforms
 func calculate_bed_capacity(platforms: Array) -> int:
@@ -121,6 +128,8 @@ func calculate_bed_capacity(platforms: Array) -> int:
 		if platform.has_method("get_type"):
 			var type = platform.get_type()
 			match type:
+				"HQ":
+					capacity += 5  # HQ provides basic living quarters
 				"Support":
 					capacity += 5
 				"Medical":

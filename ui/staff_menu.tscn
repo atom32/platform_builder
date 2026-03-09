@@ -1,0 +1,124 @@
+[gd_scene load_steps=2 format=3 uid="uid://mstaff_menu"]
+
+[ext_resource type="Script" path="res://ui/staff_menu.gd" id="staff_menu"]
+
+[node name="StaffMenu" type="CanvasLayer"]
+layer = 1
+script = ExtResource("staff_menu")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.7)
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -300.0
+offset_right = 400.0
+offset_bottom = 300.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+
+[node name="TitleLabel" type="Label" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "Staff Management"
+horizontal_alignment = 1
+
+[node name="TabContainer" type="TabContainer" parent="Panel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Recruits" type="VBoxContainer" parent="Panel/VBoxContainer/TabContainer"]
+layout_mode = 2
+
+[node name="RecruitInfo" type="Label" parent="Panel/VBoxContainer/TabContainer/Recruits"]
+layout_mode = 2
+text = "Recruit Pool - Available Staff"
+
+[node name="RecruitList" type="ItemList" parent="Panel/VBoxContainer/TabContainer/Recruits"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RecruitButtons" type="HBoxContainer" parent="Panel/VBoxContainer/TabContainer/Recruits"]
+layout_mode = 2
+
+[node name="AssignToRD" type="Button" parent="Panel/VBoxContainer/TabContainer/Recruits/RecruitButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Assign to R&D"
+
+[node name="AssignToCombat" type="Button" parent="Panel/VBoxContainer/TabContainer/Recruits/RecruitButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Assign to Combat"
+
+[node name="AssignToSupport" type="Button" parent="Panel/VBoxContainer/TabContainer/Recruits/RecruitButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Assign to Support"
+
+[node name="AssignToIntel" type="Button" parent="Panel/VBoxContainer/TabContainer/Recruits/RecruitButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Assign to Intel"
+
+[node name="AssignToMedical" type="Button" parent="Panel/VBoxContainer/TabContainer/Recruits/RecruitButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Assign to Medical"
+
+[node name="Departments" type="VBoxContainer" parent="Panel/VBoxContainer/TabContainer"]
+layout_mode = 2
+
+[node name="DeptLabel" type="Label" parent="Panel/VBoxContainer/TabContainer/Departments"]
+layout_mode = 2
+text = "Department Assignments"
+
+[node name="DeptList" type="ItemList" parent="Panel/VBoxContainer/TabContainer/Departments"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Dismiss" type="VBoxContainer" parent="Panel/VBoxContainer/TabContainer"]
+layout_mode = 2
+
+[node name="DismissInfo" type="Label" parent="Panel/VBoxContainer/TabContainer/Dismiss"]
+layout_mode = 2
+text = "Dismiss Staff - Reduce Upkeep Costs"
+
+[node name="DismissList" type="ItemList" parent="Panel/VBoxContainer/TabContainer/Dismiss"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="DismissButtons" type="HBoxContainer" parent="Panel/VBoxContainer/TabContainer/Dismiss"]
+layout_mode = 2
+
+[node name="DismissSelected" type="Button" parent="Panel/VBoxContainer/TabContainer/Dismiss/DismissButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Dismiss Selected"
+
+[node name="CloseButton" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "Close (U)"

@@ -74,6 +74,16 @@ This is a **Godot 4.6** prototype game project inspired by the Mother Base syste
 - Department system maintained (6 platforms per department type)
 - Starting resources increased to 200 Materials, 100 Fuel
 
+**Iteration 10.5 - COMPLETE** ✅ (Staff System Refactor)
+- **Individual Staff Entities**: Staff are now tracked as individual objects
+- Staff have unique IDs, names, skill levels (1-5), and specialties
+- **Recruit Pool**: New recruits go to the recruit pool (unassigned staff)
+- **Staff Management UI**: Press U to open the staff menu
+- Three tabs: Recruits, Departments, Dismiss
+- Staff assignment through UI instead of keyboard shortcuts
+- Staff dismissal system to reduce upkeep costs
+- Productivity multipliers based on skill level and specialty matching
+
 **Prototype Complete!** All core systems implemented for the prototype.
 
 ### Scope Limitations (Prototype Only)
@@ -113,12 +123,15 @@ godot --path /Users/ning/proj-0308
 
 ```
 /scenes          - Scene files (.tscn)
-    main.tscn    - Main game scene     platform.tscn - Platform scene     build_slot.tscn - Build slot scene 
+    main.tscn    - Main game scene     platform.tscn - Platform scene     build_slot.tscn - Build slot scene
 /scripts         - Game logic scripts (.gd)
     main.gd      - Main game controller     base.gd      - Base system     platform.gd  - Platform logic     build_slot.gd - Build slot logic     platform_generator.gd - Procedural generation     resource_system.gd - Resource management ✅ (Autoload singleton)
+    staff.gd     - Individual Staff entity class
+    department_system.gd - Department management ✅ (Autoload singleton)
 
 /ui              - User interface scenes
-    hud.tscn     - Resource HUD     hud.gd       - HUD controller     build_menu.tscn - Build menu     build_menu.gd - Build menu controller ```
+    hud.tscn     - Resource HUD     hud.gd       - HUD controller     build_menu.tscn - Build menu     build_menu.gd - Build menu controller
+    staff_menu.tscn - Staff management UI     staff_menu.gd - Staff menu controller ```
 
 ## Current Implementation Details
 
@@ -166,11 +179,13 @@ godot --path /Users/ning/proj-0308
 
 ### Resource System (`scripts/resource_system.gd`)
 - **Global Singleton**: Accessible from anywhere via `ResourceSystem`
-- **Resources**: Materials, Fuel
-- **Functions**: `add_materials()`, `add_fuel()`, `get_materials()`, `get_fuel()`
-- **Spending**: `spend_materials()`, `spend_fuel()` - Returns true if successful
+- **Resources**: Materials, Fuel, GMP (currency), Staff Count, Bed Capacity
+- **Functions**: `add_materials()`, `add_fuel()`, `add_gmp()`, `add_staff()`, `add_beds()`
+- **Spending**: `spend_materials()`, `spend_fuel()`, `spend_gmp()` - Returns true if successful
+- **Recruitment**: `recruit_staff()` - Creates new Staff entity via DepartmentSystem
+- **Upkeep**: Staff cost 1 Material per minute (efficiency penalty if unpaid)
 - **Debug Output**: Prints totals every 5 seconds
-- **Starting Resources**: 200 Materials, 100 Fuel (given by main.gd)
+- **Starting Resources**: 200 Materials, 100 Fuel, 300 GMP, 10 Beds
 
 ### UI System (`ui/hud.gd` and `ui/hud.tscn`)
 - **CanvasLayer** with VBoxContainer layout
@@ -188,12 +203,36 @@ godot --path /Users/ning/proj-0308
   - Disabled when parent platform full: "R&D (Parent Full)"
 - **Resource costs displayed** in button text
 
+### Staff Entity (`scripts/staff.gd`)
+- **Individual Staff**: Each staff is a unique entity with ID, name, skills
+- **Properties**: `id`, `first_name`, `last_name`, `department`, `skill_level` (1-5), `specialty`
+- **Specialties**: Combat, Research, Logistics, Medicine, Engineering, or None
+- **Productivity**: Multiplier based on skill level and specialty-department matching
+- **Recruit Pool**: Staff with empty `department` are in the recruit pool
+
+### Staff Menu (`ui/staff_menu.gd` and `ui/staff_menu.tscn`)
+- **Hotkey**: Press U to toggle the staff menu
+- **TabContainer** with three tabs:
+  1. **Recruits Tab**: View unassigned staff, assign to departments with buttons
+  2. **Departments Tab**: View all department assignments
+  3. **Dismiss Tab**: View all staff, dismiss selected to reduce upkeep
+- **Dynamic Updates**: Lists refresh when menu opens or actions are taken
+
+### Department System (`scripts/department_system.gd`)
+- **Global Singleton**: Accessible via `DepartmentSystem`
+- **Staff List**: Tracks all Staff entities in the base
+- **Recruit Pool**: `get_recruit_pool()` returns unassigned staff
+- **Assignment**: `assign_staff_member()` assigns individual staff to departments
+- **Dismissing**: `dismiss_staff()` removes staff from the base
+- **Bonuses**: Calculates research speed and combat power from assigned staff
+
 ### Main Camera & Game Controller (`scripts/main.gd`)
 - **Zoom Control**: Mouse wheel up/down
 - **Zoom Range**: 15 (closest) to 80 (farthest) units
 - **Zoom Speed**: 5 units per scroll step
 - **Camera Panning**: Right-click + drag to move camera (handled by base.gd)
-- **Starting Resources**: Grants 200 Materials, 100 Fuel on game start
+- **Starting Resources**: Grants 200 Materials, 100 Fuel, 300 GMP, 10 Beds on game start
+- **Hotkeys**: R (recruit staff), U (open staff menu)
 
 ### Base System (`scripts/base.gd`) - Tree Architecture
 - **Tree Management**: HQ is root, tracks all platforms in tree structure
@@ -217,14 +256,16 @@ godot --path /Users/ning/proj-0308
 
 ## Game Loop Summary (Tree-Based System)
 
-1. **Start**: Player gets 200 Materials, 100 Fuel
+1. **Start**: Player gets 200 Materials, 100 Fuel, 300 GMP
 2. **Explore**: HQ has 6 expansion slots (visible as yellow circles)
 3. **Build**: Click slot → Select platform type → Check capacities → Child platform appears
 4. **Expand**: New platforms also have 6 expansion slots
 5. **Grow**: Base expands in tree structure (HQ → children → grandchildren...)
 6. **Produce**: All platforms generate resources over time
 7. **Navigate**: Right-click + drag to pan camera, scroll to zoom
-8. **UI**: Watch resources and department limits in menus
+8. **Recruit**: Press R to recruit staff (50 GMP, requires available bed)
+9. **Assign**: Press U to open Staff Management, assign staff to departments
+10. **Upkeep**: Staff cost 1 Material per minute per staff
 
 ## Tree Expansion Example
 

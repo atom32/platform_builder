@@ -23,7 +23,7 @@ var department_counts = {
 	"Medical": 0
 }
 
-## Staff assignments per department
+## Staff assignments per department (for quick lookup)
 var department_staff = {
 	"R&D": 0,
 	"Combat": 0,
@@ -31,6 +31,10 @@ var department_staff = {
 	"Intel": 0,
 	"Medical": 0
 }
+
+## Individual staff tracking
+var staff_list: Array = []  # All staff in the base
+var next_staff_id: int = 1  # Auto-incrementing ID for new staff
 
 ## Department bonuses
 const RESEARCH_SPEED_BONUS_PER_STAFF: float = 0.1  # 10% per staff
@@ -97,36 +101,101 @@ func get_total_platform_count() -> int:
 
 ## ===== STAFF MANAGEMENT =====
 
-## Assign staff to a department
+## Add a new staff member (recruitment)
+func add_staff():
+	var StaffClass = load("res://scripts/staff.gd")
+	var new_staff = StaffClass.new(next_staff_id)
+	next_staff_id += 1
+	staff_list.append(new_staff)
+	print("Recruited new staff: %s (ID: %d)" % [new_staff.get_display_name(), new_staff.id])
+	return new_staff
+
+## Get all staff in recruit pool (department is empty string)
+func get_recruit_pool() -> Array:
+	var pool: Array = []
+	for staff in staff_list:
+		if staff.is_in_recruit_pool():
+			pool.append(staff)
+	return pool
+
+## Get all staff assigned to a specific department
+func get_staff_in_department(department_type: String) -> Array:
+	var dept_staff: Array = []
+	for staff in staff_list:
+		if staff.department == department_type:
+			dept_staff.append(staff)
+	return dept_staff
+
+## Assign a specific staff member to a department
+func assign_staff_member(staff_member, department_type: String) -> bool:
+	if not department_staff.has(department_type):
+		push_error("Unknown department type: %s" % department_type)
+		return false
+
+	# Update staff's department
+	staff_member.assign_to_dept(department_type)
+
+	# Update counts
+	department_staff[department_type] += 1
+
+	print("Assigned %s to %s department" % [staff_member.get_display_name(), department_type])
+	return true
+
+## Assign staff from recruit pool to a department (by count)
 func assign_staff(department_type: String, count: int) -> bool:
 	if not department_staff.has(department_type):
 		push_error("Unknown department type: %s" % department_type)
 		return false
 
-	# Check if we have enough unassigned staff
-	var current_total = get_total_staff()
-	var available = ResourceSystem.get_staff_count() - current_total
-
-	if count > available:
-		print("Cannot assign %d staff to %s: Only %d unassigned staff available" % [count, department_type, available])
+	# Get unassigned staff
+	var pool = get_recruit_pool()
+	if pool.size() < count:
+		print("Cannot assign %d staff to %s: Only %d unassigned staff available" % [count, department_type, pool.size()])
 		return false
 
-	department_staff[department_type] += count
-	print("Assigned %d staff to %s department (total: %d)" % [count, department_type, department_staff[department_type]])
+	# Assign the specified number of staff
+	for i in range(count):
+		assign_staff_member(pool[i], department_type)
+
 	return true
 
-## Remove staff from a department
-func remove_staff(department_type: String, count: int) -> bool:
-	if not department_staff.has(department_type):
-		push_error("Unknown department type: %s" % department_type)
+## Remove a specific staff member from their department (return to pool)
+func unassign_staff_member(staff_member) -> bool:
+	var old_dept = staff_member.department
+	if old_dept == "":
+		return false  # Already in pool
+
+	if not department_staff.has(old_dept):
+		push_error("Unknown department type: %s" % old_dept)
 		return false
 
-	if department_staff[department_type] < count:
-		print("Cannot remove %d staff from %s: Only %d assigned" % [count, department_type, department_staff[department_type]])
+	# Update staff's department
+	staff_member.assign_to_dept("")
+
+	# Update counts
+	department_staff[old_dept] -= 1
+
+	print("Returned %s to recruit pool from %s" % [staff_member.get_display_name(), old_dept])
+	return true
+
+## Dismiss a staff member entirely
+func dismiss_staff(staff_member) -> bool:
+	if not staff_member in staff_list:
 		return false
 
-	department_staff[department_type] -= count
-	print("Removed %d staff from %s department (total: %d)" % [count, department_type, department_staff[department_type]])
+	# If assigned to a department, update counts first
+	if not staff_member.is_in_recruit_pool():
+		var dept = staff_member.department
+		if department_staff.has(dept):
+			department_staff[dept] -= 1
+
+	# Remove from staff list
+	staff_list.erase(staff_member)
+
+	# Update resource system
+	ResourceSystem.add_staff(-1)
+
+	print("Dismissed %s from the base" % staff_member.get_display_name())
 	return true
 
 ## Get staff count for a specific department
@@ -142,9 +211,13 @@ func get_total_staff() -> int:
 		total += count
 	return total
 
-## Get unassigned staff
+## Get unassigned staff (in recruit pool)
 func get_unassigned_staff() -> int:
-	return ResourceSystem.get_staff_count() - get_total_staff()
+	return get_recruit_pool().size()
+
+## Get all staff in the base
+func get_all_staff() -> Array:
+	return staff_list
 
 ## ===== DEPARTMENT BONUSES =====
 

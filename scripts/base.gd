@@ -7,7 +7,6 @@ class_name Base
 signal build_failed(reason: String)
 
 var hq_platform: Platform = null
-var all_platforms: Array[Platform] = []
 
 var platform_scene = preload("res://scenes/platform.tscn")
 var build_menu_scene = preload("res://ui/build_menu.tscn")
@@ -94,7 +93,6 @@ func _spawn_hq():
 	hq_platform.platform_type = "HQ"
 	hq_platform.position = Vector3.ZERO
 	add_child(hq_platform)
-	all_platforms.append(hq_platform)
 
 	print(TextData.format("msg_hq_spawned"))
 
@@ -212,14 +210,14 @@ func find_platform_with_slot(slot: BuildSlot) -> Platform:
 
 func _find_platform_with_slot(slot: BuildSlot) -> Platform:
 	# Search through all platforms to find which one owns this slot
-	for platform in all_platforms:
+	for platform in get_all_platforms():
 		if slot in platform.build_slots:
 			return platform
 	return null
 
 func _hide_all_slots():
 	# Hide all build slots from all platforms
-	for platform in all_platforms:
+	for platform in get_all_platforms():
 		platform._hide_all_build_slots()
 
 func _show_platform_slots(platform: Platform):
@@ -235,7 +233,7 @@ func _show_platform_slots(platform: Platform):
 
 func _check_slot_overlap(position: Vector3) -> bool:
 	# Check if position overlaps with any existing platform
-	for platform in all_platforms:
+	for platform in get_all_platforms():
 		var distance = platform.position.distance_to(position)
 		if distance < 8.0:  # Platform size is 10x10, so < 8 means overlap
 			return true
@@ -250,7 +248,7 @@ func build_child_platform(parent_platform: Platform, slot: BuildSlot, platform_t
 	var parent_ref = parent_platform  # Store reference before building
 
 	# Check base size limit
-	if all_platforms.size() >= MAX_PLATFORMS:
+	if get_total_platform_count() >= MAX_PLATFORMS:
 		print(TextData.format("msg_build_failed_base_full", [MAX_PLATFORMS]))
 		build_failed.emit("base_full")
 		return null
@@ -289,9 +287,8 @@ func build_child_platform(parent_platform: Platform, slot: BuildSlot, platform_t
 	platform.position = parent_platform.position + slot_local_position
 
 	add_child(platform)
-	all_platforms.append(platform)
 
-	# Register to parent
+	# Register to parent (this also adds to scene tree via add_child_platform)
 	parent_platform.add_child_platform(platform, slot)
 
 	# Create visual bridge between platforms
@@ -303,7 +300,7 @@ func build_child_platform(parent_platform: Platform, slot: BuildSlot, platform_t
 		materials_cost, fuel_cost,
 		parent_platform.get_child_platform_count(),
 		Platform.MAX_CHILDREN,
-		all_platforms.size(),
+		get_total_platform_count(),
 		MAX_PLATFORMS
 	]))
 
@@ -334,16 +331,13 @@ func build_child_platform(parent_platform: Platform, slot: BuildSlot, platform_t
 
 	return platform
 
-func get_total_platform_count() -> int:
-	return all_platforms.size()
-
 func get_hq() -> Platform:
 	return hq_platform
 
 ## Check all platforms for active combos
 func _check_combos():
 	if combo_system:
-		combo_system.check_combos(all_platforms)
+		combo_system.check_combos(get_all_platforms())
 		print_combos()
 
 ## Print active combos (for debugging)
@@ -400,4 +394,26 @@ func open_expedition_menu():
 
 ## Update bed capacity based on all platforms
 func _update_bed_capacity():
-	ResourceSystem.calculate_bed_capacity(all_platforms)
+	ResourceSystem.calculate_bed_capacity(get_all_platforms())
+
+## ===== PLATFORM TRAVERSAL UTILITIES =====
+
+## Get all platforms in the base (using scene tree traversal)
+func get_all_platforms() -> Array[Platform]:
+	return find_children("*", "Platform", true, false) as Array[Platform]
+
+## Get total platform count
+func get_total_platform_count() -> int:
+	return get_all_platforms().size()
+
+## Get platforms by type
+func get_platforms_by_type(type: String) -> Array[Platform]:
+	var result: Array[Platform] = []
+	for platform in get_all_platforms():
+		if platform.platform_type == type:
+			result.append(platform)
+	return result
+
+## Get platform count by type
+func get_platform_count_by_type(type: String) -> int:
+	return get_platforms_by_type(type).size()

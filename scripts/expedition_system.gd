@@ -87,7 +87,7 @@ func calculate_combat_power() -> int:
 	var combat_power: int = 0
 
 	# Count Combat platforms
-	for platform in base_system.all_platforms:
+	for platform in base_system.get_all_platforms():
 		if platform.platform_type == "Combat":
 			combat_power += 1
 

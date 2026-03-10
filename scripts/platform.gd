@@ -21,12 +21,6 @@ var production_bonus: float = 1.0
 ## Flag to track if production is active
 var production_active: bool = false
 
-## Parent platform (null for HQ)
-var parent_platform: Platform = null
-
-## Child platforms built on this platform's slots
-var child_platforms: Array[Platform] = []
-
 ## Build slots for this platform (empty slots where children can be built)
 var build_slots: Array[BuildSlot] = []
 
@@ -119,12 +113,12 @@ func _on_production_timeout():
 
 ## Add a child platform to this platform
 func add_child_platform(platform: Platform, slot: BuildSlot):
-	if child_platforms.size() >= MAX_CHILDREN:
+	if get_child_platform_count() >= MAX_CHILDREN:
 		push_error("Platform already has maximum children!")
 		return
 
-	child_platforms.append(platform)
-	platform.parent_platform = self
+	# Add to scene tree - this is the ONLY place we define parent-child relationship
+	add_child(platform)
 	build_slots.erase(slot)
 
 	# Mark slot as occupied and hide its mesh
@@ -132,27 +126,44 @@ func add_child_platform(platform: Platform, slot: BuildSlot):
 	slot.hide_mesh()
 
 	print(TextData.format("msg_child_added", [
-		platform_type, platform.platform_type, child_platforms.size(), MAX_CHILDREN
+		platform_type, platform.platform_type, get_child_platform_count(), MAX_CHILDREN
 	]))
 
 ## Get number of child platforms
 func get_child_platform_count() -> int:
-	return child_platforms.size()
+	var count = 0
+	for child in get_children():
+		if child is Platform:
+			count += 1
+	return count
 
 ## Check if this platform can accept more children
 func can_accept_child() -> bool:
-	return child_platforms.size() < MAX_CHILDREN
+	return get_child_platform_count() < MAX_CHILDREN
 
 ## Get remaining child slots
 func get_remaining_child_slots() -> int:
-	return MAX_CHILDREN - child_platforms.size()
+	return MAX_CHILDREN - get_child_platform_count()
+
+## Get parent platform (null for HQ)
+func get_parent_platform() -> Platform:
+	return get_parent() as Platform
+
+## Get child platforms (only Platform nodes, not BuildSlots)
+func get_child_platforms() -> Array:
+	var children = []
+	for child in get_children():
+		if child is Platform:
+			children.append(child)
+	return children
 
 ## Get all descendant platforms (recursively)
-func get_all_descendants() -> Array[Platform]:
-	var descendants: Array[Platform] = []
-	for child in child_platforms:
-		descendants.append(child)
-		descendants.append_array(child.get_all_descendants())
+func get_all_descendants() -> Array:
+	var descendants = []
+	for child in get_children():
+		if child is Platform:
+			descendants.append(child)
+			descendants.append_array(child.get_all_descendants())
 	return descendants
 
 func get_type() -> String:

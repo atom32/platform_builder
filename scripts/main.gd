@@ -108,9 +108,6 @@ func _create_focus_marker():
 	# Create wireframe material
 	var material = StandardMaterial3D.new()
 	material.albedo_color = Color(1.0, 0.0, 0.0)  # Red
-	material.flags[BaseMaterial3D.FLAG_UNSHADED] = true
-	material.flags[BaseMaterial3D.FLAG_USE_POINT_SIZE] = true
-	material.point_size = 2.0
 	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	material.albedo_color.a = 0.3
 	focus_marker.set_surface_override_material(0, material)

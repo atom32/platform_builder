@@ -52,20 +52,22 @@ func _input(event):
 			_recruit_staff()
 
 func _zoom_in():
-	# Move camera closer - scale down the position vector
+	# Move camera closer along its viewing direction
 	var current_distance = camera.position.length()
 	if current_distance > zoom_min_distance:
 		var new_distance = max(current_distance - zoom_speed, zoom_min_distance)
-		var scale_factor = new_distance / current_distance
-		camera.position = camera.position * scale_factor
+		# Preserve direction, just change distance from origin
+		var direction = camera.position.normalized()
+		camera.position = direction * new_distance
 
 func _zoom_out():
-	# Move camera away - scale up the position vector
+	# Move camera away along its viewing direction
 	var current_distance = camera.position.length()
 	if current_distance < zoom_max_distance:
 		var new_distance = min(current_distance + zoom_speed, zoom_max_distance)
-		var scale_factor = new_distance / current_distance
-		camera.position = camera.position * scale_factor
+		# Preserve direction, just change distance from origin
+		var direction = camera.position.normalized()
+		camera.position = direction * new_distance
 
 func _on_build_failed(reason: String):
 	# Build failure is already logged in base.gd, no need to duplicate

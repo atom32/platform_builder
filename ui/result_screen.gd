@@ -17,23 +17,11 @@ const STATS_FONT_SIZE: int = 20
 const BUTTON_FONT_SIZE: int = 24
 
 func _ready():
-	# Connect button signals
-	if restart_button:
-		print("Result screen: Connecting restart button signal")
-		restart_button.pressed.connect(_on_restart_pressed)
-	else:
-		print("Result screen: ERROR - restart_button not found!")
-
-	if main_menu_button:
-		print("Result screen: Connecting main menu button signal")
-		main_menu_button.pressed.connect(_on_main_menu_pressed)
-	else:
-		print("Result screen: ERROR - main_menu_button not found!")
-
-	# Configure label settings
+	# Signals are now connected in the scene file
+	# Just configure labels
 	_configure_labels()
 
-	print("Result screen initialized successfully")
+	print("Result screen initialized")
 
 ## Configure label fonts and sizes
 func _configure_labels():
@@ -93,13 +81,12 @@ func show_result(victory: bool, stats: Dictionary, reason: String = ""):
 
 ## Handle restart button
 func _on_restart_pressed():
-	# Unpause game and reload main scene to restart
+	print("Restart button pressed - changing scene to main.tscn")
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://scenes/main.tscn")
 
 ## Handle main menu button
 func _on_main_menu_pressed():
-	print("Main menu button pressed!")
-	# Unpause game and return to main menu
+	print("Main menu button pressed - changing scene to main_menu.tscn")
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")

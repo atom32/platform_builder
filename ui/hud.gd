@@ -2,14 +2,17 @@ extends CanvasLayer
 
 ## HUD displays current resources and base status
 
-@onready var materials_label = $VBoxContainer/MaterialsLabel
-@onready var fuel_label = $VBoxContainer/FuelLabel
-@onready var gmp_label = $VBoxContainer/GMPLabel
-@onready var staff_label = $VBoxContainer/StaffLabel
-@onready var base_size_label = $VBoxContainer/BaseSizeLabel
-@onready var combo_label = $VBoxContainer/ComboLabel
-@onready var expedition_label = $VBoxContainer/ExpeditionLabel
-@onready var combat_power_label = $VBoxContainer/CombatPowerLabel
+@onready var materials_label = $VBoxContainer/ResourcesGroup/MaterialsLabel
+@onready var fuel_label = $VBoxContainer/ResourcesGroup/FuelLabel
+@onready var gmp_label = $VBoxContainer/ResourcesGroup/GMPLabel
+@onready var base_size_label = $VBoxContainer/BaseGroup/BaseSizeLabel
+@onready var staff_label = $VBoxContainer/BaseGroup/StaffLabel
+@onready var combo_label = $VBoxContainer/MilitaryGroup/ComboLabel
+@onready var expedition_label = $VBoxContainer/MilitaryGroup/ExpeditionLabel
+@onready var combat_power_label = $VBoxContainer/MilitaryGroup/CombatPowerLabel
+@onready var objective1_label = $VBoxContainer/ObjectivesGroup/Objective1Label
+@onready var objective2_label = $VBoxContainer/ObjectivesGroup/Objective2Label
+@onready var objective3_label = $VBoxContainer/ObjectivesGroup/Objective3Label
 @onready var notification_container = $NotificationContainer
 
 ## Update interval for resource display
@@ -21,6 +24,12 @@ var base_system: Base = null
 
 ## Reference to department system
 var department_system: Node = null
+
+## Reference to objective system
+var objective_system: Node = null
+
+## Objective labels for easy access
+var objective_labels: Array[Label] = []
 
 ## Notification settings
 const NOTIFICATION_LIFETIME: float = 5.0  # Seconds
@@ -51,6 +60,21 @@ func _ready():
 	# Get reference to department system
 	department_system = get_node_or_null("/root/DepartmentSystem")
 
+	# Get reference to objective system
+	objective_system = get_node_or_null("/root/ObjectiveSystem")
+
+	# Initialize objective labels array
+	if objective1_label:
+		objective_labels.append(objective1_label)
+	if objective2_label:
+		objective_labels.append(objective2_label)
+	if objective3_label:
+		objective_labels.append(objective3_label)
+
+	# Connect to objective completion signals
+	if objective_system:
+		objective_system.objective_completed.connect(_on_objective_completed)
+
 func _process(delta):
 	update_timer += delta
 	if update_timer >= update_interval:
@@ -58,6 +82,7 @@ func _process(delta):
 		update_base_info()
 		update_expedition_info()
 		update_staff_info()
+		update_objectives()
 		update_timer = 0.0
 
 	# Update notifications
@@ -119,6 +144,47 @@ func update_staff_info():
 		var staff = ResourceSystem.get_staff_count()
 		var beds = ResourceSystem.get_bed_capacity()
 		staff_label.text = "Staff: %d/%d" % [staff, beds]
+
+## Update objectives display
+func update_objectives():
+	if not objective_system:
+		return
+
+	var active_objectives = objective_system.get_active_objectives()
+	var all_objectives = objective_system.get_all_objectives()
+
+	# If all objectives complete, show completion message
+	if active_objectives.size() == 0 and all_objectives.size() > 0:
+		for i in range(objective_labels.size()):
+			if i < objective_labels.size():
+				objective_labels[i].text = ""
+		if objective1_label:
+			objective1_label.text = "All objectives complete!"
+		return
+
+	# Display up to 3 active objectives
+	for i in range(3):
+		if i < objective_labels.size():
+			var label = objective_labels[i]
+			if i < active_objectives.size():
+				var objective = active_objectives[i]
+				label.text = "[ ] " + objective["description"]
+			else:
+				# Check if this objective was completed
+				var all_ids = all_objectives.keys()
+				if i < all_ids.size():
+					var obj_id = all_ids[i]
+					if all_objectives[obj_id]["completed"]:
+						label.text = "[X] " + all_objectives[obj_id]["description"]
+					else:
+						label.text = ""
+				else:
+					label.text = ""
+
+## Handle objective completed
+func _on_objective_completed(objective_id: String):
+	# Update objectives immediately when completed
+	update_objectives()
 
 ## ===== NOTIFICATION SYSTEM =====
 

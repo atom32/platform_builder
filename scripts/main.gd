@@ -47,6 +47,9 @@ func _ready():
 	ResourceSystem.add_gmp(300)  # Starting GMP for recruiting
 	# Beds are provided by platforms (HQ provides 5)
 
+	# Register starting objectives
+	_register_starting_objectives()
+
 	# Store initial camera offset from origin
 	camera_offset = camera.position
 
@@ -67,6 +70,9 @@ func _ready():
 		base_overview.overview_closed.connect(_on_overview_closed)
 		# Pass base system reference to overview
 		base_overview.base_system = base
+
+	# Connect to staff recruitment signal
+	ResourceSystem.staff_recruited.connect(_on_staff_recruited)
 
 func _input(event):
 	# Handle camera zoom with mouse wheel
@@ -251,3 +257,20 @@ func _on_platform_selected(platform: Platform):
 ## Handle overview closed
 func _on_overview_closed():
 	print("Base overview closed")
+
+## Register starting objectives
+func _register_starting_objectives():
+	var objective_system = get_node_or_null("/root/ObjectiveSystem")
+	if objective_system:
+		objective_system.add_objective("build_support", "Build a Support platform")
+		objective_system.add_objective("recruit_staff", "Recruit a staff member")
+		objective_system.add_objective("first_expedition", "Send first expedition")
+		print("Starting objectives registered")
+	else:
+		push_error("ObjectiveSystem autoload not found!")
+
+## Handle staff recruited (objective tracking)
+func _on_staff_recruited():
+	var objective_system = get_node_or_null("/root/ObjectiveSystem")
+	if objective_system:
+		objective_system.complete_objective("recruit_staff")

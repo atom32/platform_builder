@@ -318,6 +318,11 @@ func build_child_platform(parent_platform: Platform, slot: BuildSlot, platform_t
 	if notification_system:
 		notification_system.show_platform_built(platform_type)
 
+	# Check for Support platform objective
+	var objective_system = get_node_or_null("/root/ObjectiveSystem")
+	if objective_system and platform_type == "Support":
+		objective_system.complete_objective("build_support")
+
 	# Refresh base overview if visible
 	if base_overview and base_overview.visible:
 		base_overview.refresh()
@@ -351,6 +356,11 @@ func _on_expedition_started(mission_id: String):
 	var notification_system = get_node_or_null("/root/NotificationSystem")
 	if notification_system:
 		notification_system.show_expedition_started(mission_name)
+
+	# Check for first expedition objective
+	var objective_system = get_node_or_null("/root/ObjectiveSystem")
+	if objective_system:
+		objective_system.mark_first_expedition()
 
 ## Handle expedition completed
 func _on_expedition_completed(mission_id: String, rewards: Dictionary):

@@ -11,13 +11,14 @@ config_version=5
 [application]
 
 config/name="Proj_0308"
-run/main_scene="res://scenes/main.tscn"
+run/main_scene="res://scenes/main_menu.tscn"
 config/features=PackedStringArray("4.6", "Mobile")
 config/icon="res://icon.svg"
 
 [autoload]
 
 ResourceSystem="*res://scripts/resource_system.gd"
+ObjectiveSystem="*res://scripts/objective_system.gd"
 PlatformData="*res://scripts/platform_data.gd"
 ExpeditionSystem="*res://scripts/expedition_system.gd"
 TextData="*res://scripts/text_data.gd"

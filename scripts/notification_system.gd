@@ -70,3 +70,9 @@ func show_staff_casualty():
 
 func show_critical_success(mission_name: String):
 	show("CRITICAL SUCCESS: %s! Bonus rewards!" % mission_name)
+
+func show_objective_completed(description: String):
+	show("Objective completed: %s" % description)
+
+func show_all_objectives_completed():
+	show("All objectives complete!")

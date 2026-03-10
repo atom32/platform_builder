@@ -3,6 +3,9 @@ extends Node
 ## Global resource management system
 ## Tracks Materials, Fuel, Staff, and GMP for the entire base
 
+## Signals
+signal staff_recruited()
+
 ## Resource totals
 var materials: int = 0
 var fuel: int = 0
@@ -117,6 +120,8 @@ func recruit_staff() -> bool:
 		dept_system.add_staff()
 		# Also update the staff count
 		add_staff(1)
+		# Emit signal for objective tracking
+		staff_recruited.emit()
 		return true
 
 	return false

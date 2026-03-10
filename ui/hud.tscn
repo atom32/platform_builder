@@ -3,60 +3,143 @@
 [ext_resource type="Script" path="res://ui/hud.gd" id="1_hud"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_resource"]
-font_size = 24
+font_size = 16
+
+[sub_resource type="LabelSettings" id="LabelSettings_header"]
+font_size = 14
 
 [sub_resource type="LabelSettings" id="LabelSettings_notification"]
-font_size = 18
+font_size = 14
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
-offset_left = 20.0
-offset_top = 20.0
-offset_right = 320.0
-offset_bottom = 300.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 250.0
+offset_bottom = 450.0
+theme_override_constants/separation = 5
 
-[node name="MaterialsLabel" type="Label" parent="VBoxContainer"]
+[node name="ResourcesGroup" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="ResourcesHeader" type="Label" parent="VBoxContainer/ResourcesGroup"]
+layout_mode = 2
+label_settings = SubResource("LabelSettings_header")
+text = "RESOURCES"
+
+[node name="HSeparator1" type="HSeparator" parent="VBoxContainer/ResourcesGroup"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="MaterialsLabel" type="Label" parent="VBoxContainer/ResourcesGroup"]
 layout_mode = 2
 label_settings = SubResource("LabelSettings_resource")
 text = "Materials: 0"
 
-[node name="FuelLabel" type="Label" parent="VBoxContainer"]
+[node name="FuelLabel" type="Label" parent="VBoxContainer/ResourcesGroup"]
 layout_mode = 2
 label_settings = SubResource("LabelSettings_resource")
 text = "Fuel: 0"
 
-[node name="GMPLabel" type="Label" parent="VBoxContainer"]
+[node name="GMPLabel" type="Label" parent="VBoxContainer/ResourcesGroup"]
 layout_mode = 2
 label_settings = SubResource("LabelSettings_resource")
 text = "GMP: 0"
 
-[node name="StaffLabel" type="Label" parent="VBoxContainer"]
+[node name="VSeparator1" type="VSeparator" parent="VBoxContainer"]
 layout_mode = 2
-label_settings = SubResource("LabelSettings_resource")
-text = "Staff: 0/0"
+theme_override_constants/separation = 0
 
-[node name="BaseSizeLabel" type="Label" parent="VBoxContainer"]
+[node name="BaseGroup" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="BaseHeader" type="Label" parent="VBoxContainer/BaseGroup"]
+layout_mode = 2
+label_settings = SubResource("LabelSettings_header")
+text = "BASE"
+
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer/BaseGroup"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="BaseSizeLabel" type="Label" parent="VBoxContainer/BaseGroup"]
 layout_mode = 2
 label_settings = SubResource("LabelSettings_resource")
 text = "Base: 0/100"
 
-[node name="ComboLabel" type="Label" parent="VBoxContainer"]
+[node name="StaffLabel" type="Label" parent="VBoxContainer/BaseGroup"]
+layout_mode = 2
+label_settings = SubResource("LabelSettings_resource")
+text = "Staff: 0/0"
+
+[node name="VSeparator2" type="VSeparator" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="MilitaryGroup" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="MilitaryHeader" type="Label" parent="VBoxContainer/MilitaryGroup"]
+layout_mode = 2
+label_settings = SubResource("LabelSettings_header")
+text = "MILITARY"
+
+[node name="HSeparator3" type="HSeparator" parent="VBoxContainer/MilitaryGroup"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="ComboLabel" type="Label" parent="VBoxContainer/MilitaryGroup"]
 layout_mode = 2
 label_settings = SubResource("LabelSettings_resource")
 text = "Combos: 0"
 autowrap_mode = 3
 
-[node name="ExpeditionLabel" type="Label" parent="VBoxContainer"]
+[node name="ExpeditionLabel" type="Label" parent="VBoxContainer/MilitaryGroup"]
 layout_mode = 2
 label_settings = SubResource("LabelSettings_resource")
 text = "Expeditions: 0 (Press E)"
 
-[node name="CombatPowerLabel" type="Label" parent="VBoxContainer"]
+[node name="CombatPowerLabel" type="Label" parent="VBoxContainer/MilitaryGroup"]
 layout_mode = 2
 label_settings = SubResource("LabelSettings_resource")
 text = "Combat: 0"
+
+[node name="VSeparator3" type="VSeparator" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="ObjectivesGroup" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="ObjectivesHeader" type="Label" parent="VBoxContainer/ObjectivesGroup"]
+layout_mode = 2
+label_settings = SubResource("LabelSettings_header")
+text = "OBJECTIVES"
+
+[node name="HSeparator4" type="HSeparator" parent="VBoxContainer/ObjectivesGroup"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Objective1Label" type="Label" parent="VBoxContainer/ObjectivesGroup"]
+layout_mode = 2
+label_settings = SubResource("LabelSettings_resource")
+text = "[ ] Build Support platform"
+
+[node name="Objective2Label" type="Label" parent="VBoxContainer/ObjectivesGroup"]
+layout_mode = 2
+label_settings = SubResource("LabelSettings_resource")
+text = "[ ] Recruit staff member"
+
+[node name="Objective3Label" type="Label" parent="VBoxContainer/ObjectivesGroup"]
+layout_mode = 2
+label_settings = SubResource("LabelSettings_resource")
+text = "[ ] Send first expedition"
 
 [node name="NotificationContainer" type="VBoxContainer" parent="."]
 anchors_preset = 1

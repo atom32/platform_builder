@@ -39,9 +39,6 @@ func _connect_signals():
 			print("Result screen: ✓ Restart button signal connected")
 		else:
 			print("Result screen: ! Restart button already connected")
-
-		# Verify pause mode
-		print("Result screen: RestartButton pause_mode = %d" % restart_btn.pause_mode)
 	else:
 		print("Result screen: ✗ ERROR - RestartButton not found!")
 
@@ -51,11 +48,15 @@ func _connect_signals():
 			print("Result screen: ✓ Main menu button signal connected")
 		else:
 			print("Result screen: ! Main menu button already connected")
-
-		# Verify pause mode
-		print("Result screen: MainMenuButton pause_mode = %d" % main_menu_btn.pause_mode)
 	else:
 		print("Result screen: ✗ ERROR - MainMenuButton not found!")
+
+	# Test button visibility and interaction
+	print("Result screen: Control visible = %s" % visible)
+	if restart_btn:
+		print("Result screen: RestartButton visible = %s, disabled = %s" % [restart_btn.visible, restart_btn.disabled])
+	if main_menu_btn:
+		print("Result screen: MainMenuButton visible = %s, disabled = %s" % [main_menu_btn.visible, main_menu_btn.disabled])
 
 ## Configure label fonts and sizes
 func _configure_labels():

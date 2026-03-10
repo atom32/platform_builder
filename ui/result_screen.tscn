@@ -15,6 +15,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
+pause_mode = 2
 
 [node name="Background" type="ColorRect" parent="Control"]
 layout_mode = 1
@@ -95,11 +96,13 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Restart"
+pause_mode = 2
 
 [node name="MainMenuButton" type="Button" parent="Control/CenterContainer/Panel/VBoxContainer/ButtonContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Main Menu"
+pause_mode = 2
 
 [connection signal="pressed" from="RestartButton" to="." method="_on_restart_pressed"]
 [connection signal="pressed" from="MainMenuButton" to="." method="_on_main_menu_pressed"]

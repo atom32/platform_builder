@@ -282,13 +282,11 @@ func build_child_platform(parent_platform: Platform, slot: BuildSlot, platform_t
 	platform.level = 1
 	platform.production_value = 10
 
-	# Position at the slot's location (relative to parent)
-	var slot_local_position = slot.position
-	platform.position = parent_platform.position + slot_local_position
+	# Position at the slot's location
+	# Slot position is relative to parent_platform, so we use it directly
+	platform.position = slot.position
 
-	add_child(platform)
-
-	# Register to parent (this also adds to scene tree via add_child_platform)
+	# Register to parent (this adds to scene tree)
 	parent_platform.add_child_platform(platform, slot)
 
 	# Create visual bridge between platforms

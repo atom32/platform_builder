@@ -117,7 +117,8 @@ func add_child_platform(platform: Platform, slot: BuildSlot):
 		push_error("Platform already has maximum children!")
 		return
 
-	# Add to scene tree - this is the ONLY place we define parent-child relationship
+	# Add to scene tree - this defines the parent-child relationship
+	# Platform's position should already be set to slot.position (relative to this platform)
 	add_child(platform)
 	build_slots.erase(slot)
 
@@ -128,6 +129,7 @@ func add_child_platform(platform: Platform, slot: BuildSlot):
 	print(TextData.format("msg_child_added", [
 		platform_type, platform.platform_type, get_child_platform_count(), MAX_CHILDREN
 	]))
+	print("Child platform positioned at: ", platform.position)
 
 ## Get number of child platforms
 func get_child_platform_count() -> int:

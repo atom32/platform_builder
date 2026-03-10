@@ -82,28 +82,35 @@ func set_base_system(base: Base):
 ## Calculate current combat power
 func calculate_combat_power() -> int:
 	if not base_system:
+		print("Expedition: base_system is null, returning 0")
 		return 0
 
 	var combat_power: int = 0
+	var all_platforms = base_system.get_all_platforms()
 
 	# Count Combat platforms
-	for platform in base_system.get_all_platforms():
+	for platform in all_platforms:
 		if platform.platform_type == "Combat":
 			combat_power += 1
+
+	print("Expedition: Combat power calculation - Platforms: %d, Combat: %d" % [all_platforms.size(), combat_power])
 
 	# Add department staff bonuses
 	var dept_system = get_node_or_null("/root/DepartmentSystem")
 	if dept_system:
 		var combat_staff = dept_system.get_department_staff("Combat")
 		var staff_bonus = int(combat_staff * COMBAT_POWER_BONUS_PER_STAFF)
+		print("Expedition: Combat staff: %d, bonus: %d" % [combat_staff, staff_bonus])
 		combat_power += staff_bonus
 
 	# Add combo bonuses
 	if base_system.combo_system:
 		var combat_bonus = base_system.combo_system.get_total_bonus("expedition_strength")
 		var bonus_amount = int(combat_power * combat_bonus)
+		print("Expedition: Combo bonus: %.2f, amount: %d" % [combat_bonus, bonus_amount])
 		combat_power += bonus_amount
 
+	print("Expedition: Total combat power: %d" % combat_power)
 	return combat_power
 
 ## Calculate expedition success chance (Intel department contribution)

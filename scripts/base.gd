@@ -280,6 +280,9 @@ func build_child_platform(parent_platform: Platform, slot: BuildSlot, platform_t
 	# Register to parent
 	parent_platform.add_child_platform(platform, slot)
 
+	# Create visual bridge between platforms
+	BridgeGenerator.create_bridge(parent_platform, platform)
+
 	print(TextData.format("msg_build_success_details", [
 		platform_type,
 		parent_platform.platform_type,

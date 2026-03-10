@@ -198,6 +198,26 @@ func dismiss_staff(staff_member) -> bool:
 	print("Dismissed %s from the base" % staff_member.get_display_name())
 	return true
 
+## Remove a staff member due to casualties (same as dismiss but different message)
+func remove_staff(staff_member) -> bool:
+	if not staff_member in staff_list:
+		return false
+
+	# If assigned to a department, update counts first
+	if not staff_member.is_in_recruit_pool():
+		var dept = staff_member.department
+		if department_staff.has(dept):
+			department_staff[dept] -= 1
+
+	# Remove from staff list
+	staff_list.erase(staff_member)
+
+	# Update resource system
+	ResourceSystem.add_staff(-1)
+
+	print("Staff member %s was killed in action" % staff_member.get_display_name())
+	return true
+
 ## Get staff count for a specific department
 func get_department_staff(department_type: String) -> int:
 	if department_staff.has(department_type):

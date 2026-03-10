@@ -31,23 +31,31 @@ func _connect_signals():
 	var restart_btn = $Control/CenterContainer/Panel/VBoxContainer/ButtonContainer/RestartButton
 	var main_menu_btn = $Control/CenterContainer/Panel/VBoxContainer/ButtonContainer/MainMenuButton
 
+	print("Result screen: Attempting to connect button signals...")
+
 	if restart_btn:
 		if not restart_btn.pressed.is_connected(_on_restart_pressed):
 			restart_btn.pressed.connect(_on_restart_pressed)
-			print("Result screen: Restart button signal connected")
+			print("Result screen: ✓ Restart button signal connected")
 		else:
-			print("Result screen: Restart button already connected")
+			print("Result screen: ! Restart button already connected")
+
+		# Verify pause mode
+		print("Result screen: RestartButton pause_mode = %d" % restart_btn.pause_mode)
 	else:
-		print("Result screen: ERROR - RestartButton not found!")
+		print("Result screen: ✗ ERROR - RestartButton not found!")
 
 	if main_menu_btn:
 		if not main_menu_btn.pressed.is_connected(_on_main_menu_pressed):
 			main_menu_btn.pressed.connect(_on_main_menu_pressed)
-			print("Result screen: Main menu button signal connected")
+			print("Result screen: ✓ Main menu button signal connected")
 		else:
-			print("Result screen: Main menu button already connected")
+			print("Result screen: ! Main menu button already connected")
+
+		# Verify pause mode
+		print("Result screen: MainMenuButton pause_mode = %d" % main_menu_btn.pause_mode)
 	else:
-		print("Result screen: ERROR - MainMenuButton not found!")
+		print("Result screen: ✗ ERROR - MainMenuButton not found!")
 
 ## Configure label fonts and sizes
 func _configure_labels():

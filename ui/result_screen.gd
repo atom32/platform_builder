@@ -64,53 +64,51 @@ func _connect_signals():
 	if main_menu_btn:
 		print("Result screen: MainMenuButton visible = %s, disabled = %s" % [main_menu_btn.visible, main_menu_btn.disabled])
 
-## Fallback input handling - catch keyboard shortcuts
-func _input(event):
+## Handle unhandled input - more reliable when paused
+func _unhandled_input(event):
 	if not visible:
 		return
 
+	print("Result screen _unhandled_input called: ", event)
+
 	# Handle R key for restart
 	if event is InputEventKey and event.pressed:
-		if event.keycode == KEY_R:
-			_on_restart_pressed()
-			get_viewport().set_input_as_handled()
-
-		# Handle M key for main menu
-		if event.keycode == KEY_M:
-			_on_main_menu_pressed()
-			get_viewport().set_input_as_handled()
-
-		# Handle ESC for main menu
-		if event.keycode == KEY_ESCAPE:
-			_on_main_menu_pressed()
-			get_viewport().set_input_as_handled()
+		match event.keycode:
+			KEY_R:
+				print("R key pressed - restarting")
+				_on_restart_pressed()
+				get_viewport().set_input_as_handled()
+			KEY_M, KEY_ESCAPE:
+				print("M/ESC pressed - main menu")
+				_on_main_menu_pressed()
+				get_viewport().set_input_as_handled()
 
 ## Handle input events on Control node (for debugging)
 func _on_Control_gui_input(event):
-	print("Result screen Control received input event: ", event)
+	print("Result screen Control gui_input: ", event)
 
-	if event is InputEventMouseButton:
-		if event.pressed:
-			print("  Mouse button pressed at: ", event.position)
-			print("  Button index: ", event.button_index)
+	if event is InputEventMouseButton and event.pressed:
+		print("  Mouse button ", event.button_index, " at ", event.position)
 
-			# Check if clicking on buttons
-			var restart_btn = $Control/CenterContainer/Panel/VBoxContainer/ButtonContainer/RestartButton
-			var main_menu_btn = $Control/CenterContainer/Panel/VBoxContainer/ButtonContainer/MainMenuButton
+		# Check if clicking on buttons
+		var restart_btn = $Control/CenterContainer/Panel/VBoxContainer/ButtonContainer/RestartButton
+		var main_menu_btn = $Control/CenterContainer/Panel/VBoxContainer/ButtonContainer/MainMenuButton
 
-			if restart_btn:
-				var restart_rect = restart_btn.get_global_rect()
-				if restart_rect.has_point(event.position):
-					print("  ✓ Clicked on Restart button!")
-					_on_restart_pressed()
-					return
+		if restart_btn:
+			var restart_rect = restart_btn.get_global_rect()
+			print("  Restart rect: ", restart_rect)
+			if restart_rect.has_point(event.position):
+				print("  ✓ Clicked Restart button!")
+				_on_restart_pressed()
+				return
 
-			if main_menu_btn:
-				var menu_rect = main_menu_btn.get_global_rect()
-				if menu_rect.has_point(event.position):
-					print("  ✓ Clicked on Main Menu button!")
-					_on_main_menu_pressed()
-					return
+		if main_menu_btn:
+			var menu_rect = main_menu_btn.get_global_rect()
+			print("  Menu rect: ", menu_rect)
+			if menu_rect.has_point(event.position):
+				print("  ✓ Clicked Main Menu button!")
+				_on_main_menu_pressed()
+				return
 
 ## Configure label fonts and sizes
 func _configure_labels():

@@ -97,9 +97,11 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "Restart"
 pause_mode = 2
+mouse_filter = 0
 
 [node name="MainMenuButton" type="Button" parent="Control/CenterContainer/Panel/VBoxContainer/ButtonContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Main Menu"
 pause_mode = 2
+mouse_filter = 0

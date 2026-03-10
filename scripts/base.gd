@@ -400,7 +400,12 @@ func _update_bed_capacity():
 
 ## Get all platforms in the base (using scene tree traversal)
 func get_all_platforms() -> Array[Platform]:
-	return find_children("*", "Platform", true, false) as Array[Platform]
+	var platforms: Array[Platform] = []
+	var nodes = find_children("*", "Platform", true, false)
+	for node in nodes:
+		if node is Platform:
+			platforms.append(node)
+	return platforms
 
 ## Get total platform count
 func get_total_platform_count() -> int:

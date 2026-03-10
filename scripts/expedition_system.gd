@@ -125,7 +125,7 @@ func calculate_resource_yield_multiplier() -> float:
 		var support_bonus = support_staff * 0.1  # 10% per Support staff
 		base_multiplier += support_bonus
 
-	return min(base_multiplier, 2.0)  # Max 200%
+	return min(base_multiplier, 1.5)  # Max 150% (reduced from 200%)
 
 ## Calculate casualty reduction (Medical department contribution)
 func calculate_casualty_reduction_chance() -> float:
@@ -150,6 +150,41 @@ func calculate_duration_reduction() -> float:
 	return min(base_reduction, 0.5)  # Max 50% reduction
 
 const COMBAT_POWER_BONUS_PER_STAFF: float = 0.5
+
+## Get department bonus information for UI display
+func get_department_bonuses() -> Dictionary:
+	var bonuses: Dictionary = {
+		"combat_power": calculate_combat_power(),
+		"success_chance": calculate_success_chance(),
+		"resource_multiplier": calculate_resource_yield_multiplier(),
+		"casualty_reduction": calculate_casualty_reduction_chance(),
+		"duration_reduction": calculate_duration_reduction()
+	}
+	return bonuses
+
+## Get department staff counts for UI display
+func get_department_staff_counts() -> Dictionary:
+	var counts: Dictionary = {}
+	var dept_system = get_node_or_null("/root/DepartmentSystem")
+	if dept_system:
+		counts = {
+			"R&D": dept_system.get_department_staff("R&D"),
+			"Combat": dept_system.get_department_staff("Combat"),
+			"Support": dept_system.get_department_staff("Support"),
+			"Intel": dept_system.get_department_staff("Intel"),
+			"Medical": dept_system.get_department_staff("Medical"),
+			"Unassigned": dept_system.get_unassigned_staff()
+		}
+	else:
+		counts = {
+			"R&D": 0,
+			"Combat": 0,
+			"Support": 0,
+			"Intel": 0,
+			"Medical": 0,
+			"Unassigned": 0
+		}
+	return counts
 
 ## Get all available missions
 func get_available_missions() -> Dictionary:
@@ -255,10 +290,18 @@ func _complete_expedition(mission_id: String, expedition: Dictionary):
 	var reward_multiplier: float = 1.0
 	var casualties: int = 0
 
+	# Check for critical success (5% chance, independent of success roll)
+	var critical_success = randf() < 0.05
+
 	if success_roll < success_chance * 0.5:
 		# Complete success
 		result_type = "success"
 		reward_multiplier = calculate_resource_yield_multiplier()
+
+		# Apply critical success bonus
+		if critical_success:
+			result_type = "critical_success"
+			reward_multiplier *= 1.5  # 50% bonus on top of normal success
 	elif success_roll < success_chance:
 		# Partial success
 		result_type = "partial_success"
@@ -283,23 +326,41 @@ func _complete_expedition(mission_id: String, expedition: Dictionary):
 		ResourceSystem.add_fuel(final_fuel)
 		ResourceSystem.add_gmp(final_gmp)
 
-		# Award recruits if any
+		# Award recruits if any (success types only, including critical)
 		var recruits = base_rewards.get("recruits", 0)
-		if recruits > 0 and result_type == "success":
+		if recruits > 0 and (result_type == "success" or result_type == "critical_success"):
 			var dept_system = get_node_or_null("/root/DepartmentSystem")
 			if dept_system:
 				for i in range(recruits):
-					dept_system.add_staff()
+					var new_staff = dept_system.add_staff()
+					# Recruits go to recruit pool (unassigned)
 
 	# Handle casualties
 	if casualties > 0:
-		_remove_random_staff()
+		var casualty_info = _remove_random_staff()
+
+		# Show notification
+		var notification_system = get_node_or_null("/root/NotificationSystem")
+		if notification_system:
+			for i in range(casualties):
+				notification_system.show_staff_casualty()
 
 	# Print results
 	print("==================================================")
-	print("EXPEDITION %s: %s" % [result_type.to_upper(), mission["display_name"]])
+	if critical_success and result_type == "critical_success":
+		print("EXPEDITION CRITICAL SUCCESS: %s" % mission["display_name"])
+	else:
+		print("EXPEDITION %s: %s" % [result_type.to_upper(), mission["display_name"]])
 
-	if result_type == "success":
+	if result_type == "critical_success":
+		print("  CRITICAL SUCCESS BONUS!")
+		print("  Rewards Received:")
+		print("    Materials: +%d" % final_materials)
+		print("    Fuel: +%d" % final_fuel)
+		print("    GMP: +%d" % final_gmp)
+		if base_rewards.get("recruits", 0) > 0:
+			print("    Recruits: +%d" % base_rewards["recruits"])
+	elif result_type == "success":
 		print("  Rewards Received:")
 		print("    Materials: +%d" % final_materials)
 		print("    Fuel: +%d" % final_fuel)
@@ -326,7 +387,8 @@ func _complete_expedition(mission_id: String, expedition: Dictionary):
 		"fuel": final_fuel,
 		"gmp": final_gmp,
 		"result_type": result_type,
-		"casualties": casualties
+		"casualties": casualties,
+		"critical": critical_success
 	}
 	expedition_completed.emit(mission_id, result_data)
 
@@ -352,14 +414,14 @@ func get_expedition_time_remaining(mission_id: String) -> int:
 	return int(max(0, remaining))
 
 ## Remove a random staff member (casualties)
-func _remove_random_staff():
+func _remove_random_staff() -> Dictionary:
 	var dept_system = get_node_or_null("/root/DepartmentSystem")
 	if not dept_system:
-		return
+		return {}
 
 	var staff_list = dept_system.get_all_staff()
 	if staff_list.size() == 0:
-		return
+		return {}
 
 	# Prefer to remove from combat staff first, then others
 	var combat_staff = dept_system.get_staff_in_department("Combat")
@@ -370,10 +432,17 @@ func _remove_random_staff():
 	else:
 		staff_to_remove = staff_list[randi() % staff_list.size()]
 
+	var staff_name = staff_to_remove.get_display_name()
+	var staff_dept = staff_to_remove.department
+	var staff_id = staff_to_remove.id
+
 	dept_system.remove_staff(staff_to_remove)
-	print("Staff casualty: %s (ID: %d) lost in expedition" % [
-		staff_to_remove.get_display_name(), staff_to_remove.id
-	])
+
+	return {
+		"name": staff_name,
+		"department": staff_dept,
+		"id": staff_id
+	}
 
 ## Get all active expeditions info
 func get_active_expeditions_info() -> Array:

@@ -6,6 +6,10 @@ signal expedition_launched(mission_id: String)
 @onready var close_button = $Panel/VBoxContainer/Header/CloseButton
 @onready var mission_list = $Panel/VBoxContainer/ScrollContainer/MissionList
 @onready var combat_power_label = $Panel/VBoxContainer/CombatPowerLabel
+@onready var success_chance_label = $Panel/VBoxContainer/DepartmentBonuses/SuccessChanceLabel
+@onready var resource_bonus_label = $Panel/VBoxContainer/DepartmentBonuses/ResourceBonusLabel
+@onready var casualty_reduction_label = $Panel/VBoxContainer/DepartmentBonuses/CasualtyReductionLabel
+@onready var duration_reduction_label = $Panel/VBoxContainer/DepartmentBonuses/DurationReductionLabel
 
 var expedition_system: ExpeditionManager
 var mission_buttons: Dictionary = {}
@@ -26,6 +30,7 @@ func show_menu():
 	visible = true
 	_update_mission_list()
 	_update_combat_power()
+	_update_department_bonuses()
 
 func hide_menu():
 	visible = false
@@ -96,6 +101,25 @@ func _update_combat_power():
 	if combat_power_label:
 		var combat_power = expedition_system.get_combat_power()
 		combat_power_label.text = TextData.format("ui_expedition_combat_power", [combat_power])
+
+func _update_department_bonuses():
+	var bonuses = expedition_system.get_department_bonuses()
+
+	if success_chance_label:
+		var chance_percent = int(bonuses["success_chance"] * 100)
+		success_chance_label.text = "Success Chance: %d%%" % chance_percent
+
+	if resource_bonus_label:
+		var resource_percent = int(bonuses["resource_multiplier"] * 100)
+		resource_bonus_label.text = "Resource Yield: %d%%" % resource_percent
+
+	if casualty_reduction_label:
+		var casualty_percent = int(bonuses["casualty_reduction"] * 100)
+		casualty_reduction_label.text = "Casualty Reduction: %d%%" % casualty_percent
+
+	if duration_reduction_label:
+		var duration_percent = int((1.0 - bonuses["duration_reduction"]) * 100)
+		duration_reduction_label.text = "Duration: %d%%" % duration_percent
 
 func _on_mission_button_clicked(button: Button):
 	var mission_id = button.get_meta("mission_id")

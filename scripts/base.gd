@@ -339,9 +339,14 @@ func _on_expedition_completed(mission_id: String, rewards: Dictionary):
 	var mission_name = TextData.expedition_name(mission_id)
 	var materials = rewards.get("materials", 0)
 	var fuel = rewards.get("fuel", 0)
+	var result_type = rewards.get("result_type", "success")
 	var notification_system = get_node_or_null("/root/NotificationSystem")
+
 	if notification_system:
-		notification_system.show_expedition_completed(mission_name, materials, fuel)
+		if result_type == "critical_success":
+			notification_system.show_critical_success(mission_name)
+		else:
+			notification_system.show_expedition_completed(mission_name, materials, fuel)
 
 ## Handle expedition failed
 func _on_expedition_failed(mission_id: String, reason: String):

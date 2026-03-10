@@ -64,3 +64,9 @@ func show_upkeep_failed(cost: int, have: int):
 
 func show_combo_activated(combo_name: String):
 	show("Combo activated: %s!" % combo_name)
+
+func show_staff_casualty():
+	show("WARNING: Staff member lost in expedition!")
+
+func show_critical_success(mission_name: String):
+	show("CRITICAL SUCCESS: %s! Bonus rewards!" % mission_name)

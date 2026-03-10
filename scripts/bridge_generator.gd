@@ -11,9 +11,10 @@ static func create_bridge(parent_platform: Platform, child_platform: Node3D):
 	var bridge = MeshInstance3D.new()
 	bridge.name = "Bridge_to_%s" % child_platform.name
 
-	# Calculate positions
-	var parent_pos = parent_platform.position
-	var child_pos = child_platform.position
+	# Calculate positions using GLOBAL coordinates
+	# This is critical because platforms may be nested (child of child)
+	var parent_pos = parent_platform.global_position
+	var child_pos = child_platform.global_position
 
 	# Calculate direction and distance
 	var direction = child_pos - parent_pos
@@ -29,10 +30,10 @@ static func create_bridge(parent_platform: Platform, child_platform: Node3D):
 	bridge_mesh.size = Vector3(bridge_width, bridge_height, bridge_length)
 	bridge.mesh = bridge_mesh
 
-	# Position bridge at midpoint
+	# Position bridge at midpoint (using global position)
 	var mid_point = (parent_pos + child_pos) / 2.0
-	bridge.position = mid_point
-	bridge.position.y = -1.5  # Slightly below platform surface
+	bridge.global_position = mid_point
+	bridge.global_position.y = -1.5  # Slightly below platform surface
 
 	# Rotate bridge to align with direction
 	# BoxMesh extends along Z axis by default
@@ -51,13 +52,21 @@ static func create_bridge(parent_platform: Platform, child_platform: Node3D):
 	material.roughness = 0.7
 	bridge.set_surface_override_material(0, material)
 
-	# Add bridge to scene (as child of parent platform's parent)
+	# Add bridge to scene (as child of Base root)
+	# Find the Base node (parent of HQ)
 	var scene_root = parent_platform.get_parent()
+	while scene_root and not scene_root is Base:
+		scene_root = scene_root.get_parent()
+
 	if scene_root:
 		scene_root.add_child(bridge)
+		# Convert global position to local since we're adding to Base
+		bridge.global_position = mid_point
+		bridge.global_position.y = -1.5
 
-	print("Bridge created: %s -> %s (distance: %.1f)" % [
-		parent_platform.name, child_platform.name, distance
+	print("Bridge created: %s -> %s (parent: %s, child: %s, distance: %.1f)" % [
+		parent_platform.name, child_platform.name,
+		parent_platform.global_position, child_platform.global_position, distance
 	])
 
 	return bridge

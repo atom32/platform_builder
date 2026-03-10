@@ -126,24 +126,18 @@ func _update_focus_marker_position():
 	var from = camera.project_ray_origin(Vector2(0.5, 0.5))  # Center of screen
 	var to = from + camera.project_ray_normal(Vector2(0.5, 0.5)) * 200
 
-	var space = get_world_3d().direct_space_state
-	var params = PhysicsRayQueryParameters3D.new()
-	params.from = from
-	params.to = to
-	params.collision_mask = 1  # Ocean layer
+	# Calculate intersection with ocean plane (y = -3.0)
+	var ray_dir = (to - from).normalized()
+	if abs(ray_dir.y) > 0.01:  # Avoid division by zero
+		var ocean_y = -3.0
+		var distance_to_surface = (ocean_y - from.y) / ray_dir.y
+		if distance_to_surface > 0:
+			focus_marker.position = from + ray_dir * distance_to_surface
+		else:
+			# Camera is below ocean, clamp to ocean surface
+			focus_marker.position = Vector3(from.x, ocean_y, from.z)
 
-	var result = space.intersect_ray(params)
-	if result and result.size() > 0:
-		focus_marker.position = result.position
-		_update_focus_marker_size()
-	else:
-		# Fallback: use ocean level
-		var ray_dir = (to - from).normalized()
-		if abs(ray_dir.y) > 0.01:  # Avoid division by zero
-			var ocean_y = -3.0
-			var distance_to_surface = (ocean_y - from.y) / ray_dir.y
-			if distance_to_surface > 0:
-				focus_marker.position = from + ray_dir * distance_to_surface
+	_update_focus_marker_size()
 
 ## Update focus marker size based on camera distance
 func _update_focus_marker_size():

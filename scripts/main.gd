@@ -41,16 +41,7 @@ func _ready():
 		print("D - Toggle debug mode (currently OFF)")
 	print("")
 
-	# Give player starting resources
-	ResourceSystem.add_materials(200)
-	ResourceSystem.add_fuel(100)
-	ResourceSystem.add_gmp(300)  # Starting GMP for recruiting
-	# Beds are provided by platforms (HQ provides 5)
-
-	# Register starting objectives
-	_register_starting_objectives()
-
-	# Initialize game session
+	# Initialize game session FIRST (resets everything to clean state)
 	var game_session = get_node_or_null("/root/GameSession")
 	if game_session:
 		game_session.start_session()
@@ -58,6 +49,15 @@ func _ready():
 		# Connect victory/failure signals
 		game_session.victory_achieved.connect(_on_victory)
 		game_session.game_over.connect(_on_game_over)
+
+	# Give player starting resources (after reset)
+	ResourceSystem.add_materials(200)
+	ResourceSystem.add_fuel(100)
+	ResourceSystem.add_gmp(300)  # Starting GMP for recruiting
+	# Beds are provided by platforms (HQ provides 5)
+
+	# Register starting objectives
+	_register_starting_objectives()
 
 	# Store initial camera offset from origin
 	camera_offset = camera.position

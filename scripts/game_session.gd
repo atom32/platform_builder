@@ -57,6 +57,9 @@ func start_session():
 	expeditions_sent = 0
 	debt_warning_shown = false
 
+	# Reset game systems
+	_reset_all_systems()
+
 	# Reset and start day timer
 	if day_timer:
 		day_timer.stop()
@@ -70,6 +73,25 @@ func start_session():
 
 	print("Game session started")
 	game_state_changed.emit(GameState.RUNNING)
+
+## Reset all game systems for new game
+func _reset_all_systems():
+	# Reset resources
+	var resource_system = get_node_or_null("/root/ResourceSystem")
+	if resource_system:
+		resource_system.reset_resources()
+
+	# Reset objectives
+	var objective_system = get_node_or_null("/root/ObjectiveSystem")
+	if objective_system and objective_system.has_method("reset_objectives"):
+		objective_system.reset_objectives()
+
+	# Reset department system
+	var dept_system = get_node_or_null("/root/DepartmentSystem")
+	if dept_system and dept_system.has_method("reset_department_system"):
+		dept_system.reset_department_system()
+
+	print("All game systems reset")
 
 ## End game with victory
 func end_victory():

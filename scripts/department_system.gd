@@ -287,3 +287,20 @@ func get_department_info() -> Dictionary:
 		"Medical": department_staff["Medical"],
 		"Unassigned": get_unassigned_staff()
 	}
+
+## Reset department system for new game
+func reset_department_system():
+	# Clear all staff
+	staff_list.clear()
+	next_staff_id = 1
+
+	# Clear all department assignments
+	for dept in department_staff:
+		department_staff[dept] = 0
+
+	# Clear all platform registrations
+	for dept in departments:
+		departments[dept].clear()
+		department_counts[dept] = 0
+
+	print("DepartmentSystem reset - all staff and assignments cleared")

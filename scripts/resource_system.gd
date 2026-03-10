@@ -212,3 +212,22 @@ func _setup_debug_timer():
 
 func _on_debug_timeout():
 	print("Materials: %d | Fuel: %d | GMP: %d | Staff: %d / %d beds" % [materials, fuel, gmp, staff_count, bed_capacity])
+
+## Reset all resources to zero (for new game)
+func reset_resources():
+	materials = 0
+	fuel = 0
+	gmp = 0
+	staff_count = 0
+	bed_capacity = 0
+	materials_produced = 0
+	fuel_produced = 0
+	upkeep_paid = true
+	efficiency_penalty = false
+
+	# Stop and restart upkeep timer
+	if upkeep_timer:
+		upkeep_timer.stop()
+		upkeep_timer.start()
+
+	print("ResourceSystem: All resources reset")

@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://ui/result_screen.gd" id="result_screen"]
 
 [node name="ResultScreen" type="CanvasLayer"]
-layer = 2
+layer = 3
 pause_mode = 2
 script = ExtResource("result_screen")
 

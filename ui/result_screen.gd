@@ -83,30 +83,23 @@ func _unhandled_input(event):
 				_on_main_menu_pressed()
 				get_viewport().set_input_as_handled()
 
-## Handle input events on Control node (for debugging)
+## Handle input events on Control node (for button click detection)
 func _on_Control_gui_input(event):
-	print("Result screen Control gui_input: ", event)
-
+	# Only log and handle mouse button clicks, ignore mouse motion
 	if event is InputEventMouseButton and event.pressed:
-		print("  Mouse button ", event.button_index, " at ", event.position)
-
 		# Check if clicking on buttons
 		var restart_btn = $Control/CenterContainer/Panel/VBoxContainer/ButtonContainer/RestartButton
 		var main_menu_btn = $Control/CenterContainer/Panel/VBoxContainer/ButtonContainer/MainMenuButton
 
 		if restart_btn:
 			var restart_rect = restart_btn.get_global_rect()
-			print("  Restart rect: ", restart_rect)
 			if restart_rect.has_point(event.position):
-				print("  ✓ Clicked Restart button!")
 				_on_restart_pressed()
 				return
 
 		if main_menu_btn:
 			var menu_rect = main_menu_btn.get_global_rect()
-			print("  Menu rect: ", menu_rect)
 			if menu_rect.has_point(event.position):
-				print("  ✓ Clicked Main Menu button!")
 				_on_main_menu_pressed()
 				return
 

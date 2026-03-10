@@ -58,6 +58,27 @@ func _connect_signals():
 	if main_menu_btn:
 		print("Result screen: MainMenuButton visible = %s, disabled = %s" % [main_menu_btn.visible, main_menu_btn.disabled])
 
+## Fallback input handling - catch keyboard shortcuts
+func _input(event):
+	if not visible:
+		return
+
+	# Handle R key for restart
+	if event is InputEventKey and event.pressed:
+		if event.keycode == KEY_R:
+			_on_restart_pressed()
+			get_viewport().set_input_as_handled()
+
+		# Handle M key for main menu
+		if event.keycode == KEY_M:
+			_on_main_menu_pressed()
+			get_viewport().set_input_as_handled()
+
+		# Handle ESC for main menu
+		if event.keycode == KEY_ESCAPE:
+			_on_main_menu_pressed()
+			get_viewport().set_input_as_handled()
+
 ## Configure label fonts and sizes
 func _configure_labels():
 	# Create label settings for title

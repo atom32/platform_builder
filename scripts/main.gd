@@ -5,6 +5,7 @@ extends Node3D
 
 @onready var base = $Base
 @onready var camera = $Camera3D
+@onready var base_overview: BaseOverview = $BaseOverview as BaseOverview
 
 # Camera zoom settings
 var zoom_min_distance: float = 15.0
@@ -32,6 +33,7 @@ func _ready():
 	print("Each platform can have up to 6 child platforms")
 	print("R - Recruit staff (50 GMP, requires bed)")
 	print("U - Open Staff Management Menu")
+	print("TAB - Open/Close Base Overview")
 	if debug_mode:
 		print("D - Toggle debug mode (currently ON)")
 		print("F - Print focus marker debug info")
@@ -59,6 +61,13 @@ func _ready():
 	if base:
 		base.build_failed.connect(_on_build_failed)
 
+	# Connect to base overview signals
+	if base_overview:
+		base_overview.platform_selected.connect(_on_platform_selected)
+		base_overview.overview_closed.connect(_on_overview_closed)
+		# Pass base system reference to overview
+		base_overview.base_system = base
+
 func _input(event):
 	# Handle camera zoom with mouse wheel
 	if event is InputEventMouseButton:
@@ -71,6 +80,8 @@ func _input(event):
 	if event is InputEventKey and event.pressed:
 		if event.keycode == KEY_R:
 			_recruit_staff()
+		elif event.keycode == KEY_TAB:
+			_toggle_base_overview()
 		elif event.keycode == KEY_F:
 			if debug_mode:
 				_print_focus_debug()
@@ -222,3 +233,21 @@ func _print_staff_info():
 	print("Unassigned: %d" % info["Unassigned"])
 	print("Research Bonus: %d%%" % int((dept_system.get_research_speed_multiplier() - 1.0) * 100))
 	print("Combat Bonus: +%d" % dept_system.get_combat_power_bonus())
+
+## Toggle base overview
+func _toggle_base_overview():
+	if not base_overview:
+		return
+
+	if base_overview.visible:
+		base_overview.hide_overview()
+	else:
+		base_overview.show_overview()
+
+## Handle platform selection from overview
+func _on_platform_selected(platform: Platform):
+	print("Platform selected from overview: %s" % platform.platform_type)
+
+## Handle overview closed
+func _on_overview_closed():
+	print("Base overview closed")

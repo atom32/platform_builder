@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://main_scene"]
+[gd_scene load_steps=8 format=3 uid="uid://main_scene"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/base.gd" id="2_base"]
 [ext_resource type="PackedScene" uid="uid://hud_scene" path="res://ui/hud.tscn" id="3_hud"]
 [ext_resource type="PackedScene" uid="uid://mstaff_menu" path="res://ui/staff_menu.tscn" id="4_staff_menu"]
 [ext_resource type="Shader" path="res://shaders/ocean_shader.gdshader" id="5_shader"]
+[ext_resource type="PackedScene" uid="uid://base_overview" path="res://ui/base_overview.tscn" id="6_base_overview"]
 
 [sub_resource type="ProceduralSky" id="ProceduralSky_sky"]
 sky_horizon_color = Color(0.4, 0.6, 0.9, 1)
@@ -65,3 +66,5 @@ script = ExtResource("2_base")
 [node name="HUD" parent="." instance=ExtResource("3_hud")]
 
 [node name="StaffMenu" parent="." instance=ExtResource("4_staff_menu")]
+
+[node name="BaseOverview" parent="." instance=ExtResource("6_base_overview")]

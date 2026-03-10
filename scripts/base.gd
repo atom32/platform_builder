@@ -18,6 +18,7 @@ var department_system: Node = null
 var combo_system: ComboSystem = null
 var expedition_system: ExpeditionManager = null
 var expedition_menu: ExpeditionMenu = null
+var base_overview: BaseOverview = null
 
 ## Base size limit
 const MAX_PLATFORMS: int = 100
@@ -33,6 +34,7 @@ func _ready():
 	_create_expedition_system()
 	_create_build_menu()
 	_create_expedition_menu()
+	_create_base_overview()
 	_setup_click_detection()
 
 	print("=== Mother Base Tree System ===")
@@ -67,6 +69,12 @@ func _create_expedition_menu():
 	expedition_menu = expedition_menu_scene.instantiate() as ExpeditionMenu
 	add_child(expedition_menu)
 	expedition_menu.expedition_launched.connect(_on_expedition_launched)
+
+func _create_base_overview():
+	# Get reference to BaseOverview from Main
+	base_overview = get_node_or_null("../BaseOverview") as BaseOverview
+	if base_overview:
+		print("BaseOverview connected")
 
 func _create_build_menu():
 	build_menu = build_menu_scene.instantiate() as BuildMenu
@@ -303,6 +311,10 @@ func build_child_platform(parent_platform: Platform, slot: BuildSlot, platform_t
 	var notification_system = get_node_or_null("/root/NotificationSystem")
 	if notification_system:
 		notification_system.show_platform_built(platform_type)
+
+	# Refresh base overview if visible
+	if base_overview and base_overview.visible:
+		base_overview.refresh()
 
 	return platform
 

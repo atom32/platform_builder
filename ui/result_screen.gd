@@ -168,10 +168,42 @@ func show_result(victory: bool, stats: Dictionary, reason: String = ""):
 
 ## Handle restart button
 func _on_restart_pressed():
-	print("Restart button pressed - changing scene to main.tscn")
-	get_tree().change_scene_to_file("res://scenes/main.tscn")
+	print("=== RESTART BUTTON PRESSED ===")
+
+	# Hide result screen immediately
+	visible = false
+	print("Result screen hidden")
+
+	# Wait a moment for UI to update
+	await get_tree().process_frame
+
+	# Verify file exists
+	var main_scene = "res://scenes/main.tscn"
+	if not FileAccess.file_exists(main_scene):
+		print("ERROR: main.tscn not found!")
+		return
+
+	print("Changing scene to: ", main_scene)
+	get_tree().change_scene_to_file(main_scene)
+	print("Scene change initiated")
 
 ## Handle main menu button
 func _on_main_menu_pressed():
-	print("Main menu button pressed - changing scene to main_menu.tscn")
-	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+	print("=== MAIN MENU BUTTON PRESSED ===")
+
+	# Hide result screen immediately
+	visible = false
+	print("Result screen hidden")
+
+	# Wait a moment for UI to update
+	await get_tree().process_frame
+
+	# Verify file exists
+	var menu_scene = "res://scenes/main_menu.tscn"
+	if not FileAccess.file_exists(menu_scene):
+		print("ERROR: main_menu.tscn not found!")
+		return
+
+	print("Changing scene to: ", menu_scene)
+	get_tree().change_scene_to_file(menu_scene)
+	print("Scene change initiated")

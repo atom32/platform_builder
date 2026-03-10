@@ -17,6 +17,12 @@ const STATS_FONT_SIZE: int = 20
 const BUTTON_FONT_SIZE: int = 24
 
 func _ready():
+	# Connect Control node's gui_input signal for debugging
+	var control_node = $Control
+	if control_node:
+		control_node.gui_input.connect(_on_Control_gui_input)
+		print("Result screen: Control gui_input signal connected")
+
 	# Ensure signals are connected programmatically
 	# This is more reliable than scene file connections
 	call_deferred("_connect_signals")
@@ -78,6 +84,33 @@ func _input(event):
 		if event.keycode == KEY_ESCAPE:
 			_on_main_menu_pressed()
 			get_viewport().set_input_as_handled()
+
+## Handle input events on Control node (for debugging)
+func _on_Control_gui_input(event):
+	print("Result screen Control received input event: ", event)
+
+	if event is InputEventMouseButton:
+		if event.pressed:
+			print("  Mouse button pressed at: ", event.position)
+			print("  Button index: ", event.button_index)
+
+			# Check if clicking on buttons
+			var restart_btn = $Control/CenterContainer/Panel/VBoxContainer/ButtonContainer/RestartButton
+			var main_menu_btn = $Control/CenterContainer/Panel/VBoxContainer/ButtonContainer/MainMenuButton
+
+			if restart_btn:
+				var restart_rect = restart_btn.get_global_rect()
+				if restart_rect.has_point(event.position):
+					print("  ✓ Clicked on Restart button!")
+					_on_restart_pressed()
+					return
+
+			if main_menu_btn:
+				var menu_rect = main_menu_btn.get_global_rect()
+				if menu_rect.has_point(event.position):
+					print("  ✓ Clicked on Main Menu button!")
+					_on_main_menu_pressed()
+					return
 
 ## Configure label fonts and sizes
 func _configure_labels():

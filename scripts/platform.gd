@@ -15,6 +15,9 @@ class_name Platform
 var materials_production: int = 0
 var fuel_production: int = 0
 
+## Production bonus from adjacency combos (multiplier, 1.0 = no bonus)
+var production_bonus: float = 1.0
+
 ## Flag to track if production is active
 var production_active: bool = false
 
@@ -105,8 +108,8 @@ func _on_production_timeout():
 	if not production_active:
 		return
 
-	var materials_to_add = materials_production * level
-	var fuel_to_add = fuel_production * level
+	var materials_to_add = int(materials_production * level * production_bonus)
+	var fuel_to_add = int(fuel_production * level * production_bonus)
 
 	if materials_to_add > 0:
 		ResourceSystem.add_materials(materials_to_add)

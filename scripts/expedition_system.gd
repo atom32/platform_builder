@@ -61,6 +61,9 @@ var active_expeditions: Dictionary = {}
 ## Reference to base system for combat power calculation
 var base_system: Base = null
 
+## Reference to combo system for adjacency bonuses
+var combo_system: ComboSystem = null
+
 ## Timer for checking expedition completion
 var expedition_timer: Timer = null
 
@@ -125,6 +128,11 @@ func calculate_resource_yield_multiplier() -> float:
 		var support_bonus = support_staff * 0.1  # 10% per Support staff
 		base_multiplier += support_bonus
 
+	# Add combo bonuses if available
+	if combo_system:
+		var combo_bonus = combo_system.get_total_bonus("expedition_resource_reward")
+		base_multiplier += combo_bonus
+
 	return min(base_multiplier, 1.5)  # Max 150% (reduced from 200%)
 
 ## Calculate casualty reduction (Medical department contribution)
@@ -135,6 +143,11 @@ func calculate_casualty_reduction_chance() -> float:
 	if dept_system:
 		var medical_staff = dept_system.get_department_staff("Medical")
 		base_chance = medical_staff * 0.15  # 15% per Medical staff
+
+	# Add combo bonuses if available
+	if combo_system:
+		var combo_bonus = combo_system.get_total_bonus("casualty_reduction")
+		base_chance += combo_bonus
 
 	return min(base_chance, 0.9)  # Max 90%
 

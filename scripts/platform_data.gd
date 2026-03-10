@@ -69,23 +69,23 @@ var combo_rules: Dictionary = {
 		"bonus": 0.2,  # +20%
 		"description": "Faster Research"
 	},
-	"combat_support": {
-		"required_tags": ["combat", "support"],
-		"effect_type": "expedition_strength",
-		"bonus": 0.15,  # +15%
-		"description": "Stronger Expeditions"
-	},
 	"medical_combat": {
 		"required_tags": ["medical", "combat"],
 		"effect_type": "casualty_reduction",
-		"bonus": 0.25,  # +25%
+		"bonus": 0.2,  # +20%
 		"description": "Reduced Casualties"
 	},
-	"intel_combat": {
-		"required_tags": ["intel", "combat"],
-		"effect_type": "expedition_strength",
+	"combat_support": {
+		"required_tags": ["combat", "support"],
+		"effect_type": "expedition_resource_reward",
 		"bonus": 0.1,  # +10%
-		"description": "Tactical Advantage"
+		"description": "Better Looting"
+	},
+	"support_research": {
+		"required_tags": ["support", "research"],
+		"effect_type": "resource_production",
+		"bonus": 0.1,  # +10%
+		"description": "Efficient Production"
 	}
 }
 

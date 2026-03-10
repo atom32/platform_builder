@@ -47,6 +47,9 @@ func _create_department_system():
 	department_system = get_node_or_null("/root/DepartmentSystem")
 	if department_system:
 		print("DepartmentSystem autoload found")
+		# Connect combo system reference
+		if combo_system:
+			department_system.combo_system = combo_system
 	else:
 		print("WARNING: DepartmentSystem autoload not found")
 
@@ -64,6 +67,9 @@ func _create_expedition_system():
 		expedition_system.expedition_started.connect(_on_expedition_started)
 		expedition_system.expedition_completed.connect(_on_expedition_completed)
 		expedition_system.expedition_failed.connect(_on_expedition_failed)
+		# Connect combo system reference
+		if combo_system:
+			expedition_system.combo_system = combo_system
 
 func _create_expedition_menu():
 	expedition_menu = expedition_menu_scene.instantiate() as ExpeditionMenu

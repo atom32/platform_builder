@@ -5,6 +5,9 @@ extends Node
 ## Maximum platforms per department
 const MAX_PLATFORMS_PER_DEPT: int = 6
 
+## Reference to combo system for adjacency bonuses
+var combo_system: ComboSystem = null
+
 ## Department tracking - stores platforms per department
 var departments = {
 	"R&D": [],
@@ -251,7 +254,14 @@ func get_research_speed_multiplier() -> float:
 	if ResourceSystem.efficiency_penalty:
 		bonus *= 0.5  # 50% penalty
 
-	return 1.0 + bonus
+	var multiplier = 1.0 + bonus
+
+	# Add combo bonuses if available
+	if combo_system:
+		var combo_bonus = combo_system.get_total_bonus("research_speed")
+		multiplier += combo_bonus
+
+	return multiplier
 
 ## Calculate combat power bonus from Combat staff
 ## Returns additional combat power

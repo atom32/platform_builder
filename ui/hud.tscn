@@ -46,6 +46,7 @@ text = "Base: 0/100"
 layout_mode = 2
 label_settings = SubResource("LabelSettings_resource")
 text = "Combos: 0"
+autowrap_mode = 3
 
 [node name="ExpeditionLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2

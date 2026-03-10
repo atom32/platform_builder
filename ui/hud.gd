@@ -81,10 +81,26 @@ func update_base_info():
 			var current_size = base_system.get_total_platform_count()
 			base_size_label.text = TextData.format("ui_base", [current_size, base_system.MAX_PLATFORMS])
 
-		# Update combo count
+		# Update combo information
 		if combo_label and base_system.combo_system:
 			var combo_count = base_system.combo_system.get_combo_count()
-			combo_label.text = TextData.format("ui_combos", [combo_count])
+			if combo_count > 0:
+				# Show combo details
+				var combo_text = "Combos: %d\n" % combo_count
+				var active_combos = base_system.combo_system.get_active_combos()
+				for combo_id in active_combos:
+					var combo = active_combos[combo_id]
+					var platform_a = combo["platform_a"]
+					var platform_b = combo["platform_b"]
+					var combo_data = combo["combo_data"]
+					combo_text += "%s+%s: %s\n" % [
+						platform_a.platform_type.substr(0, 3),
+						platform_b.platform_type.substr(0, 3),
+						combo_data["description"]
+					]
+				combo_label.text = combo_text
+			else:
+				combo_label.text = "Combos: 0"
 
 ## Update expedition information
 func update_expedition_info():

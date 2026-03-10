@@ -75,6 +75,9 @@ func _ready():
 	if objective_system:
 		objective_system.objective_completed.connect(_on_objective_completed)
 
+	# Connect to GMP debt warning signal
+	ResourceSystem.debt_warning_reached.connect(_on_debt_warning)
+
 func _process(delta):
 	update_timer += delta
 	if update_timer >= update_interval:
@@ -96,7 +99,14 @@ func update_resource_display():
 		var gmp = ResourceSystem.get_gmp()
 		materials_label.text = TextData.format("ui_materials", [mats])
 		fuel_label.text = TextData.format("ui_fuel", [fuel])
-		gmp_label.text = "GMP: %d" % gmp
+
+		# Red text if in debt
+		if gmp < 0:
+			gmp_label.text = "GMP: %d" % gmp
+			gmp_label.modulate = Color(1.0, 0.0, 0.0)  # Red
+		else:
+			gmp_label.text = "GMP: %d" % gmp
+			gmp_label.modulate = Color(1.0, 1.0, 1.0)  # White
 
 ## Update base information (size and combos)
 func update_base_info():
@@ -185,6 +195,12 @@ func update_objectives():
 func _on_objective_completed(objective_id: String):
 	# Update objectives immediately when completed
 	update_objectives()
+
+## Handle debt warning reached
+func _on_debt_warning():
+	var notification_system = get_node_or_null("/root/NotificationSystem")
+	if notification_system and notification_system.has_method("show_debt_warning"):
+		notification_system.show_debt_warning()
 
 ## ===== NOTIFICATION SYSTEM =====
 

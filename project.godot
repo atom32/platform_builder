@@ -26,6 +26,7 @@ ModuleLibrary="*res://scripts/module_library.gd"
 PlatformTemplates="*res://scripts/platform_templates.gd"
 DepartmentSystem="*res://scripts/department_system.gd"
 NotificationSystem="*res://scripts/notification_system.gd"
+GameSession="*res://scripts/game_session.gd"
 
 [physics]
 

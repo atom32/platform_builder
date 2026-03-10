@@ -5,6 +5,8 @@ extends Node
 
 ## Signals
 signal staff_recruited()
+signal gmp_changed(new_amount: int)
+signal debt_warning_reached()
 
 ## Resource totals
 var materials: int = 0
@@ -31,6 +33,9 @@ const RECRUIT_COST: int = 50  # GMP cost per staff
 ## Staff upkeep per minute
 const UPKEEP_COST: int = 1  # Materials per staff per minute
 
+## GMP salary per staff per day (60 seconds)
+const SALARY_COST: int = 1  # GMP per staff per day
+
 func _ready():
 	_setup_debug_timer()
 	_setup_upkeep_timer()
@@ -48,6 +53,7 @@ func add_fuel(amount: int):
 ## Add GMP to the resource pool
 func add_gmp(amount: int):
 	gmp += amount
+	gmp_changed.emit(gmp)
 
 ## Add staff
 func add_staff(amount: int):
@@ -97,6 +103,7 @@ func spend_fuel(amount: int) -> bool:
 func spend_gmp(amount: int) -> bool:
 	if gmp >= amount:
 		gmp -= amount
+		gmp_changed.emit(gmp)
 		return true
 	return false
 
@@ -153,26 +160,47 @@ func _setup_upkeep_timer():
 
 ## Pay staff upkeep
 func _on_upkeep_timeout():
+	# Pay materials upkeep (existing logic)
 	var total_upkeep = staff_count * UPKEEP_COST
 
 	if total_upkeep == 0:
 		upkeep_paid = true
 		efficiency_penalty = false
-		return
-
-	if materials >= total_upkeep:
-		spend_materials(total_upkeep)
-		upkeep_paid = true
-		efficiency_penalty = false
-		var notification_system = get_node_or_null("/root/NotificationSystem")
-		if notification_system:
-			notification_system.show_upkeep_paid(total_upkeep)
 	else:
-		upkeep_paid = false
-		efficiency_penalty = true
-		var notification_system = get_node_or_null("/root/NotificationSystem")
-		if notification_system:
-			notification_system.show_upkeep_failed(total_upkeep, materials)
+		if materials >= total_upkeep:
+			spend_materials(total_upkeep)
+			upkeep_paid = true
+			efficiency_penalty = false
+			var notification_system = get_node_or_null("/root/NotificationSystem")
+			if notification_system:
+				notification_system.show_upkeep_paid(total_upkeep)
+		else:
+			upkeep_paid = false
+			efficiency_penalty = true
+			var notification_system = get_node_or_null("/root/NotificationSystem")
+			if notification_system:
+				notification_system.show_upkeep_failed(total_upkeep, materials)
+
+	# Pay GMP salary (allows debt)
+	var total_salary = staff_count * SALARY_COST
+	gmp -= total_salary  # Always deduct, even if negative
+	gmp_changed.emit(gmp)
+
+	# Check debt threshold for warning (only once, with tolerance)
+	if gmp <= -200 and gmp > -210:
+		debt_warning_reached.emit()
+
+## Check if in debt
+func is_in_debt() -> bool:
+	return gmp < 0
+
+## Get debt warning threshold
+func get_debt_warning_threshold() -> int:
+	return -200
+
+## Get debt limit (game over threshold)
+func get_debt_limit() -> int:
+	return -500
 
 ## Setup debug timer to print resources every 5 seconds
 func _setup_debug_timer():

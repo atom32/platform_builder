@@ -1,0 +1,102 @@
+[gd_scene load_steps=2 format=3 uid="uid://result_screen"]
+
+[ext_resource type="Script" path="res://ui/result_screen.gd" id="result_screen"]
+
+[node name="ResultScreen" type="CanvasLayer"]
+layer = 2
+pause_mode = 2
+script = ExtResource("result_screen")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="Background" type="ColorRect" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.85)
+
+[node name="CenterContainer" type="CenterContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="Control/CenterContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(600, 500)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/CenterContainer/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+
+[node name="ResultTitleLabel" type="Label" parent="Control/CenterContainer/Panel/VBoxContainer"]
+layout_mode = 2
+text = "VICTORY"
+horizontal_alignment = 1
+
+[node name="HSeparator1" type="HSeparator" parent="Control/CenterContainer/Panel/VBoxContainer"]
+layout_mode = 2
+
+[node name="StatisticsGroup" type="VBoxContainer" parent="Control/CenterContainer/Panel/VBoxContainer"]
+layout_mode = 2
+
+[node name="DaysSurvivedLabel" type="Label" parent="Control/CenterContainer/Panel/VBoxContainer/StatisticsGroup"]
+layout_mode = 2
+text = "Days Survived: 0"
+
+[node name="PlatformsBuiltLabel" type="Label" parent="Control/CenterContainer/Panel/VBoxContainer/StatisticsGroup"]
+layout_mode = 2
+text = "Platforms Built: 0"
+
+[node name="StaffRecruitedLabel" type="Label" parent="Control/CenterContainer/Panel/VBoxContainer/StatisticsGroup"]
+layout_mode = 2
+text = "Staff Recruited: 0"
+
+[node name="ExpeditionsSentLabel" type="Label" parent="Control/CenterContainer/Panel/VBoxContainer/StatisticsGroup"]
+layout_mode = 2
+text = "Expeditions Sent: 0"
+
+[node name="HSeparator2" type="HSeparator" parent="Control/CenterContainer/Panel/VBoxContainer"]
+layout_mode = 2
+
+[node name="MessageLabel" type="Label" parent="Control/CenterContainer/Panel/VBoxContainer"]
+layout_mode = 2
+text = "Congratulations!"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="HSeparator3" type="HSeparator" parent="Control/CenterContainer/Panel/VBoxContainer"]
+layout_mode = 2
+
+[node name="ButtonContainer" type="HBoxContainer" parent="Control/CenterContainer/Panel/VBoxContainer"]
+layout_mode = 2
+
+[node name="RestartButton" type="Button" parent="Control/CenterContainer/Panel/VBoxContainer/ButtonContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Restart"
+
+[node name="MainMenuButton" type="Button" parent="Control/CenterContainer/Panel/VBoxContainer/ButtonContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Main Menu"

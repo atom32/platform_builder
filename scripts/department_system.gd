@@ -227,11 +227,13 @@ func get_department_staff(department_type: String) -> int:
 		return department_staff[department_type]
 	return 0
 
-## Get total assigned staff across all departments
+## Get total staff across all departments and recruit pool
 func get_total_staff() -> int:
 	var total = 0
 	for count in department_staff.values():
 		total += count
+	# Add unassigned staff in recruit pool
+	total += get_recruit_pool().size()
 	return total
 
 ## Get unassigned staff (in recruit pool)

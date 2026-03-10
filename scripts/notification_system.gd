@@ -76,3 +76,12 @@ func show_objective_completed(description: String):
 
 func show_all_objectives_completed():
 	show("All objectives complete!")
+
+func show_debt_warning():
+	show("WARNING: GMP debt is rising! (-200 GMP)")
+
+func show_game_over(reason: String):
+	show("GAME OVER: %s" % reason)
+
+func show_victory():
+	show("VICTORY! All objectives completed!")

@@ -323,6 +323,11 @@ func build_child_platform(parent_platform: Platform, slot: BuildSlot, platform_t
 	if objective_system and platform_type == "Support":
 		objective_system.complete_objective("build_support")
 
+	# Track platform built for game session
+	var game_session = get_node_or_null("/root/GameSession")
+	if game_session:
+		game_session.increment_platforms_built()
+
 	# Refresh base overview if visible
 	if base_overview and base_overview.visible:
 		base_overview.refresh()
@@ -361,6 +366,11 @@ func _on_expedition_started(mission_id: String):
 	var objective_system = get_node_or_null("/root/ObjectiveSystem")
 	if objective_system:
 		objective_system.mark_first_expedition()
+
+	# Track expedition sent for game session
+	var game_session = get_node_or_null("/root/GameSession")
+	if game_session:
+		game_session.increment_expeditions_sent()
 
 ## Handle expedition completed
 func _on_expedition_completed(mission_id: String, rewards: Dictionary):

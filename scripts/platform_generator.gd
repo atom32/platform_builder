@@ -22,8 +22,6 @@ static func generate_platform(platform_node: Node3D, platform_type: String = "R&
 	_apply_edge_modules(platform_node, template, rng)
 	_randomize_details(platform_node, template, rng)
 
-	print("Generated ", platform_type, " platform with template-based modules")
-
 ## Generate HQ with castle structure
 static func generate_hq_castle(platform_node: Node3D):
 	var rng = RandomNumberGenerator.new()
@@ -37,8 +35,6 @@ static func generate_hq_castle(platform_node: Node3D):
 	# Add some procedural details
 	var template = PlatformTemplates.get_template("HQ")
 	_add_hq_details(platform_node, template, rng)
-
-	print("HQ Castle generated: 3-tier structure with procedural details")
 
 ## Create platform base with themed color
 static func _create_platform_base(parent: Node3D, template: Dictionary):

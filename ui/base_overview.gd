@@ -38,8 +38,6 @@ func _build_tree():
 			push_error("Base system not found!")
 			return
 
-	print("Building base overview tree...")
-
 	# Clear existing tree
 	tree.clear()
 	platform_tree_items.clear()
@@ -49,8 +47,6 @@ func _build_tree():
 	if not hq:
 		push_error("HQ not found!")
 		return
-
-	print("HQ found, building tree...")
 
 	# Build tree recursively
 	var root_item = tree.create_item()
@@ -67,8 +63,6 @@ func _build_tree():
 	# Expand all items
 	_expand_all_items(root_item)
 
-	print("Tree built successfully")
-
 func _add_platform_children(platform: Platform, parent_item: TreeItem):
 	var child_count = 0
 	for child in platform.get_child_platforms():
@@ -78,8 +72,6 @@ func _add_platform_children(platform: Platform, parent_item: TreeItem):
 		child_item.set_text(1, "0")
 		child_item.set_metadata(0, child)  # Store platform reference
 		platform_tree_items[child] = child_item
-
-		print("  Added child: %s" % child.platform_type)
 
 		# Recursively add children
 		_add_platform_children(child, child_item)

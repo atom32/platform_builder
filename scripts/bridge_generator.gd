@@ -64,9 +64,4 @@ static func create_bridge(parent_platform: Platform, child_platform: Node3D):
 		bridge.global_position = mid_point
 		bridge.global_position.y = -1.5
 
-	print("Bridge created: %s -> %s (parent: %s, child: %s, distance: %.1f)" % [
-		parent_platform.name, child_platform.name,
-		parent_platform.global_position, child_platform.global_position, distance
-	])
-
 	return bridge

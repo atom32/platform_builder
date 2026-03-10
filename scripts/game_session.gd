@@ -29,7 +29,6 @@ signal day_passed(day_number: int)
 
 func _ready():
 	_setup_day_timer()
-	print("GameSession initialized")
 
 ## Setup day timer (60 seconds per day)
 func _setup_day_timer():
@@ -91,8 +90,6 @@ func _reset_all_systems():
 	if dept_system and dept_system.has_method("reset_department_system"):
 		dept_system.reset_department_system()
 
-	print("All game systems reset")
-
 ## End game with victory
 func end_victory():
 	if current_state == GameState.VICTORY:
@@ -103,10 +100,6 @@ func end_victory():
 
 	# Show result screen
 	_show_result_screen(true)
-
-	# Don't use engine pause - it blocks input!
-	# Instead, game logic checks GameSession.is_running()
-	print("Game state set to VICTORY (input still active)")
 
 	victory_achieved.emit()
 	game_state_changed.emit(GameState.VICTORY)
@@ -121,10 +114,6 @@ func end_game_over(reason: String):
 
 	# Show result screen
 	_show_result_screen(false, reason)
-
-	# Don't use engine pause - it blocks input!
-	# Instead, game logic checks GameSession.is_running()
-	print("Game state set to FAILURE (input still active)")
 
 	game_over.emit(reason)
 	game_state_changed.emit(GameState.FAILURE)

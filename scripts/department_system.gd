@@ -44,7 +44,7 @@ const RESEARCH_SPEED_BONUS_PER_STAFF: float = 0.1  # 10% per staff
 const COMBAT_POWER_BONUS_PER_STAFF: float = 0.5   # 0.5 per staff
 
 func _ready():
-	print("Department System initialized")
+	pass
 
 ## Check if a department can accept a new platform
 func can_build(department_type: String) -> bool:
@@ -141,7 +141,6 @@ func assign_staff_member(staff_member, department_type: String) -> bool:
 	# Update counts
 	department_staff[department_type] += 1
 
-	print("Assigned %s to %s department" % [staff_member.get_display_name(), department_type])
 	return true
 
 ## Assign staff from recruit pool to a department (by count)
@@ -198,7 +197,6 @@ func dismiss_staff(staff_member) -> bool:
 	# Update resource system
 	ResourceSystem.add_staff(-1)
 
-	print("Dismissed %s from the base" % staff_member.get_display_name())
 	return true
 
 ## Remove a staff member due to casualties (same as dismiss but different message)
@@ -302,5 +300,3 @@ func reset_department_system():
 	for dept in departments:
 		departments[dept].clear()
 		department_counts[dept] = 0
-
-	print("DepartmentSystem reset - all staff and assignments cleared")

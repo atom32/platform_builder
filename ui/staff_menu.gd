@@ -146,7 +146,6 @@ func _assign_selected_to_department(dept_name: String):
 		return
 
 	var staff_member = pool[index]
-	print("[StaffMenu] Assigning %s to %s" % [staff_member.get_display_name(), dept_name])
 	if dept_system.assign_staff_member(staff_member, dept_name):
 		var notification_system = get_node_or_null("/root/NotificationSystem")
 		if notification_system:
@@ -175,7 +174,6 @@ func _on_dismiss_selected():
 		return
 
 	var staff_member = all_staff[index]
-	print("[StaffMenu] Dismissing %s" % staff_member.get_display_name())
 	if dept_system.dismiss_staff(staff_member):
 		var notification_system = get_node_or_null("/root/NotificationSystem")
 		if notification_system:

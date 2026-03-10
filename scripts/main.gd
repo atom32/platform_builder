@@ -26,21 +26,6 @@ var focus_marker: MeshInstance3D = null
 var debug_mode: bool = true
 
 func _ready():
-	print("=== Mother Base Tree System ===")
-	print("Click yellow circles to build platforms")
-	print("Right-click + drag to move camera")
-	print("Scroll to zoom in/out")
-	print("Each platform can have up to 6 child platforms")
-	print("R - Recruit staff (50 GMP, requires bed)")
-	print("U - Open Staff Management Menu")
-	print("TAB - Open/Close Base Overview")
-	if debug_mode:
-		print("D - Toggle debug mode (currently ON)")
-		print("F - Print focus marker debug info")
-	else:
-		print("D - Toggle debug mode (currently OFF)")
-	print("")
-
 	# Initialize game session FIRST (resets everything to clean state)
 	var game_session = get_node_or_null("/root/GameSession")
 	if game_session:
@@ -65,9 +50,6 @@ func _ready():
 	# Create focus point marker (debug mode only)
 	if debug_mode:
 		_create_focus_marker()
-		if focus_marker:
-			print("Focus marker created at ", focus_marker.position)
-		print("Press D to toggle debug mode")
 
 	# Connect to build failure events for feedback
 	if base:
@@ -239,15 +221,9 @@ func _print_staff_info():
 		return
 
 	var info = dept_system.get_department_info()
-	print("=== Staff Assignment ===")
-	print("R&D: %d" % info["R&D"])
-	print("Combat: %d" % info["Combat"])
-	print("Support: %d" % info["Support"])
-	print("Intel: %d" % info["Intel"])
-	print("Medical: %d" % info["Medical"])
-	print("Unassigned: %d" % info["Unassigned"])
-	print("Research Bonus: %d%%" % int((dept_system.get_research_speed_multiplier() - 1.0) * 100))
-	print("Combat Bonus: +%d" % dept_system.get_combat_power_bonus())
+	print("Staff: %d unassigned (R&D:%d, Combat:%d, Support:%d, Intel:%d, Medical:%d)" % [
+		info["Unassigned"], info["R&D"], info["Combat"], info["Support"], info["Intel"], info["Medical"]
+	])
 
 ## Toggle base overview
 func _toggle_base_overview():
@@ -274,7 +250,6 @@ func _register_starting_objectives():
 		objective_system.add_objective("build_support", "Build a Support platform")
 		objective_system.add_objective("recruit_staff", "Recruit a staff member")
 		objective_system.add_objective("first_expedition", "Send first expedition")
-		print("Starting objectives registered")
 	else:
 		push_error("ObjectiveSystem autoload not found!")
 

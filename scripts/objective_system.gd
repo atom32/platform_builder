@@ -14,7 +14,7 @@ var objectives: Dictionary = {}
 var first_expedition_launched: bool = false
 
 func _ready():
-	print("ObjectiveSystem initialized")
+	pass
 
 ## Add a new objective to track
 func add_objective(id: String, description: String) -> void:
@@ -27,7 +27,6 @@ func add_objective(id: String, description: String) -> void:
 		"completed": false,
 		"progress": 0
 	}
-	print("Objective added: %s - %s" % [id, description])
 
 ## Mark an objective as complete
 func complete_objective(id: String) -> void:
@@ -36,11 +35,9 @@ func complete_objective(id: String) -> void:
 		return
 
 	if objectives[id]["completed"]:
-		print("Objective %s already completed" % id)
 		return
 
 	objectives[id]["completed"] = true
-	print("Objective completed: %s - %s" % [id, objectives[id]["description"]])
 
 	# Emit signal
 	objective_completed.emit(id)
@@ -98,7 +95,6 @@ func _check_all_objectives_completed() -> void:
 			break
 
 	if all_complete and objectives.size() > 0:
-		print("All objectives completed!")
 		all_objectives_completed.emit()
 
 		# Show notification

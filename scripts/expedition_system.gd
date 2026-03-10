@@ -93,24 +93,19 @@ func calculate_combat_power() -> int:
 		if platform.platform_type == "Combat":
 			combat_power += 1
 
-	print("Expedition: Combat power calculation - Platforms: %d, Combat: %d" % [all_platforms.size(), combat_power])
-
 	# Add department staff bonuses
 	var dept_system = get_node_or_null("/root/DepartmentSystem")
 	if dept_system:
 		var combat_staff = dept_system.get_department_staff("Combat")
 		var staff_bonus = int(combat_staff * COMBAT_POWER_BONUS_PER_STAFF)
-		print("Expedition: Combat staff: %d, bonus: %d" % [combat_staff, staff_bonus])
 		combat_power += staff_bonus
 
 	# Add combo bonuses
 	if base_system.combo_system:
 		var combat_bonus = base_system.combo_system.get_total_bonus("expedition_strength")
 		var bonus_amount = int(combat_power * combat_bonus)
-		print("Expedition: Combo bonus: %.2f, amount: %d" % [combat_bonus, bonus_amount])
 		combat_power += bonus_amount
 
-	print("Expedition: Total combat power: %d" % combat_power)
 	return combat_power
 
 ## Calculate expedition success chance (Intel department contribution)
@@ -264,17 +259,12 @@ func launch_expedition(mission_id: String) -> bool:
 
 	active_expeditions[mission_id] = expedition_data
 
-	print("==================================================")
-	print("EXPEDITION LAUNCHED: %s" % mission["display_name"])
-	print("  Duration: %d seconds (R&D bonus: -%d%%)" % [
-		final_duration, int(duration_reduction * 100)
+	print("Expedition: %s (%ds, combat: %d, chance: %d%%)" % [
+		mission["display_name"],
+		final_duration,
+		current_combat_power,
+		int(calculate_success_chance() * 100)
 	])
-	print("  Combat Power: %d (required: %d)" % [
-		current_combat_power, mission["required_combat_power"]
-	])
-	print("  Success Chance: %d%%" % int(calculate_success_chance() * 100))
-	print("  Resource Yield: %d%%" % int(calculate_resource_yield_multiplier() * 100))
-	print("==================================================")
 
 	expedition_started.emit(mission_id)
 	return true

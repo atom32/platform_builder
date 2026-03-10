@@ -79,10 +79,6 @@ func _set_production_rates():
 	fuel_production = PlatformData.get_fuel_production(platform_type)
 	tags = PlatformData.get_tags(platform_type)
 
-	print(TextData.format("msg_production_rates", [
-		platform_type, materials_production, fuel_production, tags
-	]))
-
 ## Create build slots around this platform
 func _create_build_slots():
 	var build_slot_scene = preload("res://scenes/build_slot.tscn")
@@ -94,8 +90,6 @@ func _create_build_slots():
 		slot.position = slot_positions[i]
 		add_child(slot)
 		build_slots.append(slot)
-
-	print(TextData.format("msg_slots_created", [platform_type, build_slots.size()]))
 
 ## Called every second by the ProductionTimer
 func _on_production_timeout():
@@ -125,11 +119,6 @@ func add_child_platform(platform: Platform, slot: BuildSlot):
 	# Mark slot as occupied and hide its mesh
 	slot.occupy()
 	slot.hide_mesh()
-
-	print(TextData.format("msg_child_added", [
-		platform_type, platform.platform_type, get_child_platform_count(), MAX_CHILDREN
-	]))
-	print("Child platform positioned at: ", platform.position)
 
 ## Get number of child platforms
 func get_child_platform_count() -> int:

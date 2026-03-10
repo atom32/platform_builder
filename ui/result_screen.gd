@@ -21,7 +21,6 @@ func _ready():
 	var control_node = $Control
 	if control_node:
 		control_node.gui_input.connect(_on_Control_gui_input)
-		print("Result screen: Control gui_input signal connected")
 
 	# Ensure signals are connected programmatically
 	# This is more reliable than scene file connections
@@ -30,56 +29,31 @@ func _ready():
 	# Configure labels
 	_configure_labels()
 
-	print("Result screen initialized")
-
 func _connect_signals():
 	# Find buttons by traversing the scene tree
 	var restart_btn = $Control/CenterContainer/Panel/VBoxContainer/ButtonContainer/RestartButton
 	var main_menu_btn = $Control/CenterContainer/Panel/VBoxContainer/ButtonContainer/MainMenuButton
 
-	print("Result screen: Attempting to connect button signals...")
-
 	if restart_btn:
 		if not restart_btn.pressed.is_connected(_on_restart_pressed):
 			restart_btn.pressed.connect(_on_restart_pressed)
-			print("Result screen: ✓ Restart button signal connected")
-		else:
-			print("Result screen: ! Restart button already connected")
-	else:
-		print("Result screen: ✗ ERROR - RestartButton not found!")
 
 	if main_menu_btn:
 		if not main_menu_btn.pressed.is_connected(_on_main_menu_pressed):
 			main_menu_btn.pressed.connect(_on_main_menu_pressed)
-			print("Result screen: ✓ Main menu button signal connected")
-		else:
-			print("Result screen: ! Main menu button already connected")
-	else:
-		print("Result screen: ✗ ERROR - MainMenuButton not found!")
-
-	# Test button visibility and interaction
-	print("Result screen: Control visible = %s" % visible)
-	if restart_btn:
-		print("Result screen: RestartButton visible = %s, disabled = %s" % [restart_btn.visible, restart_btn.disabled])
-	if main_menu_btn:
-		print("Result screen: MainMenuButton visible = %s, disabled = %s" % [main_menu_btn.visible, main_menu_btn.disabled])
 
 ## Handle unhandled input - more reliable when paused
 func _unhandled_input(event):
 	if not visible:
 		return
 
-	print("Result screen _unhandled_input called: ", event)
-
 	# Handle R key for restart
 	if event is InputEventKey and event.pressed:
 		match event.keycode:
 			KEY_R:
-				print("R key pressed - restarting")
 				_on_restart_pressed()
 				get_viewport().set_input_as_handled()
 			KEY_M, KEY_ESCAPE:
-				print("M/ESC pressed - main menu")
 				_on_main_menu_pressed()
 				get_viewport().set_input_as_handled()
 
@@ -161,11 +135,8 @@ func show_result(victory: bool, stats: Dictionary, reason: String = ""):
 
 ## Handle restart button
 func _on_restart_pressed():
-	print("=== RESTART BUTTON PRESSED ===")
-
 	# Hide result screen immediately
 	visible = false
-	print("Result screen hidden")
 
 	# Wait a moment for UI to update
 	await get_tree().process_frame
@@ -173,20 +144,14 @@ func _on_restart_pressed():
 	# Verify file exists
 	var main_scene = "res://scenes/main.tscn"
 	if not FileAccess.file_exists(main_scene):
-		print("ERROR: main.tscn not found!")
 		return
 
-	print("Changing scene to: ", main_scene)
 	get_tree().change_scene_to_file(main_scene)
-	print("Scene change initiated")
 
 ## Handle main menu button
 func _on_main_menu_pressed():
-	print("=== MAIN MENU BUTTON PRESSED ===")
-
 	# Hide result screen immediately
 	visible = false
-	print("Result screen hidden")
 
 	# Wait a moment for UI to update
 	await get_tree().process_frame
@@ -194,9 +159,6 @@ func _on_main_menu_pressed():
 	# Verify file exists
 	var menu_scene = "res://scenes/main_menu.tscn"
 	if not FileAccess.file_exists(menu_scene):
-		print("ERROR: main_menu.tscn not found!")
 		return
 
-	print("Changing scene to: ", menu_scene)
 	get_tree().change_scene_to_file(menu_scene)
-	print("Scene change initiated")

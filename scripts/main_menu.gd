@@ -34,10 +34,7 @@ func _reset_game_state():
 	if objective_system and objective_system.has_method("reset_objectives"):
 		objective_system.reset_objectives()
 
-	print("Game state reset in main menu")
-
 func _on_start_button_pressed():
-	print("Starting game...")
 	get_tree().change_scene_to_file("res://scenes/main.tscn")
 
 func _on_quit_button_pressed():

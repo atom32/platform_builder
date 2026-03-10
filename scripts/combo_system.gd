@@ -96,18 +96,14 @@ func get_platform_production_bonus(platform: Platform, all_platforms: Array[Plat
 ## Print all active combos (for debugging)
 func print_active_combos():
 	if active_combos.is_empty():
-		print("No active combos")
 		return
 
-	print("=== Active Combos (%d) ===" % active_combos.size())
+	var combo_list = []
 	for combo_id in active_combos:
 		var combo = active_combos[combo_id]
-		var platform_a = combo["platform_a"]
-		var platform_b = combo["combo_data"]["description"]
-		print("  %s + %s: %s (+%.0f%%)" % [
-			platform_a.platform_type,
+		combo_list.append("%s + %s (+%.0f%%)" % [
+			combo["platform_a"].platform_type,
 			combo["platform_b"].platform_type,
-			combo["combo_data"]["description"],
 			combo["combo_data"]["bonus"] * 100
 		])
-	print("==========================")
+	print("Active combos: %s" % ", ".join(combo_list))

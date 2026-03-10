@@ -45,12 +45,9 @@ func _create_department_system():
 	# Use the autoload instance
 	department_system = get_node_or_null("/root/DepartmentSystem")
 	if department_system:
-		print("DepartmentSystem autoload found")
 		# Connect combo system reference
 		if combo_system:
 			department_system.combo_system = combo_system
-	else:
-		print("WARNING: DepartmentSystem autoload not found")
 
 func _create_combo_system():
 	combo_system = ComboSystem.new()
@@ -78,8 +75,6 @@ func _create_expedition_menu():
 func _create_base_overview():
 	# Get reference to BaseOverview from Main
 	base_overview = get_node_or_null("../BaseOverview") as BaseOverview
-	if base_overview:
-		print("BaseOverview connected")
 
 func _create_build_menu():
 	build_menu = build_menu_scene.instantiate() as BuildMenu
@@ -297,15 +292,9 @@ func build_child_platform(parent_platform: Platform, slot: BuildSlot, platform_t
 	# Create visual bridge between platforms
 	BridgeGenerator.create_bridge(parent_platform, platform)
 
-	print(TextData.format("msg_build_success_details", [
-		platform_type,
-		parent_platform.platform_type,
-		materials_cost, fuel_cost,
-		parent_platform.get_child_platform_count(),
-		Platform.MAX_CHILDREN,
-		get_total_platform_count(),
-		MAX_PLATFORMS
-	]))
+	print("Built %s platform at %s (Materials: %d, Fuel: %d)" % [
+		platform_type, parent_platform.platform_type, materials_cost, fuel_cost
+	])
 
 	# Check for new combos
 	_check_combos()
@@ -350,7 +339,7 @@ func print_combos():
 
 ## Handle expedition launch
 func _on_expedition_launched(mission_id: String):
-	print("Expedition %s launched from base system" % mission_id)
+	pass
 
 ## Handle expedition started
 func _on_expedition_started(mission_id: String):

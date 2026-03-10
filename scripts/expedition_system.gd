@@ -346,6 +346,10 @@ func get_expedition_time_remaining(mission_id: String) -> int:
 		return 0
 
 	var expedition = active_expeditions[mission_id]
+	var current_time = Time.get_unix_time_from_system()
+	var elapsed_time = current_time - expedition["start_time"]
+	var remaining = expedition["duration"] - elapsed_time
+	return int(max(0, remaining))
 
 ## Remove a random staff member (casualties)
 func _remove_random_staff():
@@ -370,11 +374,6 @@ func _remove_random_staff():
 	print("Staff casualty: %s (ID: %d) lost in expedition" % [
 		staff_to_remove.get_display_name(), staff_to_remove.id
 	])
-	var current_time = Time.get_unix_time_from_system()
-	var elapsed_time = current_time - expedition["start_time"]
-	var remaining = expedition["duration"] - elapsed_time
-
-	return max(0, int(remaining))
 
 ## Get all active expeditions info
 func get_active_expeditions_info() -> Array:

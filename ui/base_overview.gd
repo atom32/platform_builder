@@ -71,7 +71,7 @@ func _build_tree():
 
 func _add_platform_children(platform: Platform, parent_item: TreeItem):
 	var child_count = 0
-	for child in platform.child_platforms:
+	for child in platform.get_child_platforms():
 		child_count += 1
 		var child_item = tree.create_item(parent_item)
 		child_item.set_text(0, child.platform_type)
@@ -94,11 +94,12 @@ func _update_stats(hq: Platform):
 	stats_label.text = "Total Platforms: %d | Tree Depth: %d" % [total_platforms, max_depth]
 
 func _calculate_tree_depth(platform: Platform) -> int:
-	if platform.child_platforms.is_empty():
+	var child_platforms = platform.get_child_platforms()
+	if child_platforms.is_empty():
 		return 1
 
 	var max_child_depth = 0
-	for child in platform.child_platforms:
+	for child in child_platforms:
 		var child_depth = _calculate_tree_depth(child)
 		max_child_depth = max(max_child_depth, child_depth)
 

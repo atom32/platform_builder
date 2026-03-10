@@ -79,11 +79,11 @@ func end_victory():
 	current_state = GameState.VICTORY
 	print("Victory achieved!")
 
-	# Pause game
-	get_tree().paused = true
-
-	# Show result screen
+	# Show result screen FIRST (before pause)
 	_show_result_screen(true)
+
+	# Then pause game
+	get_tree().paused = true
 
 	victory_achieved.emit()
 	game_state_changed.emit(GameState.VICTORY)
@@ -96,11 +96,11 @@ func end_game_over(reason: String):
 	current_state = GameState.FAILURE
 	print("Game over: %s" % reason)
 
-	# Pause game
-	get_tree().paused = true
-
-	# Show result screen
+	# Show result screen FIRST (before pause)
 	_show_result_screen(false, reason)
+
+	# Then pause game
+	get_tree().paused = true
 
 	game_over.emit(reason)
 	game_state_changed.emit(GameState.FAILURE)

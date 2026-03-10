@@ -401,11 +401,21 @@ func _update_bed_capacity():
 ## Get all platforms in the base (using scene tree traversal)
 func get_all_platforms() -> Array[Platform]:
 	var platforms: Array[Platform] = []
-	var nodes = find_children("*", "Platform", true, false)
-	for node in nodes:
-		if node is Platform:
-			platforms.append(node)
+
+	# Start from HQ and recursively collect all platforms
+	if hq_platform:
+		_collect_platforms_recursive(hq_platform, platforms)
+
 	return platforms
+
+## Recursively collect platforms starting from a root platform
+func _collect_platforms_recursive(platform: Platform, platforms: Array[Platform]):
+	platforms.append(platform)
+
+	# Recursively collect child platforms
+	for child in platform.get_children():
+		if child is Platform:
+			_collect_platforms_recursive(child, platforms)
 
 ## Get total platform count
 func get_total_platform_count() -> int:

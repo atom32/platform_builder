@@ -19,12 +19,21 @@ const BUTTON_FONT_SIZE: int = 24
 func _ready():
 	# Connect button signals
 	if restart_button:
+		print("Result screen: Connecting restart button signal")
 		restart_button.pressed.connect(_on_restart_pressed)
+	else:
+		print("Result screen: ERROR - restart_button not found!")
+
 	if main_menu_button:
+		print("Result screen: Connecting main menu button signal")
 		main_menu_button.pressed.connect(_on_main_menu_pressed)
+	else:
+		print("Result screen: ERROR - main_menu_button not found!")
 
 	# Configure label settings
 	_configure_labels()
+
+	print("Result screen initialized successfully")
 
 ## Configure label fonts and sizes
 func _configure_labels():
@@ -90,6 +99,7 @@ func _on_restart_pressed():
 
 ## Handle main menu button
 func _on_main_menu_pressed():
+	print("Main menu button pressed!")
 	# Unpause game and return to main menu
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")

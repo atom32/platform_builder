@@ -169,11 +169,9 @@ func show_result(victory: bool, stats: Dictionary, reason: String = ""):
 ## Handle restart button
 func _on_restart_pressed():
 	print("Restart button pressed - changing scene to main.tscn")
-	get_tree().paused = false
 	get_tree().change_scene_to_file("res://scenes/main.tscn")
 
 ## Handle main menu button
 func _on_main_menu_pressed():
 	print("Main menu button pressed - changing scene to main_menu.tscn")
-	get_tree().paused = false
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")

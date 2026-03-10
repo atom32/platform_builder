@@ -100,6 +100,11 @@ func _setup_click_detection():
 	set_process_input(true)
 
 func _input(event):
+	# Check if game is still running (prevent input during result screen)
+	var game_session = get_node_or_null("/root/GameSession")
+	if game_session and not game_session.is_running():
+		return  # Block all game input when showing result screen
+
 	# Handle camera dragging with right mouse button
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_RIGHT:

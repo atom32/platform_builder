@@ -15,7 +15,6 @@ enum PlatformState {
 @export var level: int = 1
 @export var production_value: int = 10
 
-@onready var production_timer = $ProductionTimer
 @onready var mesh_node = $Mesh
 
 ## Production rates per second (base values, multiplied by level)
@@ -57,17 +56,10 @@ var slot_positions: Array[Vector3] = [
 func _ready():
 	name = "%s_Platform" % platform_type
 
-	# Validate timer node exists
-	if not production_timer:
-		push_error("ProductionTimer not found in platform scene for type: %s" % platform_type)
-		return
-
 	# Set production rates based on platform type
 	_set_production_rates()
 
-	# Connect production timer and start it
-	production_timer.timeout.connect(_on_production_timeout)
-	production_timer.start()
+	# Production is now handled by unified BaseSystem production_timer
 	production_active = true
 
 	# Create build slots for this platform (ALL platforms get slots!)
@@ -100,10 +92,7 @@ func _create_build_slots():
 		add_child(slot)
 		build_slots.append(slot)
 
-## Called every second by the ProductionTimer (old system, will be removed)
-func _on_production_timeout():
-	produce_resources()
-
+## Called every second by the ProductionTimer (old system, DISABLED FOR TESTING)
 ## Produce resources (called by unified production system)
 func produce_resources():
 	# Only produce if operational and production is active

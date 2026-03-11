@@ -210,10 +210,12 @@ func _setup_debug_timer():
 	add_child(debug_timer)
 
 func _on_debug_timeout():
+	# Debug output disabled - use HUD for resource monitoring
 	# Only print resources when game session is running
-	var game_session = get_node_or_null("/root/GameSession")
-	if game_session and game_session.is_running():
-		print("Materials: %d | Fuel: %d | GMP: %d | Staff: %d / %d beds" % [materials, fuel, gmp, staff_count, bed_capacity])
+	# var game_session = get_node_or_null("/root/GameSession")
+	# if game_session and game_session.is_running():
+	# 	print("Materials: %d | Fuel: %d | GMP: %d | Staff: %d / %d beds" % [materials, fuel, gmp, staff_count, bed_capacity])
+	pass
 
 ## Reset all resources to zero (for new game)
 func reset_resources():

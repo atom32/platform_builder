@@ -48,3 +48,13 @@ func show_mesh():
 	# Enable collision detection when visible (layer 2 = build slots)
 	if area_3d:
 		area_3d.collision_layer = 2
+
+	# Set transparency for better visibility
+	var material = mesh_node.get_surface_override_material(0)
+	if not material:
+		material = StandardMaterial3D.new()
+		material.albedo_color = Color(1.0, 1.0, 0.0)  # Yellow
+		mesh_node.set_surface_override_material(0, material)
+
+	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	material.albedo_color.a = 0.5  # 50% opaque (半透明)

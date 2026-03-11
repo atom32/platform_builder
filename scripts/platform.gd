@@ -16,6 +16,7 @@ enum PlatformState {
 @export var production_value: int = 10
 
 @onready var mesh_node = $Mesh
+@onready var construction_progress_label = $ConstructionProgress
 
 ## Production rates per second (base values, multiplied by level)
 var materials_production: int = 0
@@ -121,10 +122,26 @@ func set_operational():
 	state = PlatformState.OPERATIONAL
 	_show_operational_visuals()
 
+	# Hide construction progress
+	if construction_progress_label:
+		construction_progress_label.visible = false
+
 ## Set platform to under construction
 func set_under_construction():
 	state = PlatformState.CONSTRUCTING
 	_show_construction_visuals()
+
+	# Show construction progress
+	if construction_progress_label:
+		construction_progress_label.visible = true
+		construction_progress_label.text = "0%"
+
+## Update construction progress (called by BaseSystem)
+func update_construction_progress(progress: float):
+	# progress is 0.0 to 1.0
+	if construction_progress_label and construction_progress_label.visible:
+		var percentage = int(progress * 100)
+		construction_progress_label.text = "%d%%" % percentage
 
 ## Show construction visuals (bare white platform with pillars, no modules)
 func _show_construction_visuals():

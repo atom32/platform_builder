@@ -118,9 +118,15 @@ func _on_construction_tick():
 		var job = construction_jobs[i]
 		job["remaining_time"] -= 1.0
 
+		# Update construction progress for UI
+		var platform = job["platform"]
+		var total_time = job["total_time"]
+		var remaining_time = job["remaining_time"]
+		var progress = 1.0 - (remaining_time / total_time)
+		platform.update_construction_progress(progress)
+
 		# Check if construction completed
 		if job["remaining_time"] <= 0.0:
-			var platform = job["platform"]
 			platform.set_operational()
 			completed_jobs.append(i)
 

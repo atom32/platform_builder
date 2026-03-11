@@ -32,6 +32,9 @@ var construction_jobs: Array[Dictionary] = []
 ## Construction timer for unified tick
 var construction_timer: Timer = null
 
+## Production timer for unified tick (all platforms)
+var production_timer: Timer = null
+
 func _ready():
 	_spawn_hq()
 	_create_department_system()
@@ -41,6 +44,7 @@ func _ready():
 	_create_expedition_menu()
 	_create_base_overview()
 	_setup_construction_timer()
+	_setup_production_timer()
 	_setup_click_detection()
 
 	print("=== Mother Base Tree System ===")
@@ -90,6 +94,21 @@ func _setup_construction_timer():
 	construction_timer.autostart = true
 	construction_timer.timeout.connect(_on_construction_tick)
 	add_child(construction_timer)
+
+func _setup_production_timer():
+	# Unified production tick (updates all operational platforms every second)
+	production_timer = Timer.new()
+	production_timer.wait_time = 1.0
+	production_timer.autostart = true
+	production_timer.timeout.connect(_on_production_tick)
+	add_child(production_timer)
+
+func _on_production_tick():
+	# Produce resources for all operational platforms
+	var all_platforms = get_all_platforms()
+	for platform in all_platforms:
+		if platform.is_operational():
+			platform.produce_resources()
 
 func _on_construction_tick():
 	# Update all construction jobs

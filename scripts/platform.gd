@@ -100,8 +100,12 @@ func _create_build_slots():
 		add_child(slot)
 		build_slots.append(slot)
 
-## Called every second by the ProductionTimer
+## Called every second by the ProductionTimer (old system, will be removed)
 func _on_production_timeout():
+	produce_resources()
+
+## Produce resources (called by unified production system)
+func produce_resources():
 	# Only produce if operational and production is active
 	if not production_active or state != PlatformState.OPERATIONAL:
 		return

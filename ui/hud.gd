@@ -94,13 +94,13 @@ func _ready():
 	if toggle_sidebar_button:
 		toggle_sidebar_button.pressed.connect(_on_toggle_sidebar)
 
+	# Connect to input manager for H key
+	var input_manager = get_node_or_null("/root/InputManager")
+	if input_manager:
+		input_manager.sidebar_toggle_key_pressed.connect(_on_toggle_sidebar)
+
 	# Set initial state
 	side_bar_visible = true
-
-func _input(event):
-	# Handle TAB key to toggle sidebar
-	if event is InputEventKey and event.pressed and event.keycode == KEY_TAB:
-		_toggle_sidebar()
 
 func _process(delta):
 	update_timer += delta
@@ -235,9 +235,9 @@ func _on_toggle_sidebar():
 
 	if toggle_sidebar_button:
 		if side_bar_visible:
-			toggle_sidebar_button.text = "Hide (TAB)"
+			toggle_sidebar_button.text = "Hide (H)"
 		else:
-			toggle_sidebar_button.text = "Show (TAB)"
+			toggle_sidebar_button.text = "Show (H)"
 
 ## ===== NOTIFICATION SYSTEM =====
 

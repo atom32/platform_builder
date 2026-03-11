@@ -64,6 +64,14 @@ func _ready():
 	# Connect to staff recruitment signal
 	ResourceSystem.staff_recruited.connect(_on_staff_recruited)
 
+	# Connect to input manager signals for keyboard shortcuts
+	var input_manager = get_node_or_null("/root/InputManager")
+	if input_manager:
+		input_manager.recruit_key_pressed.connect(_recruit_staff)
+		input_manager.overview_key_pressed.connect(_toggle_base_overview)
+		input_manager.debug_info_key_pressed.connect(_toggle_debug_mode)
+		input_manager.debug_mode_key_pressed.connect(_on_debug_mode_key)
+
 func _input(event):
 	# Handle camera zoom with mouse wheel
 	if event is InputEventMouseButton:
@@ -72,17 +80,9 @@ func _input(event):
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			_zoom_out()
 
-	# Handle keyboard input
-	if event is InputEventKey and event.pressed:
-		if event.keycode == KEY_R:
-			_recruit_staff()
-		elif event.keycode == KEY_TAB:
-			_toggle_base_overview()
-		elif event.keycode == KEY_F:
-			if debug_mode:
-				_print_focus_debug()
-		elif event.keycode == KEY_D:
-			_toggle_debug_mode()
+func _on_debug_info():
+	if debug_mode:
+		_print_focus_debug()
 
 func _process(delta):
 	# Update focus marker position to follow camera view (debug mode only)
@@ -204,6 +204,11 @@ func _toggle_debug_mode():
 	if focus_marker:
 		focus_marker.visible = debug_mode
 		print("Focus marker visibility: ", focus_marker.visible)
+
+## Handle debug mode key (F) - print debug info when in debug mode
+func _on_debug_mode_key():
+	if debug_mode:
+		_print_focus_debug()
 
 ## Recruit a staff member
 func _recruit_staff():

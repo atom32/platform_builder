@@ -46,11 +46,24 @@ func _ready():
 	_setup_construction_timer()
 	_setup_production_timer()
 	_setup_click_detection()
+	_connect_input_manager()
 
 	print("=== Mother Base Tree System ===")
 	print("HQ with 6 expansion slots created")
 	print("Each platform can have 6 children")
 	print("Click yellow circles to expand!")
+
+func _connect_input_manager():
+	var input_manager = get_node_or_null("/root/InputManager")
+	if input_manager:
+		input_manager.expedition_key_pressed.connect(_on_expedition_key_pressed)
+
+func _on_expedition_key_pressed():
+	if expedition_menu:
+		if expedition_menu.visible:
+			expedition_menu.hide_menu()
+		else:
+			open_expedition_menu()
 
 func _create_department_system():
 	# Use the autoload instance
@@ -206,14 +219,6 @@ func _input(event):
 			build_menu.hide_menu()
 		elif expedition_menu and expedition_menu.visible:
 			expedition_menu.hide_menu()
-
-	# Handle expedition menu toggle (E key)
-	if event is InputEventKey and event.pressed and event.keycode == KEY_E:
-		if expedition_menu:
-			if expedition_menu.visible:
-				expedition_menu.hide_menu()
-			else:
-				open_expedition_menu()
 
 	# Handle camera drag movement
 	if event is InputEventMouseMotion and is_dragging_camera:

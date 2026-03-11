@@ -31,6 +31,17 @@ func _connect_signals():
 	# Dismiss button
 	$Panel/VBoxContainer/TabContainer/Dismiss/DismissButtons/DismissSelected.pressed.connect(_on_dismiss_selected)
 
+	# Connect to input manager for U key
+	var input_manager = get_node_or_null("/root/InputManager")
+	if input_manager:
+		input_manager.staff_menu_key_pressed.connect(_on_staff_menu_key_pressed)
+
+func _on_staff_menu_key_pressed():
+	if visible:
+		close_menu()
+	else:
+		show_menu()
+
 ## Show the staff menu
 func show_menu():
 	visible = true
@@ -181,12 +192,3 @@ func _on_dismiss_selected():
 		refresh_lists()
 	else:
 		print("[StaffMenu] Failed to dismiss staff")
-
-## Handle input for closing with U key
-func _input(event):
-	if event is InputEventKey and event.pressed:
-		if event.keycode == KEY_U:
-			if visible:
-				close_menu()
-			else:
-				show_menu()

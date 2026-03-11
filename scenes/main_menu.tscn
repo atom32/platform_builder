@@ -1,6 +1,16 @@
-[gd_scene load_steps=2 format=3 uid="uid://main_menu_scene"]
+[gd_scene load_steps=4 format=3 uid="uid://main_menu_scene"]
 
 [ext_resource type="Script" path="res://scripts/main_menu.gd" id="1_main_menu"]
+
+[ext_resource type="Texture2D" uid="uid://bg_texture" path="res://assets/textures/bg.png" id="2_bg"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_title"]
+font_size = 72
+outline_size = 3
+outline_color = Color(0, 0, 0, 1)
+shadow_color = Color(0, 0, 0, 0.5)
+shadow_offset_x = 4
+shadow_offset_y = 4
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -12,6 +22,17 @@ grow_vertical = 2
 script = ExtResource("1_main_menu")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Background" type="TextureRect" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_bg")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="CenterContainer" type="CenterContainer" parent="CanvasLayer"]
 layout_mode = 2
@@ -33,8 +54,8 @@ theme_override_constants/separation = 30
 
 [node name="TitleLabel" type="Label" parent="CanvasLayer/CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 64
-text = "Mother Base"
+label_settings = SubResource("LabelSettings_title")
+text = "PHANTOM GEAR"
 horizontal_alignment = 1
 
 [node name="HSeparator" type="HSeparator" parent="CanvasLayer/CenterContainer/VBoxContainer"]
@@ -44,9 +65,9 @@ theme_override_constants/separation = 0
 [node name="StartButton" type="Button" parent="CanvasLayer/CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "Start Game"
+text = "START GAME"
 
 [node name="QuitButton" type="Button" parent="CanvasLayer/CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "Quit"
+text = "QUIT"

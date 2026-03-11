@@ -1,18 +1,27 @@
 extends CanvasLayer
 
-## HUD displays current resources and base status
+## HUD displays current resources and base status (MGSV style)
 
-@onready var materials_label = $VBoxContainer/ResourcesGroup/MaterialsLabel
-@onready var fuel_label = $VBoxContainer/ResourcesGroup/FuelLabel
-@onready var gmp_label = $VBoxContainer/ResourcesGroup/GMPLabel
-@onready var base_size_label = $VBoxContainer/BaseGroup/BaseSizeLabel
-@onready var staff_label = $VBoxContainer/BaseGroup/StaffLabel
-@onready var combo_label = $VBoxContainer/MilitaryGroup/ComboLabel
-@onready var expedition_label = $VBoxContainer/MilitaryGroup/ExpeditionLabel
-@onready var combat_power_label = $VBoxContainer/MilitaryGroup/CombatPowerLabel
-@onready var objective1_label = $VBoxContainer/ObjectivesGroup/Objective1Label
-@onready var objective2_label = $VBoxContainer/ObjectivesGroup/Objective2Label
-@onready var objective3_label = $VBoxContainer/ObjectivesGroup/Objective3Label
+## Resource Panel (bottom-right)
+@onready var materials_label = $ResourcePanel/VBoxContainer/MaterialsLabel
+@onready var fuel_label = $ResourcePanel/VBoxContainer/FuelLabel
+@onready var gmp_label = $ResourcePanel/VBoxContainer/GMPLabel
+@onready var staff_label = $ResourcePanel/VBoxContainer/StaffLabel
+
+## Side Bar (left, collapsible)
+@onready var side_bar = $SideBar
+@onready var base_size_label = $SideBar/VBoxContainer/BaseSizeLabel
+@onready var combat_power_label = $SideBar/VBoxContainer/CombatPowerLabel
+@onready var combo_label = $SideBar/VBoxContainer/ComboLabel
+@onready var objective1_label = $SideBar/VBoxContainer/Objective1Label
+@onready var objective2_label = $SideBar/VBoxContainer/Objective2Label
+@onready var objective3_label = $SideBar/VBoxContainer/Objective3Label
+@onready var toggle_sidebar_button = $SideBar/VBoxContainer/ToggleSideBarButton
+
+## Key Bindings (bottom-center)
+@onready var key_bindings_panel = $KeyBindings
+
+## Notifications (top-right)
 @onready var notification_container = $NotificationContainer
 
 ## Update interval for resource display
@@ -35,6 +44,9 @@ var objective_labels: Array[Label] = []
 const NOTIFICATION_LIFETIME: float = 5.0  # Seconds
 var notifications: Array = []
 
+## Side bar state
+var side_bar_visible: bool = true
+
 func _ready():
 	# Validate that label nodes exist
 	if not materials_label:
@@ -49,10 +61,10 @@ func _ready():
 		push_error("BaseSizeLabel not found in HUD scene!")
 	if not combo_label:
 		push_error("ComboLabel not found in HUD scene!")
-	if not expedition_label:
-		push_error("ExpeditionLabel not found in HUD scene!")
 	if not combat_power_label:
 		push_error("CombatPowerLabel not found in HUD scene!")
+	if not toggle_sidebar_button:
+		push_error("ToggleSideBarButton not found in HUD scene!")
 
 	# Get reference to base system
 	base_system = get_node("/root/Main/Base")
@@ -77,6 +89,18 @@ func _ready():
 
 	# Connect to GMP debt warning signal
 	ResourceSystem.debt_warning_reached.connect(_on_debt_warning)
+
+	# Connect toggle button
+	if toggle_sidebar_button:
+		toggle_sidebar_button.pressed.connect(_on_toggle_sidebar)
+
+	# Set initial state
+	side_bar_visible = true
+
+func _input(event):
+	# Handle TAB key to toggle sidebar
+	if event is InputEventKey and event.pressed and event.keycode == KEY_TAB:
+		_toggle_sidebar()
 
 func _process(delta):
 	update_timer += delta
@@ -141,7 +165,7 @@ func update_base_info():
 func update_expedition_info():
 	if base_system and base_system.expedition_system:
 		var expedition_count = base_system.expedition_system.get_active_expedition_count()
-		expedition_label.text = TextData.format("ui_expeditions", [expedition_count])
+		# Expedition info now only in sidebar
 
 		# Update combat power
 		if combat_power_label:
@@ -201,6 +225,19 @@ func _on_debt_warning():
 	var notification_system = get_node_or_null("/root/NotificationSystem")
 	if notification_system and notification_system.has_method("show_debt_warning"):
 		notification_system.show_debt_warning()
+
+## Toggle sidebar visibility
+func _on_toggle_sidebar():
+	side_bar_visible = !side_bar_visible
+
+	if side_bar:
+		side_bar.visible = side_bar_visible
+
+	if toggle_sidebar_button:
+		if side_bar_visible:
+			toggle_sidebar_button.text = "Hide (TAB)"
+		else:
+			toggle_sidebar_button.text = "Show (TAB)"
 
 ## ===== NOTIFICATION SYSTEM =====
 

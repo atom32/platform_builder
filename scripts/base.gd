@@ -95,11 +95,6 @@ func _setup_click_detection():
 	set_process_input(true)
 
 func _input(event):
-	# Check if game is still running (prevent input during result screen)
-	var game_session = get_node_or_null("/root/GameSession")
-	if game_session and not game_session.is_running():
-		return  # Block all game input when showing result screen
-
 	# Handle camera dragging with right mouse button
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_RIGHT:
@@ -227,15 +222,21 @@ func _show_platform_slots(platform: Platform):
 	# Show only this platform's non-overlapping slots
 	for slot in platform.build_slots:
 		if not slot.get_occupied():
-			var slot_world_pos = platform.position + slot.position
+			# Use slot's global_position directly (Godot handles coordinate transformation)
+			var slot_world_pos = slot.global_position
 			if not _check_slot_overlap(slot_world_pos):
 				slot.show_mesh()
 
 func _check_slot_overlap(position: Vector3) -> bool:
 	# Check if position overlaps with any existing platform
 	for platform in get_all_platforms():
-		var distance = platform.position.distance_to(position)
-		if distance < 8.0:  # Platform size is 10x10, so < 8 means overlap
+		# IMPORTANT: Use global_position for world space comparison
+		# Since platforms are in a tree structure, position is local to parent
+		var distance = platform.global_position.distance_to(position)
+		# Platform is 10x10, so overlap if distance < 10 (center-to-center)
+		# Slots are at distance 15, so they should not overlap with parent
+		# Only hide slot if it's too close to another platform center
+		if distance < 10.0:  # Less than platform size
 			return true
 	return false
 
@@ -282,12 +283,22 @@ func build_child_platform(parent_platform: Platform, slot: BuildSlot, platform_t
 	platform.level = 1
 	platform.production_value = 10
 
+	# Debug: print building info
+	print("Building platform debug:")
+	print("  Parent platform world pos: ", parent_platform.position)
+	print("  Slot local pos: ", slot.position)
+	print("  Slot world pos: ", slot.global_position)
+
 	# Position at the slot's location
 	# Slot position is relative to parent_platform, so we use it directly
 	platform.position = slot.position
 
 	# Register to parent (this adds to scene tree)
 	parent_platform.add_child_platform(platform, slot)
+
+	# Debug: print new platform position
+	print("  New platform local pos: ", platform.position)
+	print("  New platform world pos: ", platform.global_position)
 
 	# Create visual bridge between platforms
 	BridgeGenerator.create_bridge(parent_platform, platform)

@@ -95,11 +95,9 @@ func _check_all_objectives_completed() -> void:
 			break
 
 	if all_complete and objectives.size() > 0:
-		all_objectives_completed.emit()
-
-		# Show notification
+		# Just show notification, no victory trigger
 		var notification_system = get_node_or_null("/root/NotificationSystem")
-		if notification_system:
+		if notification_system and notification_system.has_method("show_all_objectives_completed"):
 			notification_system.show_all_objectives_completed()
 
 ## Mark first expedition as launched

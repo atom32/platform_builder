@@ -31,8 +31,7 @@ func _ready():
 	if game_session:
 		game_session.start_session()
 
-		# Connect victory/failure signals
-		game_session.victory_achieved.connect(_on_victory)
+		# Connect game_over signal only (no victory)
 		game_session.game_over.connect(_on_game_over)
 
 	# Give player starting resources (after reset)
@@ -243,6 +242,12 @@ func _on_platform_selected(platform: Platform):
 func _on_overview_closed():
 	print("Base overview closed")
 
+## Handle game over
+func _on_game_over(reason: String):
+	var notification_system = get_node_or_null("/root/NotificationSystem")
+	if notification_system:
+		notification_system.show("Game Over: %s" % reason)
+
 ## Register starting objectives
 func _register_starting_objectives():
 	var objective_system = get_node_or_null("/root/ObjectiveSystem")
@@ -263,15 +268,3 @@ func _on_staff_recruited():
 	var game_session = get_node_or_null("/root/GameSession")
 	if game_session:
 		game_session.increment_staff_recruited()
-
-## Handle victory achieved
-func _on_victory():
-	var notification_system = get_node_or_null("/root/NotificationSystem")
-	if notification_system and notification_system.has_method("show_victory"):
-		notification_system.show_victory()
-
-## Handle game over
-func _on_game_over(reason: String):
-	var notification_system = get_node_or_null("/root/NotificationSystem")
-	if notification_system and notification_system.has_method("show_game_over"):
-		notification_system.show_game_over(reason)

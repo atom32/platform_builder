@@ -43,8 +43,10 @@ func _on_day_passed():
 	days_survived += 1
 	day_passed.emit(days_survived)
 
-	# Check lose conditions every day
-	check_lose_conditions()
+	# Only check GMP debt condition
+	var gmp = ResourceSystem.get_gmp()
+	if gmp <= ResourceSystem.get_debt_limit():
+		end_game_over("GMP debt exceeded -500")
 
 ## Start a new game session
 func start_session():
@@ -63,12 +65,6 @@ func start_session():
 	if day_timer:
 		day_timer.stop()
 		day_timer.start()
-
-	# Connect to objective system for victory condition
-	var objective_system = get_node_or_null("/root/ObjectiveSystem")
-	if objective_system:
-		if not objective_system.all_objectives_completed.is_connected(_on_all_objectives_completed):
-			objective_system.all_objectives_completed.connect(_on_all_objectives_completed)
 
 	print("Game session started")
 	game_state_changed.emit(GameState.RUNNING)
@@ -149,12 +145,6 @@ func check_lose_conditions():
 		var notification_system = get_node_or_null("/root/NotificationSystem")
 		if notification_system and notification_system.has_method("show_debt_warning"):
 			notification_system.show_debt_warning()
-
-## Handle all objectives completed
-func _on_all_objectives_completed():
-	# Give player time to see completion, then trigger victory
-	await get_tree().create_timer(3.0).timeout
-	end_victory()
 
 ## Get session summary
 func get_session_summary() -> Dictionary:

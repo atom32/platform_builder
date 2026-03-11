@@ -1,32 +1,21 @@
-[gd_scene load_steps=8 format=3 uid="uid://main_scene"]
+[gd_scene format=3 uid="uid://77kwjveq12an"]
 
-[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
-[ext_resource type="Script" path="res://scripts/base.gd" id="2_base"]
-[ext_resource type="PackedScene" uid="uid://hud_scene" path="res://ui/hud.tscn" id="3_hud"]
-[ext_resource type="PackedScene" uid="uid://mstaff_menu" path="res://ui/staff_menu.tscn" id="4_staff_menu"]
-[ext_resource type="Shader" path="res://shaders/ocean_shader.gdshader" id="5_shader"]
-[ext_resource type="PackedScene" uid="uid://base_overview" path="res://ui/base_overview.tscn" id="6_base_overview"]
+[ext_resource type="Script" uid="uid://dwnr5o56c11f3" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Script" uid="uid://cxf21kixq2cqk" path="res://scripts/base.gd" id="2_base"]
+[ext_resource type="PackedScene" path="res://ui/hud.tscn" id="3_hud"]
+[ext_resource type="PackedScene" path="res://ui/staff_menu.tscn" id="4_staff_menu"]
+[ext_resource type="Shader" uid="uid://rcclf8q1x4ey" path="res://shaders/ocean_shader.gdshader" id="5_shader"]
+[ext_resource type="PackedScene" path="res://ui/base_overview.tscn" id="6_base_overview"]
 
-[sub_resource type="ProceduralSky" id="ProceduralSky_sky"]
-sky_horizon_color = Color(0.4, 0.6, 0.9, 1)
-sky_radial_begin = 0.01
-sky_radial_end = 2.0
-sky_ground_horizon_color = Color(0.5, 0.7, 0.9, 1)
-ground_horizon_color = Color(0.6, 0.75, 0.95, 1)
-sun_energy = 10.0
-sun_latitude = 35.0
-sun_longitude = 45.0
+[sub_resource type="Sky" id="ProceduralSky_sky"]
 
 [sub_resource type="Environment" id="Environment_environment"]
 background_mode = 2
 sky = SubResource("ProceduralSky_sky")
-sky_custom_fov = 0.0
-ground_color = Color(0.2, 0.3, 0.4, 1)
 ambient_light_source = 1
 ambient_light_color = Color(1, 1, 1, 1)
 ambient_light_energy = 0.8
 tonemap_mode = 2
-tonemap_exposure = 1.0
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_ocean"]
 size = Vector2(500, 500)
@@ -34,37 +23,37 @@ subdivide_width = 100
 subdivide_depth = 100
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ocean"]
+render_priority = 0
 shader = ExtResource("5_shader")
-shader_param/water_color = Color(0.1, 0.3, 0.5, 1)
-shader_param/wave_speed = 1.0
-shader_param/wave_height = 0.3
-shader_param/wave_frequency = 2.0
+shader_parameter/water_color = Color(0.1, 0.3, 0.5, 1)
+shader_parameter/wave_speed = 1.0
+shader_parameter/wave_height = 0.3
+shader_parameter/wave_frequency = 2.0
 
-[node name="Main" type="Node3D"]
+[node name="Main" type="Node3D" unique_id=1983293921]
 script = ExtResource("1_main")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1187303714]
 environment = SubResource("Environment_environment")
 
-[node name="Camera3D" type="Camera3D" parent="."]
+[node name="Camera3D" type="Camera3D" parent="." unique_id=455437478]
 transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 40, 40)
 fov = 60.0
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=2100205984]
 transform = Transform3D(0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, -0.75, 0.433013, 0, 0, 0)
-light_energy = 1.0
 shadow_enabled = true
 
-[node name="Ocean" type="MeshInstance3D" parent="."]
+[node name="Ocean" type="MeshInstance3D" parent="." unique_id=139092191]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.5, 0)
 mesh = SubResource("PlaneMesh_ocean")
 surface_material_override/0 = SubResource("ShaderMaterial_ocean")
 
-[node name="Base" type="Node3D" parent="."]
+[node name="Base" type="Node3D" parent="." unique_id=822023471]
 script = ExtResource("2_base")
 
-[node name="HUD" parent="." instance=ExtResource("3_hud")]
+[node name="HUD" parent="." unique_id=679465694 instance=ExtResource("3_hud")]
 
-[node name="StaffMenu" parent="." instance=ExtResource("4_staff_menu")]
+[node name="StaffMenu" parent="." unique_id=330149446 instance=ExtResource("4_staff_menu")]
 
-[node name="BaseOverview" parent="." instance=ExtResource("6_base_overview")]
+[node name="BaseOverview" parent="." unique_id=1105004953 instance=ExtResource("6_base_overview")]

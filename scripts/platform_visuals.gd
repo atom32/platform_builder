@@ -36,6 +36,9 @@ static func apply_hexagon_visuals(mesh_instance: MeshInstance3D, platform_type: 
 	if not mesh_instance:
 		return
 
+	# Clear existing pillars before creating new ones
+	_clear_existing_pillars(mesh_instance)
+
 	# Replace with hexagon mesh
 	var hex_mesh = create_hexagon_mesh()
 	mesh_instance.mesh = hex_mesh
@@ -47,6 +50,17 @@ static func apply_hexagon_visuals(mesh_instance: MeshInstance3D, platform_type: 
 
 	# Create support pillars (oil rig style)
 	_create_support_pillars(mesh_instance, platform_type)
+
+## Clear existing pillars to avoid duplicates
+static func _clear_existing_pillars(mesh_instance: MeshInstance3D):
+	var platform_node = mesh_instance.get_parent()
+	if not platform_node:
+		return
+
+	# Remove all pillars (MeshInstance3D with position.y < -1.0)
+	for child in platform_node.get_children():
+		if child is MeshInstance3D and child.position.y < -1.0:
+			child.queue_free()
 
 ## Create 6 support pillars at hexagon corners (oil rig style)
 static func _create_support_pillars(mesh_instance: MeshInstance3D, platform_type: String):

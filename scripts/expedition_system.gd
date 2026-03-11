@@ -88,9 +88,9 @@ func calculate_combat_power() -> int:
 	var combat_power: int = 0
 	var all_platforms = base_system.get_all_platforms()
 
-	# Count Combat platforms
+	# Count Combat platforms (only operational ones contribute)
 	for platform in all_platforms:
-		if platform.platform_type == "Combat":
+		if platform.platform_type == "Combat" and platform.is_operational():
 			combat_power += 1
 
 	# Add department staff bonuses

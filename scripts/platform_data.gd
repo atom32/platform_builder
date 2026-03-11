@@ -12,6 +12,7 @@ var platform_data: Dictionary = {
 		"materials_production": 0,
 		"fuel_production": 0,
 		"build_cost": {"materials": 0, "fuel": 0},
+		"construction_time": 0.0,  # HQ builds instantly
 		"tags": ["hq", "command"]
 	},
 
@@ -21,6 +22,7 @@ var platform_data: Dictionary = {
 		"materials_production": 2,
 		"fuel_production": 0,
 		"build_cost": {"materials": 50, "fuel": 10},
+		"construction_time": 5.0,  # seconds
 		"tags": ["research"]
 	},
 
@@ -30,6 +32,7 @@ var platform_data: Dictionary = {
 		"materials_production": 1,
 		"fuel_production": 1,
 		"build_cost": {"materials": 40, "fuel": 30},
+		"construction_time": 5.0,  # seconds
 		"tags": ["combat", "military"]
 	},
 
@@ -39,6 +42,7 @@ var platform_data: Dictionary = {
 		"materials_production": 0,
 		"fuel_production": 2,
 		"build_cost": {"materials": 30, "fuel": 40},
+		"construction_time": 5.0,  # seconds
 		"tags": ["support", "logistics"]
 	},
 
@@ -48,6 +52,7 @@ var platform_data: Dictionary = {
 		"materials_production": 0,
 		"fuel_production": 1,
 		"build_cost": {"materials": 35, "fuel": 25},
+		"construction_time": 5.0,  # seconds
 		"tags": ["intel"]
 	},
 
@@ -57,6 +62,7 @@ var platform_data: Dictionary = {
 		"materials_production": 1,
 		"fuel_production": 0,
 		"build_cost": {"materials": 25, "fuel": 25},
+		"construction_time": 5.0,  # seconds
 		"tags": ["medical", "support"]
 	}
 }
@@ -114,6 +120,13 @@ func get_build_cost(platform_type: String) -> Dictionary:
 	if data.has("build_cost"):
 		return data["build_cost"]
 	return {"materials": 0, "fuel": 0}
+
+## Get construction time for a platform type (in seconds)
+func get_construction_time(platform_type: String) -> float:
+	var data = get_platform_data(platform_type)
+	if data.has("construction_time"):
+		return data["construction_time"]
+	return 45.0  # Default construction time
 
 ## Get tags for a platform type
 func get_tags(platform_type: String) -> Array:

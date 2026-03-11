@@ -26,6 +26,12 @@ const MAX_PLATFORMS: int = 100
 var is_dragging_camera: bool = false
 var last_mouse_position: Vector2
 
+## Construction jobs (managed centrally)
+var construction_jobs: Array[Dictionary] = []
+
+## Construction timer for unified tick
+var construction_timer: Timer = null
+
 func _ready():
 	_spawn_hq()
 	_create_department_system()
@@ -34,6 +40,7 @@ func _ready():
 	_create_build_menu()
 	_create_expedition_menu()
 	_create_base_overview()
+	_setup_construction_timer()
 	_setup_click_detection()
 
 	print("=== Mother Base Tree System ===")
@@ -76,6 +83,60 @@ func _create_base_overview():
 	# Get reference to BaseOverview from Main
 	base_overview = get_node_or_null("../BaseOverview") as BaseOverview
 
+func _setup_construction_timer():
+	# Unified construction tick (updates all construction jobs every second)
+	construction_timer = Timer.new()
+	construction_timer.wait_time = 1.0
+	construction_timer.autostart = true
+	construction_timer.timeout.connect(_on_construction_tick)
+	add_child(construction_timer)
+
+func _on_construction_tick():
+	# Update all construction jobs
+	var completed_jobs: Array = []
+
+	for i in range(construction_jobs.size()):
+		var job = construction_jobs[i]
+		job["remaining_time"] -= 1.0
+
+		# Check if construction completed
+		if job["remaining_time"] <= 0.0:
+			var platform = job["platform"]
+			platform.set_operational()
+			completed_jobs.append(i)
+
+			# Notify systems
+			print("Platform constructed: %s" % platform.platform_type)
+
+			# Check for new combos
+			_check_combos()
+
+			# Update bed capacity based on new platform
+			_update_bed_capacity()
+
+			# Show notification
+			var notification_system = get_node_or_null("/root/NotificationSystem")
+			if notification_system:
+				notification_system.show_platform_built(platform.platform_type)
+
+			# Check for Support platform objective
+			var objective_system = get_node_or_null("/root/ObjectiveSystem")
+			if objective_system and platform.platform_type == "Support":
+				objective_system.complete_objective("build_support")
+
+			# Track platform built for game session
+			var game_session = get_node_or_null("/root/GameSession")
+			if game_session:
+				game_session.increment_platforms_built()
+
+			# Refresh base overview if visible
+			if base_overview and base_overview.visible:
+				base_overview.refresh()
+
+	# Remove completed jobs (in reverse order to maintain indices)
+	for i in range(completed_jobs.size() - 1, -1, -1):
+		construction_jobs.remove_at(completed_jobs[i])
+
 func _create_build_menu():
 	build_menu = build_menu_scene.instantiate() as BuildMenu
 	add_child(build_menu)
@@ -88,6 +149,8 @@ func _spawn_hq():
 	hq_platform.platform_type = "HQ"
 	hq_platform.position = Vector3.ZERO
 	add_child(hq_platform)
+
+	# HQ sets itself to operational in its _ready() method
 
 	print(TextData.format("msg_hq_spawned"))
 
@@ -283,11 +346,24 @@ func build_child_platform(parent_platform: Platform, slot: BuildSlot, platform_t
 	platform.level = 1
 	platform.production_value = 10
 
+	# Platform will start in CONSTRUCTING state (handled in _ready())
+	# Get construction time for this platform type (data-driven)
+	var construction_time = PlatformData.get_construction_time(platform_type)
+
+	# Create construction job
+	var construction_job = {
+		"platform": platform,
+		"remaining_time": construction_time,
+		"total_time": construction_time
+	}
+	construction_jobs.append(construction_job)
+
 	# Debug: print building info
 	print("Building platform debug:")
 	print("  Parent platform world pos: ", parent_platform.position)
 	print("  Slot local pos: ", slot.position)
 	print("  Slot world pos: ", slot.global_position)
+	print("  Construction time: %ds" % construction_time)
 
 	# Position at the slot's location
 	# Slot position is relative to parent_platform, so we use it directly
@@ -303,34 +379,12 @@ func build_child_platform(parent_platform: Platform, slot: BuildSlot, platform_t
 	# Create visual bridge between platforms
 	BridgeGenerator.create_bridge(parent_platform, platform)
 
-	print("Built %s platform at %s (Materials: %d, Fuel: %d)" % [
-		platform_type, parent_platform.platform_type, materials_cost, fuel_cost
+	print("Started construction of %s platform at %s (Materials: %d, Fuel: %d, Time: %ds)" % [
+		platform_type, parent_platform.platform_type, materials_cost, fuel_cost, construction_time
 	])
 
-	# Check for new combos
-	_check_combos()
-
-	# Update bed capacity based on new platform
-	_update_bed_capacity()
-
-	# Show notification
-	var notification_system = get_node_or_null("/root/NotificationSystem")
-	if notification_system:
-		notification_system.show_platform_built(platform_type)
-
-	# Check for Support platform objective
-	var objective_system = get_node_or_null("/root/ObjectiveSystem")
-	if objective_system and platform_type == "Support":
-		objective_system.complete_objective("build_support")
-
-	# Track platform built for game session
-	var game_session = get_node_or_null("/root/GameSession")
-	if game_session:
-		game_session.increment_platforms_built()
-
-	# Refresh base overview if visible
-	if base_overview and base_overview.visible:
-		base_overview.refresh()
+	# NOTE: Bed capacity, combos, objectives, and notifications are updated when construction completes
+	# See _on_construction_tick()
 
 	return platform
 

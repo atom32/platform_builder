@@ -187,7 +187,6 @@ func _create_radar_scan_effect():
 	shader_material.set_shader_parameter("outer_radius", 5.0)  # Max scan range
 	shader_material.set_shader_parameter("ring_thickness", 0.5)  # Ring thickness
 	shader_material.render_priority = 1  # Render on top
-	shader_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 
 	radar_scan_ring.material_override = shader_material
 	radar_scan_ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF

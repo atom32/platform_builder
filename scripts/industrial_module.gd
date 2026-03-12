@@ -187,7 +187,6 @@ func _create_radar_scan_effect():
 	shader_material.set_shader_parameter("thickness", 0.5)
 	shader_material.set_shader_parameter("color", Color(0.2, 0.8, 1.0, 0.6))  # Cyan-blue
 	shader_material.render_priority = 1  # Render on top
-	shader_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA  // Enable transparency
 
 	radar_scan_ring.material_override = shader_material
 	radar_scan_ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF  # Don't cast shadows

@@ -1,5 +1,5 @@
 shader_type spatial;
-render_mode unshaded, cull_disabled, ensure_correct_normals;
+render_mode unshaded, cull_disabled, ensure_correct_normals, blend_mix;
 
 uniform float radius: float = 0.0;
 uniform float max_radius: float = 20.0;

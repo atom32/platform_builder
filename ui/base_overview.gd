@@ -34,11 +34,15 @@ func _input(event):
 	if event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			var clicked_pos = event.position
+			print("Mouse clicked at: ", clicked_pos)
 
 			# Get item at click position
 			var clicked_item = tree.get_item_at_position(clicked_pos)
 			if clicked_item:
+				print("Item clicked: ", clicked_item.get_text(0))
 				_check_double_click(clicked_item)
+			else:
+				print("No item found at position")
 
 func show_overview():
 	visible = true

@@ -102,12 +102,18 @@ func _expand_all_items(item: TreeItem):
 	for child in item.get_children():
 		_expand_all_items(child)
 
-func _on_tree_item_activated():
-	var selected = tree.get_selected()
-	if selected and selected.has_method("get_metadata"):
-		var platform = selected.get_metadata(0)
-		if platform and platform is Platform:
-			_navigate_to_platform(platform)
+func _on_tree_item_activated(item: TreeItem, mouse_button_index: int, mouse_position: Vector2):
+	# Only respond to double click (mouse button 1)
+	if mouse_button_index != MOUSE_BUTTON_LEFT:
+		return
+
+	if not item:
+		return
+
+	# Get platform from metadata
+	var platform = item.get_metadata(0)
+	if platform and platform is Platform:
+		_navigate_to_platform(platform)
 
 func _on_tree_item_selected():
 	var selected = tree.get_selected()

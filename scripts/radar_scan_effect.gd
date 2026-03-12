@@ -21,8 +21,7 @@ func _create_scan_ring():
 	var torus = TorusMesh.new()
 	torus.inner_radius = 0.4  # Inner radius (hole size)
 	torus.outer_radius = 0.5  # Outer radius (ring thickness)
-	torus.rings = 32
-	torus.radial_segments = 32
+	torus.ring_segments = 32
 
 	scan_ring = MeshInstance3D.new()
 	scan_ring.name = "ScanRing"

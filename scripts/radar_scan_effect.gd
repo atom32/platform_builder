@@ -19,8 +19,8 @@ func _ready():
 func _create_scan_ring():
 	# Create a ring using Torus (donut shape)
 	var torus = TorusMesh.new()
-	torus.radius = 0.5  # Inner radius
-	torus.inner_radius = 0.4  # Tube thickness
+	torus.inner_radius = 0.4  # Inner radius (hole size)
+	torus.outer_radius = 0.5  # Outer radius (ring thickness)
 	torus.rings = 32
 	torus.radial_segments = 32
 

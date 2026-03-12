@@ -37,15 +37,15 @@ func _input(event):
 
 			# Convert screen position to Tree's local coordinate system
 			var local_pos = tree.get_local_mouse_position()
-			print("Mouse clicked at screen: ", clicked_pos, " local: ", local_pos)
+			ResourceSystem.debug_print("Mouse clicked at screen: " + str(clicked_pos) + " local: " + str(local_pos))
 
 			# Get item at local position
 			var clicked_item = tree.get_item_at_position(local_pos)
 			if clicked_item:
-				print("Item clicked: ", clicked_item.get_text(0))
+				ResourceSystem.debug_print("Item clicked: " + clicked_item.get_text(0))
 				_check_double_click(clicked_item)
 			else:
-				print("No item found at local position")
+				ResourceSystem.debug_print("No item found at local position")
 
 func show_overview():
 	visible = true
@@ -154,7 +154,7 @@ func _on_tree_item_selected():
 	if selected and selected.has_method("get_metadata"):
 		var platform = selected.get_metadata(0)
 		if platform and platform is Platform:
-			print("Selected platform: %s" % platform.platform_type)
+			ResourceSystem.debug_print("Selected platform: %s" % platform.platform_type)
 
 func _navigate_to_platform(platform: Platform):
 	# Move camera to platform
@@ -171,7 +171,7 @@ func _navigate_to_platform(platform: Platform):
 		# Maintain camera's height and viewing angle
 		var new_target = Vector3(target_pos.x, current_pos.y, target_pos.z + 40)
 		camera.set("target_position", new_target)
-		print("Navigated to platform: %s (set CameraController target)" % platform.platform_type)
+		ResourceSystem.debug_print("Navigated to platform: %s (set CameraController target)" % platform.platform_type)
 	else:
 		# Fallback: direct position setting
 		var current_pos = camera.position
@@ -180,7 +180,7 @@ func _navigate_to_platform(platform: Platform):
 		# Maintain camera's height and viewing angle
 		camera.position.x = target_pos.x
 		camera.position.z = target_pos.z + 40
-		print("Navigated to platform: %s (direct position set)" % platform.platform_type)
+		ResourceSystem.debug_print("Navigated to platform: %s (direct position set)" % platform.platform_type)
 
 	platform_selected.emit(platform)
 

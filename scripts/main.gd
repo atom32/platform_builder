@@ -186,22 +186,29 @@ func _update_focus_marker_size():
 ## Print focus marker debug info
 func _print_focus_debug():
 	if not focus_marker or not camera:
-		print("Focus marker or camera not available")
+		ResourceSystem.debug_print("Focus marker or camera not available")
 		return
 
-	print("=== Focus Marker Debug ===")
-	print("Camera position: ", camera.position)
-	print("Focus marker position: ", focus_marker.position)
-	print("Distance camera to focus: ", camera.position.distance_to(focus_marker.position))
-	print("Focus marker scale: ", focus_marker.scale)
-	print("Debug mode: ", debug_mode)
-	print("")
+	ResourceSystem.debug_print("=== Focus Marker Debug ===")
+	ResourceSystem.debug_print("Camera position: " + str(camera.position))
+	ResourceSystem.debug_print("Focus marker position: " + str(focus_marker.position))
+	ResourceSystem.debug_print("Distance camera to focus: " + str(camera.position.distance_to(focus_marker.position)))
+	ResourceSystem.debug_print("Focus marker scale: " + str(focus_marker.scale))
+	ResourceSystem.debug_print("Debug mode: " + str(debug_mode))
+	ResourceSystem.debug_print("")
 
 ## Toggle debug mode
 func _toggle_debug_mode():
 	debug_mode = !debug_mode
+
+	# Sync with ResourceSystem
+	ResourceSystem.debug_mode = debug_mode
+
 	if focus_marker:
 		focus_marker.visible = debug_mode
+
+	# Always print debug mode status (not controlled by debug_mode)
+	print("Debug mode: %s" % ("ON" if debug_mode else "OFF"))
 
 ## Handle debug mode key (F) - print debug info when in debug mode
 func _on_debug_mode_key():
@@ -223,7 +230,7 @@ func _print_staff_info():
 		return
 
 	var info = dept_system.get_department_info()
-	print("Staff: %d unassigned (R&D:%d, Combat:%d, Support:%d, Intel:%d, Medical:%d)" % [
+	ResourceSystem.debug_print("Staff: %d unassigned (R&D:%d, Combat:%d, Support:%d, Intel:%d, Medical:%d)" % [
 		info["Unassigned"], info["R&D"], info["Combat"], info["Support"], info["Intel"], info["Medical"]
 	])
 

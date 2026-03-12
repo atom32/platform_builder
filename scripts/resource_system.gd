@@ -3,6 +3,9 @@ extends Node
 ## Global resource management system
 ## Tracks Materials, Fuel, Staff, and GMP for the entire base
 
+## Debug mode (global setting for all debug output)
+var debug_mode: bool = false
+
 ## Signals
 signal staff_recruited()
 signal gmp_changed(new_amount: int)
@@ -216,6 +219,11 @@ func _on_debug_timeout():
 	# if game_session and game_session.is_running():
 	# 	print("Materials: %d | Fuel: %d | GMP: %d | Staff: %d / %d beds" % [materials, fuel, gmp, staff_count, bed_capacity])
 	pass
+
+## Debug print function - only prints when debug_mode is enabled
+func debug_print(message: String):
+	if debug_mode:
+		print(message)
 
 ## Reset all resources to zero (for new game)
 func reset_resources():

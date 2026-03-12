@@ -66,7 +66,7 @@ func start_session():
 		day_timer.stop()
 		day_timer.start()
 
-	print("Game session started")
+	ResourceSystem.debug_print("Game session started")
 	game_state_changed.emit(GameState.RUNNING)
 
 ## Reset all game systems for new game
@@ -92,7 +92,7 @@ func end_victory():
 		return  # Already won
 
 	current_state = GameState.VICTORY
-	print("Victory achieved!")
+	ResourceSystem.debug_print("Victory achieved!")
 
 	# Show result screen
 	_show_result_screen(true)
@@ -106,7 +106,7 @@ func end_game_over(reason: String):
 		return  # Already lost
 
 	current_state = GameState.FAILURE
-	print("Game over: %s" % reason)
+	ResourceSystem.debug_print("Game over: %s" % reason)
 
 	# Show result screen
 	_show_result_screen(false, reason)

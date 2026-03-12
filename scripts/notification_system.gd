@@ -20,7 +20,7 @@ func _find_hud():
 		# Try without Main prefix
 		hud = get_node_or_null("/root/Camera3D/HUD")
 	if not hud:
-		print("WARNING: HUD not found for notifications")
+		ResourceSystem.debug_print("WARNING: HUD not found for notifications")
 
 ## Show a notification message
 ## duration: how long to show in seconds (default 5)

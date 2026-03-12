@@ -141,19 +141,19 @@ func _on_assign_to_medical():
 func _assign_selected_to_department(dept_name: String):
 	var selected_items = recruit_list.get_selected_items()
 	if selected_items.is_empty():
-		print("[StaffMenu] No staff selected for assignment to %s" % dept_name)
+		ResourceSystem.debug_print("[StaffMenu] No staff selected for assignment to %s" % dept_name)
 		return
 
 	var dept_system = get_node_or_null("/root/DepartmentSystem")
 	if not dept_system:
-		print("[StaffMenu] DepartmentSystem not found")
+		ResourceSystem.debug_print("[StaffMenu] DepartmentSystem not found")
 		return
 
 	var pool = dept_system.get_recruit_pool()
 	var index = selected_items[0]
 
 	if index >= pool.size():
-		print("[StaffMenu] Invalid index: %d, pool size: %d" % [index, pool.size()])
+		ResourceSystem.debug_print("[StaffMenu] Invalid index: %d, pool size: %d" % [index, pool.size()])
 		return
 
 	var staff_member = pool[index]
@@ -163,25 +163,25 @@ func _assign_selected_to_department(dept_name: String):
 			notification_system.show_staff_assigned(dept_name)
 		refresh_lists()
 	else:
-		print("[StaffMenu] Failed to assign staff to %s" % dept_name)
+		ResourceSystem.debug_print("[StaffMenu] Failed to assign staff to %s" % dept_name)
 
 ## Dismiss the selected staff member
 func _on_dismiss_selected():
 	var selected_items = dismiss_list.get_selected_items()
 	if selected_items.is_empty():
-		print("[StaffMenu] No staff selected for dismissal")
+		ResourceSystem.debug_print("[StaffMenu] No staff selected for dismissal")
 		return
 
 	var dept_system = get_node_or_null("/root/DepartmentSystem")
 	if not dept_system:
-		print("[StaffMenu] DepartmentSystem not found")
+		ResourceSystem.debug_print("[StaffMenu] DepartmentSystem not found")
 		return
 
 	var all_staff = dept_system.get_all_staff()
 	var index = selected_items[0]
 
 	if index >= all_staff.size():
-		print("[StaffMenu] Invalid index: %d, staff count: %d" % [index, all_staff.size()])
+		ResourceSystem.debug_print("[StaffMenu] Invalid index: %d, staff count: %d" % [index, all_staff.size()])
 		return
 
 	var staff_member = all_staff[index]
@@ -191,4 +191,4 @@ func _on_dismiss_selected():
 			notification_system.show("Staff dismissed: %s" % staff_member.get_display_name())
 		refresh_lists()
 	else:
-		print("[StaffMenu] Failed to dismiss staff")
+		ResourceSystem.debug_print("[StaffMenu] Failed to dismiss staff")

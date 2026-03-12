@@ -48,10 +48,10 @@ func _ready():
 	_setup_click_detection()
 	_connect_input_manager()
 
-	print("=== Mother Base Tree System ===")
-	print("HQ with 6 expansion slots created")
-	print("Each platform can have 6 children")
-	print("Click yellow circles to expand!")
+	ResourceSystem.debug_print("=== Mother Base Tree System ===")
+	ResourceSystem.debug_print("HQ with 6 expansion slots created")
+	ResourceSystem.debug_print("Each platform can have 6 children")
+	ResourceSystem.debug_print("Click yellow circles to expand!")
 
 func _connect_input_manager():
 	var input_manager = get_node_or_null("/root/InputManager")
@@ -144,7 +144,7 @@ func _on_construction_tick():
 			completed_jobs.append(i)
 
 			# Notify systems
-			print("Platform constructed: %s" % platform.platform_type)
+			ResourceSystem.debug_print("Platform constructed: %s" % platform.platform_type)
 
 			# Check for new combos
 			_check_combos()
@@ -190,7 +190,7 @@ func _spawn_hq():
 
 	# HQ sets itself to operational in its _ready() method
 
-	print(TextData.format("msg_hq_spawned"))
+	ResourceSystem.debug_print(TextData.format("msg_hq_spawned"))
 
 func _setup_click_detection():
 	set_process_input(true)
@@ -330,13 +330,13 @@ func build_child_platform(parent_platform: Platform, slot: BuildSlot, platform_t
 
 	# Check base size limit
 	if get_total_platform_count() >= MAX_PLATFORMS:
-		print(TextData.format("msg_build_failed_base_full", [MAX_PLATFORMS]))
+		ResourceSystem.debug_print(TextData.format("msg_build_failed_base_full", [MAX_PLATFORMS]))
 		build_failed.emit("base_full")
 		return null
 
 	# Check if parent can accept more children
 	if not parent_platform.can_accept_child():
-		print(TextData.format("msg_build_failed_parent_full"))
+		ResourceSystem.debug_print(TextData.format("msg_build_failed_parent_full"))
 		build_failed.emit("parent_full")
 		return null
 
@@ -347,13 +347,13 @@ func build_child_platform(parent_platform: Platform, slot: BuildSlot, platform_t
 
 	# Check resources
 	if not ResourceSystem.spend_materials(materials_cost):
-		print(TextData.format("msg_build_failed_materials", [materials_cost, ResourceSystem.get_materials()]))
+		ResourceSystem.debug_print(TextData.format("msg_build_failed_materials", [materials_cost, ResourceSystem.get_materials()]))
 		build_failed.emit("materials")
 		return null
 
 	if not ResourceSystem.spend_fuel(fuel_cost):
 		ResourceSystem.add_materials(materials_cost)
-		print(TextData.format("msg_build_failed_fuel", [fuel_cost, ResourceSystem.get_fuel()]))
+		ResourceSystem.debug_print(TextData.format("msg_build_failed_fuel", [fuel_cost, ResourceSystem.get_fuel()]))
 		build_failed.emit("fuel")
 		return null
 
@@ -376,11 +376,11 @@ func build_child_platform(parent_platform: Platform, slot: BuildSlot, platform_t
 	construction_jobs.append(construction_job)
 
 	# Debug: print building info
-	print("Building platform debug:")
-	print("  Parent platform world pos: ", parent_platform.position)
-	print("  Slot local pos: ", slot.position)
-	print("  Slot world pos: ", slot.global_position)
-	print("  Construction time: %ds" % construction_time)
+	ResourceSystem.debug_print("Building platform debug:")
+	ResourceSystem.debug_print("  Parent platform world pos: " + str(parent_platform.position))
+	ResourceSystem.debug_print("  Slot local pos: " + str(slot.position))
+	ResourceSystem.debug_print("  Slot world pos: " + str(slot.global_position))
+	ResourceSystem.debug_print("  Construction time: %ds" % construction_time)
 
 	# Position at the slot's location
 	# Slot position is relative to parent_platform, so we use it directly
@@ -390,13 +390,13 @@ func build_child_platform(parent_platform: Platform, slot: BuildSlot, platform_t
 	parent_platform.add_child_platform(platform, slot)
 
 	# Debug: print new platform position
-	print("  New platform local pos: ", platform.position)
-	print("  New platform world pos: ", platform.global_position)
+	ResourceSystem.debug_print("  New platform local pos: " + str(platform.position))
+	ResourceSystem.debug_print("  New platform world pos: " + str(platform.global_position))
 
 	# Create visual bridge between platforms
 	BridgeGenerator.create_bridge(parent_platform, platform)
 
-	print("Started construction of %s platform at %s (Materials: %d, Fuel: %d, Time: %ds)" % [
+	ResourceSystem.debug_print("Started construction of %s platform at %s (Materials: %d, Fuel: %d, Time: %ds)" % [
 		platform_type, parent_platform.platform_type, materials_cost, fuel_cost, construction_time
 	])
 

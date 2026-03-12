@@ -251,7 +251,7 @@ func get_production() -> int:
 
 func upgrade():
 	level += 1
-	print(TextData.format("msg_platform_upgraded", [platform_type, level]))
+	ResourceSystem.debug_print(TextData.format("msg_platform_upgraded", [platform_type, level]))
 
 ## Apply color tinting based on platform type
 func apply_platform_colors():

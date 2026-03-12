@@ -106,4 +106,4 @@ func print_active_combos():
 			combo["platform_b"].platform_type,
 			combo["combo_data"]["bonus"] * 100
 		])
-	print("Active combos: %s" % ", ".join(combo_list))
+	ResourceSystem.debug_print("Active combos: %s" % ", ".join(combo_list))

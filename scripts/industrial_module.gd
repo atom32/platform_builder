@@ -128,7 +128,7 @@ func _on_input_event(camera: Node, event: InputEvent, position: Vector3, normal:
 
 ## Module clicked - override in subclasses or connect to signal
 func _on_module_clicked():
-	print("Module clicked: ", module_type)
+	ResourceSystem.debug_print("Module clicked: " + module_type)
 	# Can show info, highlight, etc.
 
 ## Set module state
@@ -171,4 +171,4 @@ func _create_radar_scan_effect():
 	# Use RadarScanEffect node instead of shader approach
 	radar_scan_effect = RadarScanEffect.new()
 	add_child(radar_scan_effect)
-	print("Radar scan effect created for module: ", module_type)
+	ResourceSystem.debug_print("Radar scan effect created for module: " + module_type)

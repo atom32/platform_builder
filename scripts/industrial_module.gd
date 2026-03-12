@@ -171,23 +171,26 @@ func _is_radar_module() -> bool:
 
 ## Create radar scan effect
 func _create_radar_scan_effect():
-	# Create a flat ring mesh
+	# Create a flat ring mesh (smaller size to avoid visibility issues)
 	var plane = PlaneMesh.new()
-	plane.size = Vector2(40, 40)  # Large enough for scan radius
+	plane.size = Vector2(10, 10)  # Smaller, centered on module
 
 	radar_scan_ring = MeshInstance3D.new()
 	radar_scan_ring.name = "RadarScan"
 	radar_scan_ring.mesh = plane
-	radar_scan_ring.position = Vector3(0, 0.1, 0)  # Just above ground
+	radar_scan_ring.position = Vector3(0, 0.5, 0)  # Above platform base
 
 	# Load and apply shader
 	var shader_material = ShaderMaterial.new()
 	shader_material.shader = load("res://shaders/radar_scan_shader.gdshader")
-	shader_material.set_shader_parameter("max_radius", 20.0)
-	shader_material.set_shader_parameter("thickness", 1.0)
+	shader_material.set_shader_parameter("max_radius", 5.0)  # Match plane size
+	shader_material.set_shader_parameter("thickness", 0.5)
 	shader_material.set_shader_parameter("color", Color(0.2, 0.8, 1.0, 0.6))  # Cyan-blue
+	shader_material.render_priority = 1  # Render on top
+	shader_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA  // Enable transparency
 
 	radar_scan_ring.material_override = shader_material
+	radar_scan_ring.cast_shadow = false  # Don't cast shadows
 
 	add_child(radar_scan_ring)
 
@@ -202,7 +205,7 @@ func _update_radar_scan(delta):
 
 		# Calculate current radius based on time
 		var scan_progress = fmod(radar_scan_time, radar_scan_interval) / radar_scan_interval
-		var current_radius = scan_progress * 20.0  # Max radius 20
+		var current_radius = scan_progress * 5.0  # Match max_radius
 
 		material.set_shader_parameter("radius", current_radius)
 

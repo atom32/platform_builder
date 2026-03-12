@@ -101,13 +101,15 @@ func _update_radar_behavior(delta):
 ## Crane behavior: slow arm movement
 func _update_crane_behavior(delta):
 	if visual:
-		var sway = sin(Time.get_time_elapsed() * 0.5) * 2.0
+		var time_sec = Time.get_ticks_msec() / 1000.0
+		var sway = sin(time_sec * 0.5) * 2.0
 		visual.rotation_degrees.y = sway
 
 ## Antenna behavior: gentle blinking
 func _update_antenna_behavior(delta):
 	if visual:
-		var pulse = (sin(Time.get_time_elapsed() * 2.0) + 1.0) * 0.5
+		var time_sec = Time.get_ticks_msec() / 1000.0
+		var pulse = (sin(time_sec * 2.0) + 1.0) * 0.5
 		var material = visual.get_surface_override_material(0)
 		if material:
 			var base_color = material.albedo_color
@@ -117,7 +119,8 @@ func _update_antenna_behavior(delta):
 ## Turret behavior: scanning
 func _update_turret_behavior(delta):
 	if visual:
-		var scan_angle = sin(Time.get_time_elapsed() * 0.3) * 45.0
+		var time_sec = Time.get_ticks_msec() / 1000.0
+		var scan_angle = sin(time_sec * 0.3) * 45.0
 		visual.rotation_degrees.y = scan_angle
 
 ## Handle interaction (click on module) - handled internally

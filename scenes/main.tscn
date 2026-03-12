@@ -7,8 +7,7 @@
 [ext_resource type="Shader" uid="uid://rcclf8q1x4ey" path="res://shaders/ocean_shader.gdshader" id="5_shader"]
 [ext_resource type="PackedScene" path="res://ui/base_overview.tscn" id="6_base_overview"]
 [ext_resource type="Script" path="res://scripts/camera_controller.gd" id="7_camera_controller"]
-
-[sub_resource type="Sky" id="ProceduralSky_sky"]
+[ext_resource type="Script" path="res://scripts/ambient_sound_controller.gd" id="8_ambient_sound_controller"]
 
 [sub_resource type="Environment" id="Environment_environment"]
 background_mode = 2
@@ -17,6 +16,12 @@ ambient_light_source = 1
 ambient_light_color = Color(1, 1, 1, 1)
 ambient_light_energy = 0.8
 tonemap_mode = 2
+fog_enabled = true
+fog_light_color = Color(0.6, 0.7, 0.8, 1)
+fog_sun_color = Color(0.8, 0.8, 0.7, 1)
+fog_density = 0.002
+fog_sky_affect = true
+fog_height = 50.0
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_ocean"]
 size = Vector2(500, 500)
@@ -46,6 +51,11 @@ fov = 60.0
 transform = Transform3D(0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, -0.75, 0.433013, 0, 0, 0)
 shadow_enabled = true
 
+[node name="AmbientWind" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
+volume_db = -20.0
+autoplay = true
+
 [node name="Ocean" type="MeshInstance3D" parent="." unique_id=139092191]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.5, 0)
 mesh = SubResource("PlaneMesh_ocean")
@@ -53,6 +63,8 @@ surface_material_override/0 = SubResource("ShaderMaterial_ocean")
 
 [node name="Base" type="Node3D" parent="." unique_id=822023471]
 script = ExtResource("2_base")
+
+[node name="AmbientSoundController" type="AmbientSoundController" parent="." unique_id=999999999]
 
 [node name="HUD" parent="." unique_id=679465694 instance=ExtResource("3_hud")]
 

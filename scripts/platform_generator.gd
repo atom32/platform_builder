@@ -134,34 +134,34 @@ static func _create_module(
 	var height = ModuleLibrary.get_height(module_data)
 	module_node.position = Vector3(position.x, 0, position.z)
 
-	# Create mesh as child
-	var mesh_instance = MeshInstance3D.new()
-	mesh_instance.name = "MeshInstance3D"
-	mesh_instance.position = Vector3(0, height, 0)
+	# Create visual mesh as child
+	var visual = MeshInstance3D.new()
+	visual.name = "Visual"
+	visual.position = Vector3(0, height, 0)
 
 	# Create mesh based on type
 	var mesh_type = ModuleLibrary.get_mesh_type(module_data)
 	var scale = ModuleLibrary.get_scale(module_data)
-	_create_mesh_for_type(mesh_instance, mesh_type, scale)
+	_create_mesh_for_type(visual, mesh_type, scale)
 
 	# Rotation
 	var can_rotate = ModuleLibrary.get_can_rotate(module_data)
 	var fixed_angles = ModuleLibrary.get_fixed_angles(module_data)
 	if can_rotate:
 		if fixed_angles.is_empty():
-			mesh_instance.rotation_degrees = Vector3(0, rng.randf_range(0, 360), 0)
+			visual.rotation_degrees = Vector3(0, rng.randf_range(0, 360), 0)
 		else:
 			var angle = fixed_angles.pick_random()
-			mesh_instance.rotation_degrees = Vector3(0, angle, 0)
+			visual.rotation_degrees = Vector3(0, angle, 0)
 
 	# Color
 	var material = StandardMaterial3D.new()
 	var color_options = ModuleLibrary.get_color_options(module_data)
 	var color = color_options.pick_random()
 	material.albedo_color = color
-	mesh_instance.set_surface_override_material(0, material)
+	visual.set_surface_override_material(0, material)
 
-	module_node.add_child(mesh_instance)
+	module_node.add_child(visual)
 
 	# Create interaction area
 	var interaction_area = Area3D.new()
@@ -179,12 +179,7 @@ static func _create_module(
 	# Add to parent
 	parent.add_child(module_node)
 
-	# Connect to clicked signal (optional - for debugging)
-	module_node.module_clicked.connect(_on_module_clicked.bind(module_node))
-
-## Handle module clicked (for debugging)
-static func _on_module_clicked(module: IndustrialModule):
-	print("Module clicked: ", module.module_type)
+	# Note: signal connection is now handled internally by IndustrialModule
 
 ## Create edge module (attached to platform edge, now as IndustrialModule node)
 static func _create_edge_module(
@@ -203,15 +198,15 @@ static func _create_edge_module(
 	var height = ModuleLibrary.get_height(module_data)
 	module_node.position = Vector3(position.x, 0, position.z)
 
-	# Create mesh as child
-	var mesh_instance = MeshInstance3D.new()
-	mesh_instance.name = "MeshInstance3D"
-	mesh_instance.position = Vector3(0, height, 0)
+	# Create visual mesh as child
+	var visual = MeshInstance3D.new()
+	visual.name = "Visual"
+	visual.position = Vector3(0, height, 0)
 
 	# Create mesh based on type
 	var mesh_type = ModuleLibrary.get_mesh_type(module_data)
 	var scale = ModuleLibrary.get_scale(module_data)
-	_create_mesh_for_type(mesh_instance, mesh_type, scale)
+	_create_mesh_for_type(visual, mesh_type, scale)
 
 	# Rotation - edge modules face outward
 	var base_rotation = rotation_degrees
@@ -219,16 +214,16 @@ static func _create_edge_module(
 	var fixed_angles = ModuleLibrary.get_fixed_angles(module_data)
 	if can_rotate and not fixed_angles.is_empty():
 		base_rotation += fixed_angles.pick_random()
-	mesh_instance.rotation_degrees = Vector3(0, base_rotation, 0)
+	visual.rotation_degrees = Vector3(0, base_rotation, 0)
 
 	# Color
 	var material = StandardMaterial3D.new()
 	var color_options = ModuleLibrary.get_color_options(module_data)
 	var color = color_options.pick_random()
 	material.albedo_color = color
-	mesh_instance.set_surface_override_material(0, material)
+	visual.set_surface_override_material(0, material)
 
-	module_node.add_child(mesh_instance)
+	module_node.add_child(visual)
 
 	# Create interaction area
 	var interaction_area = Area3D.new()
@@ -246,8 +241,7 @@ static func _create_edge_module(
 	# Add to parent
 	parent.add_child(module_node)
 
-	# Connect to clicked signal (optional - for debugging)
-	module_node.module_clicked.connect(_on_module_clicked.bind(module_node))
+	# Note: signal connection is now handled internally by IndustrialModule
 
 ## Create mesh for specific type
 static func _create_mesh_for_type(mesh_instance: MeshInstance3D, mesh_type: int, scale: Vector3):

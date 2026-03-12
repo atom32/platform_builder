@@ -14,62 +14,99 @@ var activity_state: String = "idle"  # idle, working, disabled, damaged
 var rotation_speed: float = 30.0  # Degrees per second
 
 ## Visual components
-@onready var mesh_instance: MeshInstance3D = $MeshInstance3D
+@onready var visual: MeshInstance3D = $Visual
 @onready var interaction_area: Area3D = $InteractionArea
+
+## Radar scan effect (optional)
+var radar_scan_ring: MeshInstance3D = null
+var radar_scan_time: float = 0.0
+var radar_scan_interval: float = 3.0  # Seconds between scans
+var show_radar_scan: bool = true  # Can be toggled
+
+## Behavior mapping - avoids match statement explosion
+const BEHAVIOR_MAP = {
+	# Radar-type modules
+	"radar": "_update_radar_behavior",
+	"radar_tower": "_update_radar_behavior",
+	"satellite_dish": "_update_radar_behavior",
+	"sensor_array": "_update_radar_behavior",
+
+	# Crane modules
+	"crane": "_update_crane_behavior",
+
+	# Communication modules
+	"antenna": "_update_antenna_behavior",
+	"antenna_array": "_update_antenna_behavior",
+	"comms_array": "_update_antenna_behavior",
+
+	# Defense modules
+	"turret": "_update_turret_behavior"
+}
+
+## Cached behavior function for performance
+var _behavior_func: Callable = null
 
 ## Signals
 signal module_clicked(module: IndustrialModule)
 signal state_changed(new_state: String)
 
 func _ready():
-	# Setup interaction
+	# Setup interaction (handle internally, not in generator)
 	if interaction_area:
+		interaction_area.monitoring = false
+		interaction_area.monitorable = false
+		interaction_area.input_ray_pickable = true
 		interaction_area.input_event.connect(_on_input_event)
+
+	# Cache behavior function for performance
+	_cache_behavior_function()
+
+	# Create radar scan effect for radar-type modules
+	if _is_radar_module():
+		_create_radar_scan_effect()
 
 	# Start behavior based on type
 	_start_module_behavior()
 
 func _process(delta):
-	# Update module behavior
-	match module_type:
-		"radar", "radar_tower", "satellite_dish":
-			_update_radar_behavior(delta)
-		"crane":
-			_update_crane_behavior(delta)
-		"antenna", "antenna_array", "comms_array":
-			_update_antenna_behavior(delta)
-		"turret":
-			_update_turret_behavior(delta)
+	# Use cached behavior function instead of match
+	if _behavior_func != null and activity_state == "working":
+		if _behavior_func.is_valid():
+			_behavior_func.call(delta)
+
+	# Update radar scan effect
+	if radar_scan_ring and show_radar_scan:
+		_update_radar_scan(delta)
+
+## Cache the behavior function for this module type
+func _cache_behavior_function():
+	var behavior_name = BEHAVIOR_MAP.get(module_type)
+	if behavior_name != null and has_method(behavior_name):
+		_behavior_func = Callable(self, behavior_name)
 
 ## Start module-specific behavior
 func _start_module_behavior():
-	match module_type:
-		"radar", "radar_tower", "satellite_dish":
-			activity_state = "working"
-		"crane":
-			activity_state = "working"
-		_:
-			activity_state = "idle"
+	if module_type in BEHAVIOR_MAP:
+		activity_state = "working"
+	else:
+		activity_state = "idle"
 
 ## Radar behavior: rotating dish
 func _update_radar_behavior(delta):
-	if activity_state == "working" and mesh_instance:
-		# Rotate radar dish
-		mesh_instance.rotation_degrees.y += rotation_speed * delta
+	if visual:
+		visual.rotation_degrees.y += rotation_speed * delta
 
 ## Crane behavior: slow arm movement
 func _update_crane_behavior(delta):
-	if activity_state == "working" and mesh_instance:
-		# Subtle swaying motion
+	if visual:
 		var sway = sin(Time.get_time_elapsed() * 0.5) * 2.0
-		mesh_instance.rotation_degrees.y = sway
+		visual.rotation_degrees.y = sway
 
 ## Antenna behavior: gentle blinking
 func _update_antenna_behavior(delta):
-	if activity_state == "working" and mesh_instance:
-		# Gentle pulse
+	if visual:
 		var pulse = (sin(Time.get_time_elapsed() * 2.0) + 1.0) * 0.5
-		var material = mesh_instance.get_surface_override_material(0)
+		var material = visual.get_surface_override_material(0)
 		if material:
 			var base_color = material.albedo_color
 			material.emission_enabled = true
@@ -77,12 +114,11 @@ func _update_antenna_behavior(delta):
 
 ## Turret behavior: scanning
 func _update_turret_behavior(delta):
-	if activity_state == "working" and mesh_instance:
-		# Slow scanning motion
+	if visual:
 		var scan_angle = sin(Time.get_time_elapsed() * 0.3) * 45.0
-		mesh_instance.rotation_degrees.y = scan_angle
+		visual.rotation_degrees.y = scan_angle
 
-## Handle interaction (click on module)
+## Handle interaction (click on module) - handled internally
 func _on_input_event(camera: Node, event: InputEvent, position: Vector3, normal: Vector3, shape_idx: int):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		module_clicked.emit(self)
@@ -104,13 +140,13 @@ func set_state(new_state: String):
 func _update_visuals_for_state():
 	match activity_state:
 		"disabled":
-			if mesh_instance:
-				var material = mesh_instance.get_surface_override_material(0)
+			if visual:
+				var material = visual.get_surface_override_material(0)
 				if material:
 					material.albedo_color = Color(0.3, 0.3, 0.3)  # Gray out
 		"damaged":
-			if mesh_instance:
-				var material = mesh_instance.get_surface_override_material(0)
+			if visual:
+				var material = visual.get_surface_override_material(0)
 				if material:
 					material.albedo_color = Color(0.5, 0.2, 0.2)  # Red tint
 
@@ -121,3 +157,54 @@ func get_module_info() -> Dictionary:
 		"level": module_level,
 		"state": activity_state
 	}
+
+## ===== RADAR SCAN EFFECT =====
+
+## Check if this is a radar-type module
+func _is_radar_module() -> bool:
+	return module_type in ["radar", "radar_tower", "satellite_dish", "sensor_array"]
+
+## Create radar scan effect
+func _create_radar_scan_effect():
+	# Create a flat ring mesh
+	var plane = PlaneMesh.new()
+	plane.size = Vector2(40, 40)  # Large enough for scan radius
+	plane.orientation = PlaneMesh.FACE_UP
+
+	radar_scan_ring = MeshInstance3D.new()
+	radar_scan_ring.name = "RadarScan"
+	radar_scan_ring.mesh = plane
+	radar_scan_ring.position = Vector3(0, 0.1, 0)  # Just above ground
+
+	# Load and apply shader
+	var shader_material = ShaderMaterial.new()
+	shader_material.shader = load("res://shaders/radar_scan_shader.gdshader")
+	shader_material.set_shader_parameter("max_radius", 20.0)
+	shader_material.set_shader_parameter("thickness", 1.0)
+	shader_material.set_shader_parameter("color", Color(0.2, 0.8, 1.0, 0.6))  # Cyan-blue
+
+	radar_scan_ring.material_override = shader_material
+
+	add_child(radar_scan_ring)
+
+	print("Radar scan effect created for module: ", module_type)
+
+## Update radar scan animation
+func _update_radar_scan(delta):
+	radar_scan_time += delta
+
+	if radar_scan_ring and radar_scan_ring.material_override:
+		var material = radar_scan_ring.material_override as ShaderMaterial
+
+		# Calculate current radius based on time
+		var scan_progress = (radar_scan_time % radar_scan_interval) / radar_scan_interval
+		var current_radius = scan_progress * 20.0  # Max radius 20
+
+		material.set_shader_parameter("radius", current_radius)
+
+		# Fade out near end of cycle
+		if scan_progress > 0.8:
+			var alpha = 1.0 - ((scan_progress - 0.8) / 0.2)
+			var current_color = material.get_shader_parameter("color")
+			current_color.a = alpha * 0.6
+			material.set_shader_parameter("color", current_color)

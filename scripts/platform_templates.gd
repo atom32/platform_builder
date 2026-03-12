@@ -28,7 +28,7 @@ func _register_all_templates():
 	_templates["R&D"] = {
 		"display_name": "Research & Development",
 		"top_modules": ["antenna_array", "satellite_dish", "radar_tower", "comms_array"],
-		"middle_modules": ["equipment_box", "solar_panel", "ventilation_unit"],
+		"middle_modules": ["equipment_box", "ventilation_unit"],  # TEMPORARY: Removed solar_panel
 		"edge_modules": ["sensor_array", "pipe_cluster"],
 		"top_count": [2, 4],
 		"middle_count": [2, 4],
@@ -67,7 +67,7 @@ func _register_all_templates():
 	_templates["Intel"] = {
 		"display_name": "Intelligence Platform",
 		"top_modules": ["radar_tower", "satellite_dish", "comms_array", "antenna_array", "sensor_array"],
-		"middle_modules": ["equipment_box", "ventilation_unit", "solar_panel"],
+		"middle_modules": ["equipment_box", "ventilation_unit"],  # TEMPORARY: Removed solar_panel
 		"edge_modules": ["sensor_array", "sensor_array", "pipe_cluster"],
 		"top_count": [3, 5],
 		"middle_count": [2, 4],
@@ -79,9 +79,9 @@ func _register_all_templates():
 	# Medical Template - Medical bay with life support
 	_templates["Medical"] = {
 		"display_name": "Medical Platform",
-		"top_modules": ["helipad", "antenna_array"],
-		"middle_modules": ["equipment_box", "ventilation_unit", "fuel_tank"],
-		"edge_modules": ["lifeboat", "sensor_array", "pipe_cluster"],
+		"top_modules": ["antenna_array"],  # TEMPORARY: Removed helipad
+		"middle_modules": ["equipment_box", "ventilation_unit"],
+		"edge_modules": ["sensor_array", "pipe_cluster"],
 		"top_count": [1, 2],
 		"middle_count": [2, 4],
 		"edge_count": [2, 4],

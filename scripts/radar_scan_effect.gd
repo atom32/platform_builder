@@ -44,28 +44,40 @@ func _create_scan_ring():
 func _start_scan_animation():
 	tween = create_tween()
 	tween.set_loops()
-	tween.set_parallel(true)  # Run animations in parallel
+
+	# Parallel tween group for both scale and fade
+	var parallel_tween = tween.parallel()
 
 	# Scale animation: Expand ring
-	tween.tween_property(scan_ring, "scale", Vector3(max_scale, max_scale, max_scale), scan_duration)
-	tween.tween_property(scan_ring, "scale", Vector3(0.1, 0.1, 0.1), 0.1)  # Quick reset
+	parallel_tween.tween_property(scan_ring, "scale", Vector3(max_scale, max_scale, max_scale), scan_duration)
+	parallel_tween.tween_property(scan_ring, "scale", Vector3(0.1, 0.1, 0.1), 0.1)  # Quick reset
 
-	# Create a separate tween for fade (can't be parallel with scale)
+	# Fade animation using custom callback
 	_create_fade_animation()
 
 func _create_fade_animation():
-	# Create independent tween for fade animation
+	# Simple approach: Animate a counter and update material in _process
 	var fade_tween = create_tween()
 	fade_tween.set_loops()
 
-	# Animate from high alpha to low alpha
-	var start_color = Color(ring_color.r, ring_color.g, ring_color.b, 0.6)
-	var end_color = Color(ring_color.r, ring_color.g, ring_color.b, 0.0)
+	# Animate a dummy property from 0 to 1
+	fade_tween.tween_property(self, "fade_progress", 1.0, scan_duration)
+	fade_tween.tween_property(self, "fade_progress", 0.0, 0.1)  # Reset
 
-	fade_tween.tween_method(
-		scan_ring,
-		"set_albedo_color",
-		start_color,
-		end_color,
-		scan_duration
-	)
+## Dummy property for fade animation
+var fade_progress: float = 0.0:
+	set(value):
+		fade_progress = value
+		_update_ring_alpha(value)
+
+func _update_ring_alpha(progress: float):
+	if not scan_ring:
+		return
+
+	var material = scan_ring.get_surface_override_material(0)
+	if not material:
+		return
+
+	# Alpha: 0.6 -> 0.0
+	var new_alpha = 0.6 * (1.0 - progress)
+	material.albedo_color = Color(ring_color.r, ring_color.g, ring_color.b, new_alpha)

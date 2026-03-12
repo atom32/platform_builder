@@ -21,7 +21,7 @@ var rotation_speed: float = 30.0  # Degrees per second
 var radar_scan_ring: MeshInstance3D = null
 var radar_scan_time: float = 0.0
 var radar_scan_interval: float = 3.0  # Seconds between scans
-var show_radar_scan: bool = true  # Can be toggled
+var show_radar_scan: bool = false  # TEMPORARY: Disabled due to shader issues
 
 ## Behavior mapping - avoids match statement explosion
 const BEHAVIOR_MAP = {

@@ -18,9 +18,7 @@ var rotation_speed: float = 30.0  # Degrees per second
 @onready var interaction_area: Area3D = $InteractionArea
 
 ## Radar scan effect (optional)
-var radar_scan_ring: MeshInstance3D = null
-var radar_scan_time: float = 0.0
-var radar_scan_interval: float = 3.0  # Seconds between scans
+var radar_scan_effect: RadarScanEffect = null
 var show_radar_scan: bool = true  # Can be toggled
 
 ## Behavior mapping - avoids match statement explosion
@@ -73,9 +71,8 @@ func _process(delta):
 	if activity_state == "working" and _behavior_func.is_valid():
 		_behavior_func.call(delta)
 
-	# Update radar scan effect
-	if radar_scan_ring and show_radar_scan:
-		_update_radar_scan(delta)
+	# Note: Radar scan animation is handled by RadarScanEffect node
+
 
 ## Cache the behavior function for this module type
 func _cache_behavior_function():
@@ -171,43 +168,7 @@ func _is_radar_module() -> bool:
 
 ## Create radar scan effect
 func _create_radar_scan_effect():
-	# Create a flat ring mesh
-	var plane = PlaneMesh.new()
-	plane.size = Vector2(10, 10)  # 10x10 units
-
-	radar_scan_ring = MeshInstance3D.new()
-	radar_scan_ring.name = "RadarScan"
-	radar_scan_ring.mesh = plane
-	radar_scan_ring.position = Vector3(0, 0.5, 0)  # Just above platform base
-
-	# Load and apply shader
-	var shader_material = ShaderMaterial.new()
-	shader_material.shader = load("res://shaders/radar_scan_shader.gdshader")
-	shader_material.set_shader_parameter("ring_color", Color(0.2, 0.8, 1.0, 0.6))  # Cyan-blue
-	shader_material.set_shader_parameter("outer_radius", 5.0)  # Max scan range
-	shader_material.set_shader_parameter("ring_thickness", 0.5)  # Ring thickness
-	shader_material.render_priority = 1  # Render on top
-
-	radar_scan_ring.material_override = shader_material
-	radar_scan_ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	radar_scan_ring.position = Vector3(0, 0.1, 0)  # Low to ground
-
-	add_child(radar_scan_ring)
-
+	# Use RadarScanEffect node instead of shader approach
+	radar_scan_effect = RadarScanEffect.new()
+	add_child(radar_scan_effect)
 	print("Radar scan effect created for module: ", module_type)
-
-## Update radar scan animation
-func _update_radar_scan(delta):
-	if not show_radar_scan:
-		return
-
-	radar_scan_time += delta
-
-	if radar_scan_ring and radar_scan_ring.material_override:
-		var material = radar_scan_ring.material_override as ShaderMaterial
-
-		# Animate inner radius from 0 to outer_radius
-		var scan_progress = fmod(radar_scan_time, radar_scan_interval) / radar_scan_interval
-		var current_inner_radius = scan_progress * 5.0  # Animate to max range
-
-		material.set_shader_parameter("inner_radius", current_inner_radius)

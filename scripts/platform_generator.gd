@@ -163,18 +163,20 @@ static func _create_module(
 
 	module_node.add_child(visual)
 
-	# Create interaction area
-	var interaction_area = Area3D.new()
-	interaction_area.name = "InteractionArea"
-
-	var collision_shape = CollisionShape3D.new()
-	var shape = SphereShape3D.new()
-	shape.radius = 2.0  # Interaction radius
-	collision_shape.shape = shape
-	interaction_area.add_child(collision_shape)
-
-	interaction_area.position = Vector3(0, height + 1.0, 0)
-	module_node.add_child(interaction_area)
+	# TEMPORARY: Disable interaction area to debug white square
+	# var interaction_area = Area3D.new()
+	# interaction_area.name = "InteractionArea"
+	# interaction_area.monitoring = false
+	# interaction_area.monitorable = false
+	#
+	# var collision_shape = CollisionShape3D.new()
+	# var shape = SphereShape3D.new()
+	# shape.radius = 2.0  # Interaction radius
+	# collision_shape.shape = shape
+	# interaction_area.add_child(collision_shape)
+	#
+	# interaction_area.position = Vector3(0, height + 1.0, 0)
+	# module_node.add_child(interaction_area)
 
 	# Add to parent
 	parent.add_child(module_node)
@@ -225,18 +227,20 @@ static func _create_edge_module(
 
 	module_node.add_child(visual)
 
-	# Create interaction area
-	var interaction_area = Area3D.new()
-	interaction_area.name = "InteractionArea"
-
-	var collision_shape = CollisionShape3D.new()
-	var shape = SphereShape3D.new()
-	shape.radius = 2.0  # Interaction radius
-	collision_shape.shape = shape
-	interaction_area.add_child(collision_shape)
-
-	interaction_area.position = Vector3(0, height + 1.0, 0)
-	module_node.add_child(interaction_area)
+	# TEMPORARY: Disable interaction area to debug white square
+	# var interaction_area = Area3D.new()
+	# interaction_area.name = "InteractionArea"
+	# interaction_area.monitoring = false
+	# interaction_area.monitorable = false
+	#
+	# var collision_shape = CollisionShape3D.new()
+	# var shape = SphereShape3D.new()
+	# shape.radius = 2.0  # Interaction radius
+	# collision_shape.shape = shape
+	# interaction_area.add_child(collision_shape)
+	#
+	# interaction_area.position = Vector3(0, height + 1.0, 0)
+	# module_node.add_child(interaction_area)
 
 	# Add to parent
 	parent.add_child(module_node)

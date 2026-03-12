@@ -30,8 +30,6 @@ func _ready():
 	var game_session = get_node_or_null("/root/GameSession")
 	if game_session:
 		game_session.start_session()
-
-		# Connect game_over signal only (no victory)
 		game_session.game_over.connect(_on_game_over)
 
 	# Give player starting resources (after reset)
@@ -202,11 +200,8 @@ func _print_focus_debug():
 ## Toggle debug mode
 func _toggle_debug_mode():
 	debug_mode = !debug_mode
-	print("Debug mode: ", debug_mode)
-
 	if focus_marker:
 		focus_marker.visible = debug_mode
-		print("Focus marker visibility: ", focus_marker.visible)
 
 ## Handle debug mode key (F) - print debug info when in debug mode
 func _on_debug_mode_key():
@@ -244,11 +239,11 @@ func _toggle_base_overview():
 
 ## Handle platform selection from overview
 func _on_platform_selected(platform: Platform):
-	print("Platform selected from overview: %s" % platform.platform_type)
+	pass
 
 ## Handle overview closed
 func _on_overview_closed():
-	print("Base overview closed")
+	pass
 
 ## Handle game over
 func _on_game_over(reason: String):

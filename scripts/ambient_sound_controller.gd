@@ -2,54 +2,53 @@ extends Node
 class_name AmbientSoundController
 
 ## Ambient sound controller for ocean/atmospheric effects
-## Handles procedural wind sound generation
-
-var audio_generator: AudioEffectGenerator = null
-var audio_stream: AudioStreamGenerator = null
+## Plays ocean wind audio file
 
 ## Sound settings
-var volume_db: float = -20.0  # Background ambient level
-var wind_cutoff_hz: float = 800.0  # Lowpass filter for wind-like sound
+var volume_db: float = 20.0  # Background ambient level
+var loop: bool = true  # Loop the sound
 
 func _ready():
 	_setup_ambient_wind_sound()
 
 func _setup_ambient_wind_sound():
-	var audio_player = get_node_or_null("../AmbientWind") as AudioStreamPlayer3D
+	var audio_player = get_node_or_null("../AmbientWind") as AudioStreamPlayer
 	if not audio_player:
 		print("WARNING: AmbientWind node not found")
 		return
 
-	# TEMPORARY: Disable procedural sound generation
-	# AudioEffectGenerator is not available in Godot 4.6
-	# TODO: Add actual wind sound file when available
+	# Load ocean wind audio file
+	var wind_sound = load("res://assets/audio/sfx/0009056.wav")
+	if not wind_sound:
+		print("ERROR: Failed to load ocean wind audio file")
+		return
 
-	print("AmbientSoundController: Wind sound system ready (audio file needed)")
-	print("  - Volume: %.1 dB" % volume_db)
-	print("  - Lowpass filter: %.0 Hz" % wind_cutoff_hz)
+	# Configure audio stream for looping
+	if wind_sound is AudioStreamWAV:
+		var stream: AudioStreamWAV = wind_sound
+		stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
+		stream.loop_begin = 0
+		stream.loop_end = 0  # 0 means end of file
 
-	# For now, just set volume and autoplay
-	# When you have a wind sound file, uncomment:
-	# audio_player.stream = load("res://sounds/ocean_wind.ogg")
-	# audio_player.autoplay = true
+	audio_player.stream = wind_sound
+	audio_player.volume_db = volume_db
+	audio_player.play()
 
 ## Adjust ambient volume
 func set_volume(volume: float):
 	volume_db = volume
-	var audio_player = get_node_or_null("../AmbientWind") as AudioStreamPlayer3D
+	var audio_player = get_node_or_null("../AmbientWind") as AudioStreamPlayer
 	if audio_player:
 		audio_player.volume_db = volume_db
 
 ## Stop ambient sound
 func stop_ambient():
-	var audio_player = get_node_or_null("../AmbientWind") as AudioStreamPlayer3D
+	var audio_player = get_node_or_null("../AmbientWind") as AudioStreamPlayer
 	if audio_player:
 		audio_player.stop()
-		print("Ambient sound stopped")
 
 ## Start ambient sound
 func start_ambient():
-	var audio_player = get_node_or_null("../AmbientWind") as AudioStreamPlayer3D
+	var audio_player = get_node_or_null("../AmbientWind") as AudioStreamPlayer
 	if audio_player:
 		audio_player.play()
-		print("Ambient sound started")

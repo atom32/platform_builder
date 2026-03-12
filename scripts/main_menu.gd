@@ -18,7 +18,6 @@ func _ready():
 		quit_button.pressed.connect(_on_quit_button_pressed)
 
 	print("Main Menu loaded")
-	print("Press 'Start Game' to begin")
 
 ## Reset all game state when returning to main menu
 func _reset_game_state():

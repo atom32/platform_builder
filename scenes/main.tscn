@@ -9,9 +9,16 @@
 [ext_resource type="Script" path="res://scripts/camera_controller.gd" id="7_camera_controller"]
 [ext_resource type="Script" path="res://scripts/ambient_sound_controller.gd" id="8_ambient_sound_controller"]
 
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_sky"]
+sky_material = SubResource("ProceduralSkyMaterial_sky")
+
 [sub_resource type="Environment" id="Environment_environment"]
 background_mode = 2
-sky = SubResource("ProceduralSky_sky")
+sky = SubResource("Sky_sky")
 ambient_light_source = 1
 ambient_light_color = Color(1, 1, 1, 1)
 ambient_light_energy = 0.8
@@ -51,9 +58,8 @@ fov = 60.0
 transform = Transform3D(0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, -0.75, 0.433013, 0, 0, 0)
 shadow_enabled = true
 
-[node name="AmbientWind" type="AudioStreamPlayer3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
-volume_db = -20.0
+[node name="AmbientWind" type="AudioStreamPlayer" parent="."]
+volume_db = -10.0
 autoplay = true
 
 [node name="Ocean" type="MeshInstance3D" parent="." unique_id=139092191]
@@ -64,7 +70,8 @@ surface_material_override/0 = SubResource("ShaderMaterial_ocean")
 [node name="Base" type="Node3D" parent="." unique_id=822023471]
 script = ExtResource("2_base")
 
-[node name="AmbientSoundController" type="AmbientSoundController" parent="." unique_id=999999999]
+[node name="AmbientSoundController" type="Node" parent="." unique_id=999999999]
+script = ExtResource("8_ambient_sound_controller")
 
 [node name="HUD" parent="." unique_id=679465694 instance=ExtResource("3_hud")]
 

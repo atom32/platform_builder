@@ -76,26 +76,32 @@ func is_panning_active() -> bool:
 # ========== ZOOM ==========
 
 func _zoom_in():
-	# Move camera closer to focus point along view direction
-	if not focus_marker:
-		return
+	# Move camera closer along its current looking direction (not toward origin)
+	var camera_forward = -transform.basis.z  # Camera looks toward -Z
+	camera_forward = camera_forward.normalized()
 
-	var current_distance = position.distance_to(focus_marker.position)
-	if current_distance > zoom_min_distance:
-		var new_distance = max(current_distance - zoom_speed, zoom_min_distance)
-		var direction = (focus_marker.position - position).normalized()
-		target_position = focus_marker.position - direction * new_distance
+	# Calculate current distance from ground (project to horizontal plane)
+	var ground_height = -3.5  # Ocean level
+	var distance_to_ground = position.y - ground_height
+
+	# Zoom in only if not too close
+	if distance_to_ground > zoom_min_distance:
+		var new_distance = max(distance_to_ground - zoom_speed, zoom_min_distance)
+		target_position = position + camera_forward * zoom_speed
 
 func _zoom_out():
-	# Move camera away from focus point along view direction
-	if not focus_marker:
-		return
+	# Move camera away along its current looking direction (not away from origin)
+	var camera_forward = -transform.basis.z  # Camera looks toward -Z
+	camera_forward = camera_forward.normalized()
 
-	var current_distance = position.distance_to(focus_marker.position)
-	if current_distance < zoom_max_distance:
-		var new_distance = min(current_distance + zoom_speed, zoom_max_distance)
-		var direction = (focus_marker.position - position).normalized()
-		target_position = focus_marker.position - direction * new_distance
+	# Calculate current distance from ground (project to horizontal plane)
+	var ground_height = -3.5  # Ocean level
+	var distance_to_ground = position.y - ground_height
+
+	# Zoom out only if not too far
+	if distance_to_ground < zoom_max_distance:
+		var new_distance = min(distance_to_ground + zoom_speed, zoom_max_distance)
+		target_position = position - camera_forward * zoom_speed
 
 # ========== PAN ==========
 

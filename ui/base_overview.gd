@@ -161,15 +161,26 @@ func _navigate_to_platform(platform: Platform):
 	if not camera:
 		return
 
-	# Calculate new camera position (keep same height and offset)
-	var current_pos = camera.position
-	var target_pos = platform.position
+	# Check if camera has target_position (CameraController)
+	if camera.has_method("get") and camera.has_method("set"):
+		# Use CameraController's target_position system
+		var current_pos = camera.position
+		var target_pos = platform.position
 
-	# Maintain camera's height and viewing angle
-	camera.position.x = target_pos.x
-	camera.position.z = target_pos.z + 40  # Keep the offset from main.tscn
+		# Maintain camera's height and viewing angle
+		var new_target = Vector3(target_pos.x, current_pos.y, target_pos.z + 40)
+		camera.set("target_position", new_target)
+		print("Navigated to platform: %s (set CameraController target)" % platform.platform_type)
+	else:
+		# Fallback: direct position setting
+		var current_pos = camera.position
+		var target_pos = platform.position
 
-	print("Navigated to platform: %s at %s" % [platform.platform_type, platform.position])
+		# Maintain camera's height and viewing angle
+		camera.position.x = target_pos.x
+		camera.position.z = target_pos.z + 40
+		print("Navigated to platform: %s (direct position set)" % platform.platform_type)
+
 	platform_selected.emit(platform)
 
 func _on_close_clicked():

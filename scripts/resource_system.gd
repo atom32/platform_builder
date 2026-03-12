@@ -206,11 +206,8 @@ func get_debt_limit() -> int:
 
 ## Setup debug timer to print resources every 5 seconds
 func _setup_debug_timer():
-	debug_timer = Timer.new()
-	debug_timer.wait_time = 5.0
-	debug_timer.autostart = true
-	debug_timer.timeout.connect(_on_debug_timeout)
-	add_child(debug_timer)
+	# Debug timer disabled - no longer needed, use HUD for monitoring
+	pass
 
 func _on_debug_timeout():
 	# Debug output disabled - use HUD for resource monitoring

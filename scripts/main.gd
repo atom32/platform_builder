@@ -87,7 +87,8 @@ func _on_debug_info():
 
 func _process(delta):
 	# Update focus marker position to follow camera view (debug mode only)
-	_update_focus_marker_position()
+	if debug_mode:
+		_update_focus_marker_position()
 
 func _zoom_in():
 	# Move camera closer to focus point along view direction

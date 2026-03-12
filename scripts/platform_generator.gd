@@ -118,23 +118,31 @@ static func _randomize_details(parent: Node3D, template: Dictionary, rng: Random
 			2:  # Small pipe
 				_create_small_pipe(parent, pos, rng)
 
-## Create a single module
+## Create a single module (now as IndustrialModule node with behavior)
 static func _create_module(
 	parent: Node3D,
 	module_data: Dictionary,
 	position: Vector3,
 	rng: RandomNumberGenerator
 ):
+	# Create module node
+	var module_node = IndustrialModule.new()
+	module_node.module_id = ModuleLibrary.get_module_id(module_data)
+	module_node.module_type = module_node.module_id
+
+	# Position the module node
+	var height = ModuleLibrary.get_height(module_data)
+	module_node.position = Vector3(position.x, 0, position.z)
+
+	# Create mesh as child
 	var mesh_instance = MeshInstance3D.new()
+	mesh_instance.name = "MeshInstance3D"
+	mesh_instance.position = Vector3(0, height, 0)
 
 	# Create mesh based on type
 	var mesh_type = ModuleLibrary.get_mesh_type(module_data)
 	var scale = ModuleLibrary.get_scale(module_data)
-	var height = ModuleLibrary.get_height(module_data)
 	_create_mesh_for_type(mesh_instance, mesh_type, scale)
-
-	# Position
-	mesh_instance.position = Vector3(position.x, height, position.z)
 
 	# Rotation
 	var can_rotate = ModuleLibrary.get_can_rotate(module_data)
@@ -153,9 +161,32 @@ static func _create_module(
 	material.albedo_color = color
 	mesh_instance.set_surface_override_material(0, material)
 
-	parent.add_child(mesh_instance)
+	module_node.add_child(mesh_instance)
 
-## Create edge module (attached to platform edge)
+	# Create interaction area
+	var interaction_area = Area3D.new()
+	interaction_area.name = "InteractionArea"
+
+	var collision_shape = CollisionShape3D.new()
+	var shape = SphereShape3D.new()
+	shape.radius = 2.0  # Interaction radius
+	collision_shape.shape = shape
+	interaction_area.add_child(collision_shape)
+
+	interaction_area.position = Vector3(0, height + 1.0, 0)
+	module_node.add_child(interaction_area)
+
+	# Add to parent
+	parent.add_child(module_node)
+
+	# Connect to clicked signal (optional - for debugging)
+	module_node.module_clicked.connect(_on_module_clicked.bind(module_node))
+
+## Handle module clicked (for debugging)
+static func _on_module_clicked(module: IndustrialModule):
+	print("Module clicked: ", module.module_type)
+
+## Create edge module (attached to platform edge, now as IndustrialModule node)
 static func _create_edge_module(
 	parent: Node3D,
 	module_data: Dictionary,
@@ -163,16 +194,24 @@ static func _create_edge_module(
 	rotation_degrees: float,
 	rng: RandomNumberGenerator
 ):
+	# Create module node
+	var module_node = IndustrialModule.new()
+	module_node.module_id = ModuleLibrary.get_module_id(module_data)
+	module_node.module_type = module_node.module_id
+
+	# Position the module node
+	var height = ModuleLibrary.get_height(module_data)
+	module_node.position = Vector3(position.x, 0, position.z)
+
+	# Create mesh as child
 	var mesh_instance = MeshInstance3D.new()
+	mesh_instance.name = "MeshInstance3D"
+	mesh_instance.position = Vector3(0, height, 0)
 
 	# Create mesh based on type
 	var mesh_type = ModuleLibrary.get_mesh_type(module_data)
 	var scale = ModuleLibrary.get_scale(module_data)
-	var height = ModuleLibrary.get_height(module_data)
 	_create_mesh_for_type(mesh_instance, mesh_type, scale)
-
-	# Position at edge
-	mesh_instance.position = Vector3(position.x, height, position.z)
 
 	# Rotation - edge modules face outward
 	var base_rotation = rotation_degrees
@@ -189,7 +228,26 @@ static func _create_edge_module(
 	material.albedo_color = color
 	mesh_instance.set_surface_override_material(0, material)
 
-	parent.add_child(mesh_instance)
+	module_node.add_child(mesh_instance)
+
+	# Create interaction area
+	var interaction_area = Area3D.new()
+	interaction_area.name = "InteractionArea"
+
+	var collision_shape = CollisionShape3D.new()
+	var shape = SphereShape3D.new()
+	shape.radius = 2.0  # Interaction radius
+	collision_shape.shape = shape
+	interaction_area.add_child(collision_shape)
+
+	interaction_area.position = Vector3(0, height + 1.0, 0)
+	module_node.add_child(interaction_area)
+
+	# Add to parent
+	parent.add_child(module_node)
+
+	# Connect to clicked signal (optional - for debugging)
+	module_node.module_clicked.connect(_on_module_clicked.bind(module_node))
 
 ## Create mesh for specific type
 static func _create_mesh_for_type(mesh_instance: MeshInstance3D, mesh_type: int, scale: Vector3):

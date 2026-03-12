@@ -289,6 +289,9 @@ func get_module(id: String) -> Dictionary:
 	return _modules.get(id, {})
 
 ## Helper functions to get module properties
+func get_module_id(module: Dictionary) -> String:
+	return module.get("id", "")
+
 func get_mesh_type(module: Dictionary) -> int:
 	return module.get("mesh_type", MeshType.BOX)
 

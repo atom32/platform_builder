@@ -190,7 +190,7 @@ func _create_radar_scan_effect():
 	shader_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA  // Enable transparency
 
 	radar_scan_ring.material_override = shader_material
-	radar_scan_ring.cast_shadow = false  # Don't cast shadows
+	radar_scan_ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF  # Don't cast shadows
 
 	add_child(radar_scan_ring)
 

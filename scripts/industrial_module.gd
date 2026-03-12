@@ -201,7 +201,7 @@ func _update_radar_scan(delta):
 		var material = radar_scan_ring.material_override as ShaderMaterial
 
 		# Calculate current radius based on time
-		var scan_progress = (radar_scan_time % radar_scan_interval) / radar_scan_interval
+		var scan_progress = fmod(radar_scan_time, radar_scan_interval) / radar_scan_interval
 		var current_radius = scan_progress * 20.0  # Max radius 20
 
 		material.set_shader_parameter("radius", current_radius)

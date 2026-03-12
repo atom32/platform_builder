@@ -171,30 +171,27 @@ func _is_radar_module() -> bool:
 
 ## Create radar scan effect
 func _create_radar_scan_effect():
-	# TEMPORARY: Completely disabled due to white square issue
-	# The shader is causing the entire plane to render as white
-	# TODO: Fix shader transparency implementation
-	return
-
-	# Create a flat ring mesh (smaller size to avoid visibility issues)
+	# Create a flat ring mesh
 	var plane = PlaneMesh.new()
-	plane.size = Vector2(10, 10)  # Smaller, centered on module
+	plane.size = Vector2(10, 10)  # 10x10 units
 
 	radar_scan_ring = MeshInstance3D.new()
 	radar_scan_ring.name = "RadarScan"
 	radar_scan_ring.mesh = plane
-	radar_scan_ring.position = Vector3(0, 0.5, 0)  # Above platform base
+	radar_scan_ring.position = Vector3(0, 0.5, 0)  # Just above platform base
 
 	# Load and apply shader
 	var shader_material = ShaderMaterial.new()
 	shader_material.shader = load("res://shaders/radar_scan_shader.gdshader")
-	shader_material.set_shader_parameter("max_radius", 5.0)  # Match plane size
-	shader_material.set_shader_parameter("thickness", 0.5)
-	shader_material.set_shader_parameter("color", Color(0.2, 0.8, 1.0, 0.6))  # Cyan-blue
+	shader_material.set_shader_parameter("ring_color", Color(0.2, 0.8, 1.0, 0.6))  # Cyan-blue
+	shader_material.set_shader_parameter("outer_radius", 5.0)  # Max scan range
+	shader_material.set_shader_parameter("ring_thickness", 0.5)  # Ring thickness
 	shader_material.render_priority = 1  # Render on top
+	shader_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 
 	radar_scan_ring.material_override = shader_material
-	radar_scan_ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF  # Don't cast shadows
+	radar_scan_ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	radar_scan_ring.position = Vector3(0, 0.1, 0)  # Low to ground
 
 	add_child(radar_scan_ring)
 
@@ -202,20 +199,16 @@ func _create_radar_scan_effect():
 
 ## Update radar scan animation
 func _update_radar_scan(delta):
+	if not show_radar_scan:
+		return
+
 	radar_scan_time += delta
 
 	if radar_scan_ring and radar_scan_ring.material_override:
 		var material = radar_scan_ring.material_override as ShaderMaterial
 
-		# Calculate current radius based on time
+		# Animate inner radius from 0 to outer_radius
 		var scan_progress = fmod(radar_scan_time, radar_scan_interval) / radar_scan_interval
-		var current_radius = scan_progress * 5.0  # Match max_radius
+		var current_inner_radius = scan_progress * 5.0  # Animate to max range
 
-		material.set_shader_parameter("radius", current_radius)
-
-		# Fade out near end of cycle
-		if scan_progress > 0.8:
-			var alpha = 1.0 - ((scan_progress - 0.8) / 0.2)
-			var current_color = material.get_shader_parameter("color")
-			current_color.a = alpha * 0.6
-			material.set_shader_parameter("color", current_color)
+		material.set_shader_parameter("inner_radius", current_inner_radius)

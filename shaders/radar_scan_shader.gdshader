@@ -1,41 +1,45 @@
 shader_type spatial;
-render_mode unshaded, cull_disabled, ensure_correct_normals, blend_mix;
+render_mode unshaded, cull_disabled, blend_mix, depth_draw_always;
 
-uniform float radius: float = 0.0;
-uniform float max_radius: float = 20.0;
-uniform float thickness: float = 0.5;
-uniform vec4 color: source_color = vec4(0.2, 0.8, 1.0, 1.0);
+uniform vec4 ring_color: source_color = vec4(0.2, 0.8, 1.0, 0.5);
+uniform float inner_radius: float = 0.0;
+uniform float outer_radius: float = 5.0;
+uniform float ring_thickness: float = 0.3;
 
 void vertex() {
 	POSITION = vec4(VERTEX, 1.0);
 }
 
 void fragment() {
-	// Calculate distance from center
-	float dist = length(UV - vec2(0.5)) * 2.0;  // Scale to 0-1 range
+	// Calculate distance from center (UV is 0-1, map to -1 to 1)
+	vec2 uv_centered = UV * 2.0 - 1.0;
+	float dist = length(uv_centered);
 
-	// Create expanding ring effect
-	float ring_edge = radius / max_radius;
-	float ring_inner = max(0.0, ring_edge - thickness / max_radius);
-	float ring_outer = ring_edge;
+	// Map to world space roughly (plane is 10x10 units)
+	float world_dist = dist * 5.0;
 
-	// Alpha based on position in ring
+	// Check if fragment is within the ring
+	float ring_inner = inner_radius;
+	float ring_outer = inner_radius + ring_thickness;
+
+	// Calculate alpha based on position in ring
 	float alpha = 0.0;
-	if (dist >= ring_inner && dist <= ring_outer) {
-		// Smooth falloff at edges
-		float inner_fade = smoothstep(ring_inner, ring_inner + 0.05, dist);
-		float outer_fade = 1.0 - smoothstep(ring_outer - 0.05, ring_outer, dist);
-		alpha = inner_fade * outer_fade;
+
+	if (world_dist >= ring_inner && world_dist <= ring_outer) {
+		// Smooth edges
+		float inner_edge = smoothstep(ring_inner, ring_inner + 0.1, world_dist);
+		float outer_edge = 1.0 - smoothstep(ring_outer - 0.1, ring_outer, world_dist);
+		alpha = inner_edge * outer_edge;
+
+		// Fade based on radius (larger rings = more transparent)
+		float fade = 1.0 - (inner_radius / outer_radius);
+		alpha *= fade;
 	}
 
-	// Fade out as it expands
-	alpha *= (1.0 - (radius / max_radius));
-
-	// Check if we have any visible alpha
 	if (alpha < 0.01) {
 		discard;
 	}
 
-	ALBEDO = color.rgb;
-	ALPHA = color.a * alpha;
+	ALBEDO = ring_color.rgb;
+	ALPHA = ring_color.a * alpha;
 }

@@ -80,6 +80,7 @@ func _build_tree():
 	var root_item = tree.create_item()
 	root_item.set_text(0, "HQ")
 	root_item.set_text(1, "0")
+	root_item.set_metadata(0, hq)  # Store HQ platform reference
 	platform_tree_items[hq] = root_item
 
 	# Add children recursively

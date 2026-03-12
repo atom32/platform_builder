@@ -196,22 +196,15 @@ func _setup_click_detection():
 	set_process_input(true)
 
 func _input(event):
-	# Handle camera dragging with right mouse button
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_RIGHT:
-			if event.pressed:
-				is_dragging_camera = true
-				last_mouse_position = event.position
-			else:
-				is_dragging_camera = false
+	# Camera control is handled by CameraController
+	# Base.gd handles slot/platform clicks and UI events
 
-	# Handle left click
+	# Handle left click for slot/platform interaction
 	if event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT:
-			if not is_dragging_camera:
-				if not (build_menu and build_menu.visible) and not (expedition_menu and expedition_menu.visible):
-					# Only handle click if menus are not open
-					_handle_click(event.position)
+			# Check if menus are open
+			if not (build_menu and build_menu.visible) and not (expedition_menu and expedition_menu.visible):
+				_handle_click(event.position)
 
 	# Handle menu cancellation with ESC
 	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
@@ -219,12 +212,6 @@ func _input(event):
 			build_menu.hide_menu()
 		elif expedition_menu and expedition_menu.visible:
 			expedition_menu.hide_menu()
-
-	# Handle camera drag movement
-	if event is InputEventMouseMotion and is_dragging_camera:
-		var delta = event.position - last_mouse_position
-		_drag_camera(delta)
-		last_mouse_position = event.position
 
 func _drag_camera(delta: Vector2):
 	var camera = get_viewport().get_camera_3d()

@@ -73,12 +73,15 @@ func _ready():
 		input_manager.debug_mode_key_pressed.connect(_on_debug_mode_key)
 
 func _input(event):
-	# Handle camera zoom with mouse wheel
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
-			_zoom_in()
-		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			_zoom_out()
+	# Camera zoom is now handled by CameraController
+	# TODO: Remove this after confirming everything works
+	# if event is InputEventMouseButton:
+	# 	if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+	# 		_zoom_in()
+	# 	elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+	# 		_zoom_out()
+	pass
+
 
 func _on_debug_info():
 	if debug_mode:

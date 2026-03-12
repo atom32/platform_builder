@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" path="res://ui/staff_menu.tscn" id="4_staff_menu"]
 [ext_resource type="Shader" uid="uid://rcclf8q1x4ey" path="res://shaders/ocean_shader.gdshader" id="5_shader"]
 [ext_resource type="PackedScene" path="res://ui/base_overview.tscn" id="6_base_overview"]
+[ext_resource type="Script" path="res://scripts/camera_controller.gd" id="7_camera_controller"]
 
 [sub_resource type="Sky" id="ProceduralSky_sky"]
 
@@ -37,6 +38,7 @@ script = ExtResource("1_main")
 environment = SubResource("Environment_environment")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=455437478]
+script = ExtResource("7_camera_controller")
 transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 40, 40)
 fov = 60.0
 

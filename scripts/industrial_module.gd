@@ -174,7 +174,6 @@ func _create_radar_scan_effect():
 	# Create a flat ring mesh
 	var plane = PlaneMesh.new()
 	plane.size = Vector2(40, 40)  # Large enough for scan radius
-	plane.orientation = PlaneMesh.FACE_UP
 
 	radar_scan_ring = MeshInstance3D.new()
 	radar_scan_ring.name = "RadarScan"

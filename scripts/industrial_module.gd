@@ -21,7 +21,7 @@ var rotation_speed: float = 30.0  # Degrees per second
 var radar_scan_ring: MeshInstance3D = null
 var radar_scan_time: float = 0.0
 var radar_scan_interval: float = 3.0  # Seconds between scans
-var show_radar_scan: bool = false  # TEMPORARY: Disabled due to shader issues
+var show_radar_scan: bool = true  # Can be toggled
 
 ## Behavior mapping - avoids match statement explosion
 const BEHAVIOR_MAP = {
@@ -171,6 +171,11 @@ func _is_radar_module() -> bool:
 
 ## Create radar scan effect
 func _create_radar_scan_effect():
+	# TEMPORARY: Completely disabled due to white square issue
+	# The shader is causing the entire plane to render as white
+	# TODO: Fix shader transparency implementation
+	return
+
 	# Create a flat ring mesh (smaller size to avoid visibility issues)
 	var plane = PlaneMesh.new()
 	plane.size = Vector2(10, 10)  # Smaller, centered on module

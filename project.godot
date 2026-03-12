@@ -28,6 +28,7 @@ DepartmentSystem="*res://scripts/department_system.gd"
 NotificationSystem="*res://scripts/notification_system.gd"
 GameSession="*res://scripts/game_session.gd"
 InputManager="*res://scripts/input_manager.gd"
+FeedbackSystem="*res://scripts/feedback_system.gd"
 
 [physics]
 

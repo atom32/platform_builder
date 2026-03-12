@@ -168,6 +168,8 @@ static func _create_module(
 	interaction_area.name = "InteractionArea"
 	interaction_area.monitoring = false
 	interaction_area.monitorable = false
+	interaction_area.collision_layer = 1
+	interaction_area.collision_mask = 1
 
 	var collision_shape = CollisionShape3D.new()
 	var shape = SphereShape3D.new()
@@ -232,6 +234,8 @@ static func _create_edge_module(
 	interaction_area.name = "InteractionArea"
 	interaction_area.monitoring = false
 	interaction_area.monitorable = false
+	interaction_area.collision_layer = 1
+	interaction_area.collision_mask = 1
 
 	var collision_shape = CollisionShape3D.new()
 	var shape = SphereShape3D.new()

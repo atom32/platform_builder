@@ -3,11 +3,15 @@ class_name ComboSystem
 
 ## Manages combo detection and bonuses between platforms
 
+## Signals
+signal combo_activated(combo_name: String, bonus: float, position: Vector3)
+
 ## Active combos dictionary
 var active_combos: Dictionary = {}
 
 ## Check all platforms for active combos
 func check_combos(all_platforms: Array[Platform]) -> Dictionary:
+	var previous_combos = active_combos.duplicate()
 	active_combos.clear()
 
 	# Reset all platform production bonuses
@@ -43,6 +47,13 @@ func check_combos(all_platforms: Array[Platform]) -> Dictionary:
 				if combo["effect_type"] == "resource_production":
 					platform.production_bonus += combo["bonus"]
 					neighbor.production_bonus += combo["bonus"]
+
+				# Check if this is a new combo
+				if not previous_combos.has(pair_id):
+					var combo_name = combo["description"]
+					var bonus = combo["bonus"]
+					var position = (platform.global_position + neighbor.global_position) / 2.0
+					combo_activated.emit(combo_name, bonus, position)
 
 	return active_combos
 

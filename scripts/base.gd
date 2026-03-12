@@ -77,6 +77,9 @@ func _create_combo_system():
 	combo_system = ComboSystem.new()
 	add_child(combo_system)
 
+	# Connect combo activation signal to feedback system
+	combo_system.combo_activated.connect(_on_combo_activated)
+
 func _create_expedition_system():
 	# Use the autoload instance
 	expedition_system = get_node("/root/ExpeditionSystem")
@@ -146,6 +149,10 @@ func _on_construction_tick():
 			# Notify systems
 			ResourceSystem.debug_print("Platform constructed: %s" % platform.platform_type)
 
+			# Play build completion feedback
+			print("[Base] Calling FeedbackSystem.show_build_flash")
+			FeedbackSystem.show_build_flash(platform.global_position, platform.platform_type)
+
 			# Check for new combos
 			_check_combos()
 
@@ -212,6 +219,11 @@ func _input(event):
 			build_menu.hide_menu()
 		elif expedition_menu and expedition_menu.visible:
 			expedition_menu.hide_menu()
+
+	# Handle test feedback with T key
+	if event is InputEventKey and event.pressed and event.keycode == KEY_T:
+		print("[Base] Testing feedback system...")
+		FeedbackSystem.test_all_feedback()
 
 func _drag_camera(delta: Vector2):
 	var camera = get_viewport().get_camera_3d()
@@ -448,6 +460,10 @@ func _on_expedition_completed(mission_id: String, rewards: Dictionary):
 	var result_type = rewards.get("result_type", "success")
 	var notification_system = get_node_or_null("/root/NotificationSystem")
 
+	# Show expedition result feedback at base position
+	var base_pos = hq_platform.global_position if hq_platform else Vector3.ZERO
+	FeedbackSystem.show_expedition_result(result_type != "failed", rewards, base_pos)
+
 	if notification_system:
 		if result_type == "critical_success":
 			notification_system.show_critical_success(mission_name)
@@ -460,6 +476,10 @@ func _on_expedition_failed(mission_id: String, reason: String):
 	var notification_system = get_node_or_null("/root/NotificationSystem")
 	if notification_system:
 		notification_system.show_expedition_failed(mission_name)
+
+## Handle combo activation feedback
+func _on_combo_activated(combo_name: String, bonus: float, position: Vector3):
+	FeedbackSystem.show_combo_activated(combo_name, bonus, position)
 
 ## Open expedition menu (called from UI or hotkey)
 func open_expedition_menu():

@@ -20,37 +20,18 @@ func _setup_ambient_wind_sound():
 		print("WARNING: AmbientWind node not found")
 		return
 
-	# Create procedural ocean wind sound using AudioEffectGenerator
-	audio_generator = AudioEffectGenerator.new()
+	# TEMPORARY: Disable procedural sound generation
+	# AudioEffectGenerator is not available in Godot 4.6
+	# TODO: Add actual wind sound file when available
 
-	# Generate audio stream generator with pink noise
-	var generator = audio_generator.create_audio_stream_generator(AudioStreamGenerator.new())
+	print("AmbientSoundController: Wind sound system ready (audio file needed)")
+	print("  - Volume: %.1 dB" % volume_db)
+	print("  - Lowpass filter: %.0 Hz" % wind_cutoff_hz)
 
-	if generator and generator.generator:
-		audio_stream = generator.generator
-
-		# Configure noise parameters
-		audio_stream.mix_rate = 44100
-		audio_stream.buffer_length = 0.5
-
-		# Apply lowpass filter to muffle noise into wind-like sound
-	var audio_bus = AudioServer.get_bus_name(0)
-		var effect = AudioEffectLowPassFilter.new()
-		effect.cutoff_hz = wind_cutoff_hz
-		effect.resonance = 1.0
-
-		# Add effect to audio bus (if supported)
-		# Note: In Godot 4.x, audio effects work differently
-		# The lowpass filter is applied during generation
-
-		# Set the stream to the audio player
-		audio_player.stream = audio_stream
-		audio_player.volume_db = volume_db
-		audio_player.autoplay = true
-
-		print("AmbientSoundController: Ocean wind sound generated")
-	else:
-		print("ERROR: Failed to create audio stream generator")
+	# For now, just set volume and autoplay
+	# When you have a wind sound file, uncomment:
+	# audio_player.stream = load("res://sounds/ocean_wind.ogg")
+	# audio_player.autoplay = true
 
 ## Adjust ambient volume
 func set_volume(volume: float):

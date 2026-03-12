@@ -44,7 +44,7 @@ const BEHAVIOR_MAP = {
 }
 
 ## Cached behavior function for performance
-var _behavior_func: Callable = null
+var _behavior_func: Callable
 
 ## Signals
 signal module_clicked(module: IndustrialModule)
@@ -70,9 +70,8 @@ func _ready():
 
 func _process(delta):
 	# Use cached behavior function instead of match
-	if _behavior_func != null and activity_state == "working":
-		if _behavior_func.is_valid():
-			_behavior_func.call(delta)
+	if activity_state == "working" and _behavior_func.is_valid():
+		_behavior_func.call(delta)
 
 	# Update radar scan effect
 	if radar_scan_ring and show_radar_scan:
@@ -83,6 +82,9 @@ func _cache_behavior_function():
 	var behavior_name = BEHAVIOR_MAP.get(module_type)
 	if behavior_name != null and has_method(behavior_name):
 		_behavior_func = Callable(self, behavior_name)
+	else:
+		# Create an invalid callable if no behavior found
+		_behavior_func = Callable()
 
 ## Start module-specific behavior
 func _start_module_behavior():

@@ -13,11 +13,32 @@ var platform_tree_items: Dictionary = {}  # Maps platform -> TreeItem
 
 func _ready():
 	close_button.pressed.connect(_on_close_clicked)
-	tree.item_activated.connect(_on_tree_item_activated)
 	tree.item_selected.connect(_on_tree_item_selected)
+	tree.item_activated.connect(_on_tree_item_activated)
+
+	# Enable input processing for double-click detection
+	set_process_input(true)
 
 	# Hide initially
 	hide()
+
+var _last_click_time: float = 0.0
+var _last_clicked_item: TreeItem = null
+const DOUBLE_CLICK_TIME: float = 0.5  # Seconds between clicks
+
+func _input(event):
+	if not visible:
+		return
+
+	# Handle mouse clicks on Tree
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			var clicked_pos = event.position
+
+			# Get item at click position
+			var clicked_item = tree.get_item_at_position(clicked_pos)
+			if clicked_item:
+				_check_double_click(clicked_item)
 
 func show_overview():
 	visible = true
@@ -102,18 +123,23 @@ func _expand_all_items(item: TreeItem):
 	for child in item.get_children():
 		_expand_all_items(child)
 
+func _check_double_click(clicked_item: TreeItem):
+	var current_time = Time.get_ticks_msec() / 1000.0
+
+	# Check if same item was clicked recently
+	if clicked_item == _last_clicked_item and (current_time - _last_click_time) < DOUBLE_CLICK_TIME:
+		# Double click detected
+		var platform = clicked_item.get_metadata(0)
+		if platform and platform is Platform:
+			_navigate_to_platform(platform)
+		_last_clicked_item = null  # Reset
+	else:
+		_last_clicked_item = clicked_item
+		_last_click_time = current_time
+
 func _on_tree_item_activated(item: TreeItem, mouse_button_index: int, mouse_position: Vector2):
-	# Only respond to double click (mouse button 1)
-	if mouse_button_index != MOUSE_BUTTON_LEFT:
-		return
-
-	if not item:
-		return
-
-	# Get platform from metadata
-	var platform = item.get_metadata(0)
-	if platform and platform is Platform:
-		_navigate_to_platform(platform)
+	# Now handled by manual double-click detection in _input()
+	pass
 
 func _on_tree_item_selected():
 	var selected = tree.get_selected()

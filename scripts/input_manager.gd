@@ -11,6 +11,7 @@ signal sidebar_toggle_key_pressed()
 signal debug_info_key_pressed()
 signal debug_mode_key_pressed()
 signal staff_menu_key_pressed()
+signal save_load_key_pressed()
 
 func _ready():
 	set_process_input(true)
@@ -37,3 +38,5 @@ func _input(event):
 			debug_mode_key_pressed.emit()
 		KEY_U:
 			staff_menu_key_pressed.emit()
+		KEY_ESCAPE:
+			save_load_key_pressed.emit()

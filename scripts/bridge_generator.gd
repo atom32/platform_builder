@@ -30,21 +30,6 @@ static func create_bridge(parent_platform: Platform, child_platform: Node3D):
 	bridge_mesh.size = Vector3(bridge_width, bridge_height, bridge_length)
 	bridge.mesh = bridge_mesh
 
-	# Position bridge at midpoint (using global position)
-	var mid_point = (parent_pos + child_pos) / 2.0
-	bridge.global_position = mid_point
-	bridge.global_position.y = -1.5  # Slightly below platform surface
-
-	# Rotate bridge to align with direction
-	# BoxMesh extends along Z axis by default
-	# We need to rotate from (0,0,1) to our direction
-	var forward = Vector3(0, 0, 1)
-	var target_direction = direction.normalized()
-
-	# Calculate rotation around Y axis
-	var angle = atan2(target_direction.x, target_direction.z)
-	bridge.rotation_degrees.y = rad_to_deg(angle)
-
 	# Create industrial material
 	var material = StandardMaterial3D.new()
 	material.albedo_color = Color(0.5, 0.5, 0.55)  # Industrial gray
@@ -52,7 +37,7 @@ static func create_bridge(parent_platform: Platform, child_platform: Node3D):
 	material.roughness = 0.7
 	bridge.set_surface_override_material(0, material)
 
-	# Add bridge to scene (as child of Base root)
+	# Add bridge to scene FIRST (as child of Base root)
 	# Find the Base node (parent of HQ)
 	var scene_root = parent_platform.get_parent()
 	while scene_root and not scene_root is Base:
@@ -60,8 +45,20 @@ static func create_bridge(parent_platform: Platform, child_platform: Node3D):
 
 	if scene_root:
 		scene_root.add_child(bridge)
-		# Convert global position to local since we're adding to Base
+
+		# NOW set position and rotation (must be after add_child)
+		var mid_point = (parent_pos + child_pos) / 2.0
 		bridge.global_position = mid_point
-		bridge.global_position.y = -1.5
+		bridge.global_position.y = -1.5  # Slightly below platform surface
+
+		# Rotate bridge to align with direction
+		# BoxMesh extends along Z axis by default
+		# We need to rotate from (0,0,1) to our direction
+		var forward = Vector3(0, 0, 1)
+		var target_direction = direction.normalized()
+
+		# Calculate rotation around Y axis
+		var angle = atan2(target_direction.x, target_direction.z)
+		bridge.rotation_degrees.y = rad_to_deg(angle)
 
 	return bridge

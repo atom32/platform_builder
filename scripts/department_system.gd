@@ -2,6 +2,9 @@ extends Node
 
 ## Manages platform departments with capacity limits and staff assignments
 
+## Signals
+signal staff_assigned(staff_id: int, department: String)
+
 ## Maximum platforms per department
 const MAX_PLATFORMS_PER_DEPT: int = 6
 
@@ -140,6 +143,9 @@ func assign_staff_member(staff_member, department_type: String) -> bool:
 
 	# Update counts
 	department_staff[department_type] += 1
+
+	# Emit signal for StorySystem
+	staff_assigned.emit(staff_member.id, department_type)
 
 	return true
 

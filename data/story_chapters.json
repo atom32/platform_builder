@@ -1,0 +1,255 @@
+{
+  "chapters": [
+    {
+      "id": "chapter_01",
+      "name": "Arrival",
+      "description": "Establish your first base platform",
+      "objectives": [
+        {
+          "id": "obj_build_rd",
+          "type": "build_platform",
+          "target": "R&D",
+          "description": "Build an R&D platform",
+          "hint": "Click a yellow build slot near HQ"
+        },
+        {
+          "id": "obj_recruit_staff",
+          "type": "recruit_staff",
+          "count": 1,
+          "description": "Recruit 1 staff member"
+        }
+      ],
+      "dialogues": [
+        {
+          "id": "intro_briefing",
+          "trigger": "chapter_start",
+          "speaker": "Kaz",
+          "text": "We need to establish operations. Build an R&D platform to begin our research capabilities.",
+          "choices": []
+        },
+        {
+          "id": "platform_complete",
+          "trigger": "objective_complete",
+          "trigger_objective": "obj_build_rd",
+          "speaker": "Kaz",
+          "text": "Good work. The R&D platform is operational. Now we need personnel to run it.",
+          "choices": [
+            {
+              "text": "What's next?",
+              "next_dialogue": "recruit_briefing"
+            }
+          ]
+        },
+        {
+          "id": "recruit_briefing",
+          "speaker": "Kaz",
+          "text": "Press R to recruit staff. We need at least one person assigned to get things running.",
+          "choices": []
+        }
+      ],
+      "completion": {
+        "required_objectives": ["obj_build_rd", "obj_recruit_staff"],
+        "next_chapter": "chapter_02",
+        "rewards": {
+          "materials": 100,
+          "gmp": 50
+        }
+      }
+    },
+    {
+      "id": "chapter_02",
+      "name": "Expansion",
+      "description": "Expand your base with a Support platform",
+      "objectives": [
+        {
+          "id": "obj_build_support",
+          "type": "build_platform",
+          "target": "Support",
+          "description": "Build a Support platform"
+        },
+        {
+          "id": "obj_assign_staff",
+          "type": "assign_staff",
+          "count": 1,
+          "description": "Assign 1 staff to a department"
+        }
+      ],
+      "dialogues": [
+        {
+          "id": "chapter_02_start",
+          "trigger": "chapter_start",
+          "speaker": "Kaz",
+          "text": "Excellent progress on Chapter 1. Now we need to expand our support capabilities. Build a Support platform to improve our logistics.",
+          "choices": []
+        }
+      ],
+      "completion": {
+        "required_objectives": ["obj_build_support", "obj_assign_staff"],
+        "next_chapter": "chapter_03",
+        "rewards": {
+          "materials": 150,
+          "fuel": 100,
+          "gmp": 100
+        }
+      }
+    },
+    {
+      "id": "chapter_03",
+      "name": "Defense",
+      "description": "Establish combat capabilities",
+      "objectives": [
+        {
+          "id": "obj_build_combat",
+          "type": "build_platform",
+          "target": "Combat",
+          "description": "Build a Combat platform"
+        },
+        {
+          "id": "obj_send_expedition",
+          "type": "send_expedition",
+          "count": 1,
+          "description": "Send your first expedition"
+        }
+      ],
+      "dialogues": [
+        {
+          "id": "chapter_03_start",
+          "trigger": "chapter_start",
+          "speaker": "Kaz",
+          "text": "We're making good progress, but we can't ignore defense. Build a Combat platform and send teams out to gather resources.",
+          "choices": []
+        }
+      ],
+      "completion": {
+        "required_objectives": ["obj_build_combat", "obj_send_expedition"],
+        "next_chapter": "chapter_04",
+        "rewards": {
+          "materials": 200,
+          "gmp": 150
+        }
+      }
+    },
+    {
+      "id": "chapter_04",
+      "name": "Intelligence",
+      "description": "Establish intel gathering capabilities",
+      "objectives": [
+        {
+          "id": "obj_build_intel",
+          "type": "build_platform",
+          "target": "Intel",
+          "description": "Build an Intel platform"
+        },
+        {
+          "id": "obj_total_platforms",
+          "type": "total_platforms",
+          "count": 5,
+          "description": "Have 5 total platforms"
+        }
+      ],
+      "dialogues": [
+        {
+          "id": "chapter_04_start",
+          "trigger": "chapter_start",
+          "speaker": "Kaz",
+          "text": "Information is power. Build an Intel platform to improve our reconnaissance capabilities.",
+          "choices": []
+        }
+      ],
+      "completion": {
+        "required_objectives": ["obj_build_intel", "obj_total_platforms"],
+        "next_chapter": "chapter_05",
+        "rewards": {
+          "materials": 250,
+          "gmp": 200
+        }
+      }
+    },
+    {
+      "id": "chapter_05",
+      "name": "Medical",
+      "description": "Establish medical facilities",
+      "objectives": [
+        {
+          "id": "obj_build_medical",
+          "type": "build_platform",
+          "target": "Medical",
+          "description": "Build a Medical platform"
+        },
+        {
+          "id": "obj_staff_count",
+          "type": "staff_count",
+          "count": 5,
+          "description": "Have 5 staff members"
+        }
+      ],
+      "dialogues": [
+        {
+          "id": "chapter_05_start",
+          "trigger": "chapter_start",
+          "speaker": "Kaz",
+          "text": "We need to take care of our people. Build a Medical platform to treat injuries and improve staff recovery.",
+          "choices": []
+        }
+      ],
+      "completion": {
+        "required_objectives": ["obj_build_medical", "obj_staff_count"],
+        "next_chapter": "chapter_06",
+        "rewards": {
+          "materials": 300,
+          "fuel": 200,
+          "gmp": 250
+        }
+      }
+    },
+    {
+      "id": "chapter_06",
+      "name": "Full Operation",
+      "description": "Reach full operational capacity",
+      "objectives": [
+        {
+          "id": "obj_all_departments",
+          "type": "all_departments",
+          "description": "Build at least one platform of each department type"
+        },
+        {
+          "id": "obj_total_staff",
+          "type": "staff_count",
+          "count": 10,
+          "description": "Have 10 staff members"
+        },
+        {
+          "id": "obj_expansion",
+          "type": "platform_level",
+          "count": 2,
+          "description": "Build a platform at level 2 or deeper (child of a child)"
+        }
+      ],
+      "dialogues": [
+        {
+          "id": "chapter_06_start",
+          "trigger": "chapter_start",
+          "speaker": "Kaz",
+          "text": "We're close to full operational capacity. Complete the final objectives to establish Mother Base as a formidable force.",
+          "choices": []
+        },
+        {
+          "id": "victory_dialogue",
+          "trigger": "chapter_complete",
+          "speaker": "Kaz",
+          "text": "Congratulations! Mother Base is now fully operational. This is just the beginning of our legacy.",
+          "choices": []
+        }
+      ],
+      "completion": {
+        "required_objectives": ["obj_all_departments", "obj_total_staff", "obj_expansion"],
+        "next_chapter": null,
+        "rewards": {
+          "materials": 500,
+          "fuel": 500,
+          "gmp": 500
+        }
+      }
+    }
+  ]
+}

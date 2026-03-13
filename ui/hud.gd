@@ -24,6 +24,9 @@ extends CanvasLayer
 ## Notifications (top-right)
 @onready var notification_container = $NotificationContainer
 
+## Story Objectives Panel (for Story Mode)
+@onready var story_objectives_panel = $StoryObjectivesPanel
+
 ## Update interval for resource display
 var update_timer: float = 0.0
 var update_interval: float = 0.5  # Update twice per second
@@ -101,6 +104,16 @@ func _ready():
 
 	# Set initial state
 	side_bar_visible = true
+
+	# Show/hide story objectives panel based on game mode
+	# In sandbox mode, hide it; in story mode, show it
+	var game_mode_manager = get_node_or_null("/root/GameModeManager")
+	if story_objectives_panel:
+		if game_mode_manager and game_mode_manager.current_mode == 1:  # STORY_MODE
+			story_objectives_panel.show_panel()
+		else:
+			# Hide in sandbox mode (or if GameModeManager not available)
+			story_objectives_panel.hide_panel()
 
 func _process(delta):
 	update_timer += delta

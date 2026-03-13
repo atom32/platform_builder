@@ -1,0 +1,224 @@
+[gd_scene load_steps=2 format=3 uid="uid://save_load_menu"]
+
+[ext_resource type="Script" path="res://ui/save_load_menu.gd" id="1_save_load_menu"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.1, 0.1, 0.15, 0.98)
+corner_radius_top_left = 15
+corner_radius_top_right = 15
+corner_radius_bottom_right = 15
+corner_radius_bottom_left = 15
+
+[node name="SaveLoadMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/constants = 20
+mouse_filter = 2
+script = ExtResource("1_save_load_menu")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.7)
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -250.0
+offset_right = 300.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 15
+
+[node name="TitleLabel" type="Label" parent="Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "SAVE / LOAD"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="Panel/VBoxContainer"]
+layout_mode = 2
+
+[node name="ModeLabel" type="Label" parent="Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Story Mode"
+horizontal_alignment = 1
+
+[node name="SaveSlots" type="VBoxContainer" parent="Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Slot1" type="Panel" parent="Panel/VBoxContainer/SaveSlots"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 60)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/VBoxContainer/SaveSlots/Slot1"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="SlotInfo" type="VBoxContainer" parent="Panel/VBoxContainer/SaveSlots/Slot1/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 3
+
+[node name="SlotName" type="Label" parent="Panel/VBoxContainer/SaveSlots/Slot1/HBoxContainer/SlotInfo"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Slot 1: Empty"
+
+[node name="SlotDetails" type="Label" parent="Panel/VBoxContainer/SaveSlots/Slot1/HBoxContainer/SlotInfo"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = ""
+
+[node name="Buttons" type="HBoxContainer" parent="Panel/VBoxContainer/SaveSlots/Slot1/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="SaveButton" type="Button" parent="Panel/VBoxContainer/SaveSlots/Slot1/HBoxContainer/Buttons"]
+layout_mode = 2
+text = "Save"
+
+[node name="LoadButton" type="Button" parent="Panel/VBoxContainer/SaveSlots/Slot1/HBoxContainer/Buttons"]
+layout_mode = 2
+text = "Load"
+
+[node name="DeleteButton" type="Button" parent="Panel/VBoxContainer/SaveSlots/Slot1/HBoxContainer/Buttons"]
+layout_mode = 2
+text = "Delete"
+
+[node name="Slot2" type="Panel" parent="Panel/VBoxContainer/SaveSlots"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 60)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/VBoxContainer/SaveSlots/Slot2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="SlotInfo" type="VBoxContainer" parent="Panel/VBoxContainer/SaveSlots/Slot2/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SlotName" type="Label" parent="Panel/VBoxContainer/SaveSlots/Slot2/HBoxContainer/SlotInfo"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Slot 2: Empty"
+
+[node name="SlotDetails" type="Label" parent="Panel/VBoxContainer/SaveSlots/Slot2/HBoxContainer/SlotInfo"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = ""
+
+[node name="Buttons" type="HBoxContainer" parent="Panel/VBoxContainer/SaveSlots/Slot2/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="SaveButton" type="Button" parent="Panel/VBoxContainer/SaveSlots/Slot2/HBoxContainer/Buttons"]
+layout_mode = 2
+text = "Save"
+
+[node name="LoadButton" type="Button" parent="Panel/VBoxContainer/SaveSlots/Slot2/HBoxContainer/Buttons"]
+layout_mode = 2
+text = "Load"
+
+[node name="DeleteButton" type="Button" parent="Panel/VBoxContainer/SaveSlots/Slot2/HBoxContainer/Buttons"]
+layout_mode = 2
+text = "Delete"
+
+[node name="Slot3" type="Panel" parent="Panel/VBoxContainer/SaveSlots"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 60)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/VBoxContainer/SaveSlots/Slot3"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="SlotInfo" type="VBoxContainer" parent="Panel/VBoxContainer/SaveSlots/Slot3/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SlotName" type="Label" parent="Panel/VBoxContainer/SaveSlots/Slot3/HBoxContainer/SlotInfo"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Slot 3: Empty"
+
+[node name="SlotDetails" type="Label" parent="Panel/VBoxContainer/SaveSlots/Slot3/HBoxContainer/SlotInfo"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = ""
+
+[node name="Buttons" type="HBoxContainer" parent="Panel/VBoxContainer/SaveSlots/Slot3/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="SaveButton" type="Button" parent="Panel/VBoxContainer/SaveSlots/Slot3/HBoxContainer/Buttons"]
+layout_mode = 2
+text = "Save"
+
+[node name="LoadButton" type="Button" parent="Panel/VBoxContainer/SaveSlots/Slot3/HBoxContainer/Buttons"]
+layout_mode = 2
+text = "Load"
+
+[node name="DeleteButton" type="Button" parent="Panel/VBoxContainer/SaveSlots/Slot3/HBoxContainer/Buttons"]
+layout_mode = 2
+text = "Delete"
+
+[node name="CloseButton" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Close"

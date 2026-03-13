@@ -134,7 +134,9 @@ func _create_focus_marker():
 	focus_marker.position = Vector3.ZERO
 
 	# Add to scene (as sibling of camera)
-	get_parent().add_child(focus_marker)
+	# Use call_deferred to avoid "parent is busy setting up children" error
+	var parent = get_parent()
+	parent.call_deferred("add_child", focus_marker)
 
 	if not debug_mode:
 		focus_marker.visible = false

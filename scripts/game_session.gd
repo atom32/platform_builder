@@ -9,6 +9,9 @@ enum GameState { RUNNING, PAUSED, VICTORY, FAILURE }
 ## Current game state
 var current_state: GameState = GameState.RUNNING
 
+## Current game mode (Story Mode or Free Sandbox)
+var game_mode: int = 0  # 0 = FREE_SANDBOX, 1 = STORY_MODE
+
 ## Session statistics
 var days_survived: int = 0
 var platforms_built: int = 0
@@ -49,7 +52,10 @@ func _on_day_passed():
 		end_game_over("GMP debt exceeded -500")
 
 ## Start a new game session
-func start_session():
+func start_session(mode: int = 0):  # 0 = FREE_SANDBOX, 1 = STORY_MODE
+	# Set game mode
+	game_mode = mode
+
 	# Reset all statistics
 	current_state = GameState.RUNNING
 	days_survived = 0
@@ -66,7 +72,8 @@ func start_session():
 		day_timer.stop()
 		day_timer.start()
 
-	ResourceSystem.debug_print("Game session started")
+	var mode_name = "Story Mode" if mode == 1 else "Free Sandbox"
+	ResourceSystem.debug_print("Game session started: %s" % mode_name)
 	game_state_changed.emit(GameState.RUNNING)
 
 ## Reset all game systems for new game

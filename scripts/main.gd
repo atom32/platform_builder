@@ -5,6 +5,7 @@ extends Node3D
 
 @onready var base = $Base
 @onready var camera = $Camera3D
+@onready var internal_affairs_panel: InternalAffairsPanel = $InternalAffairsPanel as InternalAffairsPanel
 @onready var base_overview: BaseOverview = $BaseOverview as BaseOverview
 
 # Camera zoom settings
@@ -28,9 +29,20 @@ var debug_mode: bool = true
 func _ready():
 	# Initialize game session FIRST (resets everything to clean state)
 	var game_session = get_node_or_null("/root/GameSession")
+	var game_mode_manager = get_node_or_null("/root/GameModeManager")
+	var story_system = get_node_or_null("/root/StorySystem")
+
 	if game_session:
-		game_session.start_session()
+		var mode = 0  # Default to FREE_SANDBOX
+		if game_mode_manager:
+			mode = game_mode_manager.current_mode
+		game_session.start_session(mode)
 		game_session.game_over.connect(_on_game_over)
+
+	# Initialize StorySystem if in Story Mode
+	if story_system and game_mode_manager:
+		if game_mode_manager.current_mode == 1:  # STORY_MODE
+			story_system.initialize_story_mode()
 
 	# Give player starting resources (after reset)
 	ResourceSystem.add_materials(200)
@@ -69,6 +81,9 @@ func _ready():
 		input_manager.overview_key_pressed.connect(_toggle_base_overview)
 		input_manager.debug_info_key_pressed.connect(_toggle_debug_mode)
 		input_manager.debug_mode_key_pressed.connect(_on_debug_mode_key)
+		input_manager.staff_menu_key_pressed.connect(_toggle_internal_affairs)
+		input_manager.expedition_key_pressed.connect(_toggle_internal_affairs)
+		input_manager.save_load_key_pressed.connect(_toggle_save_load_menu)
 
 func _input(event):
 	# Camera zoom is now handled by CameraController
@@ -245,6 +260,11 @@ func _toggle_base_overview():
 	else:
 		base_overview.show_overview()
 
+## Toggle internal affairs panel (staff/expedition)
+func _toggle_internal_affairs():
+	if internal_affairs_panel:
+		internal_affairs_panel.toggle_panel()
+
 ## Handle platform selection from overview
 func _on_platform_selected(platform: Platform):
 	pass
@@ -279,3 +299,9 @@ func _on_staff_recruited():
 	var game_session = get_node_or_null("/root/GameSession")
 	if game_session:
 		game_session.increment_staff_recruited()
+
+## Toggle save/load menu
+func _toggle_save_load_menu():
+	var save_load_menu = get_node_or_null("SaveLoadMenu")
+	if save_load_menu and save_load_menu.has_method("show_menu"):
+		save_load_menu.show_menu()

@@ -1,0 +1,59 @@
+[gd_scene load_steps=2 format=3 uid="uid://story_objectives_panel"]
+
+[ext_resource type="Script" path="res://ui/story_objectives_panel.gd" id="1_story_objectives"]
+
+[node name="StoryObjectivesPanel" type="Panel"]
+anchors_preset = 2
+anchor_left = 0.0
+anchor_top = 0.5
+anchor_right = 0.0
+anchor_bottom = 0.5
+offset_left = 2.0
+offset_top = -150.0
+offset_right = 312.0
+offset_bottom = 150.0
+grow_vertical = 0
+script = ExtResource("1_story_objectives")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+grow_vertical = 2
+
+[node name="ChapterHeader" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "CHAPTER 1: ARRIVAL"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="ObjectivesLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "OBJECTIVES"
+horizontal_alignment = 1
+
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="ObjectivesList" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="Objective1" type="Label" parent="VBoxContainer/ObjectivesList"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "[ ] Build an R&D platform"
+
+[node name="Objective2" type="Label" parent="VBoxContainer/ObjectivesList"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "[ ] Recruit 1 staff member"

@@ -5,12 +5,12 @@ class_name Base
 ## HQ is the root, platforms expand in a tree structure
 
 signal build_failed(reason: String)
+signal platform_built(platform_type: String)
 
 var hq_platform: Platform = null
 
 var platform_scene = preload("res://scenes/platform.tscn")
 var build_menu_scene = preload("res://ui/build_menu.tscn")
-var expedition_menu_scene = preload("res://ui/expedition_menu.tscn")
 
 var build_menu: BuildMenu = null
 var department_system: Node = null
@@ -18,6 +18,7 @@ var combo_system: ComboSystem = null
 var expedition_system: ExpeditionManager = null
 var expedition_menu: ExpeditionMenu = null
 var base_overview: BaseOverview = null
+var internal_affairs_panel: InternalAffairsPanel = null
 
 ## Base size limit
 const MAX_PLATFORMS: int = 100
@@ -36,12 +37,12 @@ var construction_timer: Timer = null
 var production_timer: Timer = null
 
 func _ready():
+	add_to_group("base")
 	_spawn_hq()
 	_create_department_system()
 	_create_combo_system()
 	_create_expedition_system()
 	_create_build_menu()
-	_create_expedition_menu()
 	_create_base_overview()
 	_setup_construction_timer()
 	_setup_production_timer()
@@ -94,14 +95,20 @@ func _create_expedition_system():
 		if combo_system:
 			expedition_system.combo_system = combo_system
 
-func _create_expedition_menu():
-	expedition_menu = expedition_menu_scene.instantiate() as ExpeditionMenu
-	add_child(expedition_menu)
-	expedition_menu.expedition_launched.connect(_on_expedition_launched)
-
 func _create_base_overview():
 	# Get reference to BaseOverview from Main
 	base_overview = get_node_or_null("../BaseOverview") as BaseOverview
+
+	# Get reference to InternalAffairsPanel
+	internal_affairs_panel = get_node_or_null("../InternalAffairsPanel") as InternalAffairsPanel
+	if internal_affairs_panel:
+		# Get expedition menu reference from InternalAffairsPanel
+		expedition_menu = internal_affairs_panel.expedition_menu
+		if expedition_menu and expedition_menu.has_method("show_menu"):
+			print("[Base] Connected to InternalAffairsPanel expedition menu")
+			# Connect expedition signals
+			if expedition_menu.has_signal("expedition_launched"):
+				expedition_menu.expedition_launched.connect(_on_expedition_launched)
 
 func _setup_construction_timer():
 	# Unified construction tick (updates all construction jobs every second)
@@ -163,6 +170,9 @@ func _on_construction_tick():
 			var notification_system = get_node_or_null("/root/NotificationSystem")
 			if notification_system:
 				notification_system.show_platform_built(platform.platform_type)
+
+			# Emit platform built signal for StorySystem
+			platform_built.emit(platform.platform_type)
 
 			# Check for Support platform objective
 			var objective_system = get_node_or_null("/root/ObjectiveSystem")

@@ -29,6 +29,9 @@ NotificationSystem="*res://scripts/notification_system.gd"
 GameSession="*res://scripts/game_session.gd"
 InputManager="*res://scripts/input_manager.gd"
 FeedbackSystem="*res://scripts/feedback_system.gd"
+GameModeManager="*res://scripts/game_mode_manager.gd"
+StorySystem="*res://scripts/story_system.gd"
+SaveSystem="*res://scripts/save_system.gd"
 
 [physics]
 

@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://hud_scene"]
+[gd_scene load_steps=5 format=3 uid="uid://hud_scene"]
 
 [ext_resource type="Script" path="res://ui/hud.gd" id="1_hud"]
+[ext_resource type="PackedScene" uid="uid://story_objectives_panel" path="res://ui/story_objectives_panel.tscn" id="2_story_objectives_panel"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_resource"]
 font_size = 14
@@ -23,10 +24,10 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -220.0
-offset_top = -135.0
-offset_right = -20.0
-offset_bottom = -20.0
+offset_left = -222.0
+offset_top = -137.0
+offset_right = -2.0
+offset_bottom = -2.0
 grow_horizontal = 0
 grow_vertical = 0
 
@@ -79,9 +80,9 @@ anchor_top = 1.0
 anchor_right = 0.0
 anchor_bottom = 1.0
 offset_left = 20.0
-offset_top = -80.0
-offset_right = 680.0
-offset_bottom = -40.0
+offset_top = -42.0
+offset_right = 780.0
+offset_bottom = -2.0
 grow_horizontal = 0
 grow_vertical = 0
 theme_override_constants/separation = 5
@@ -134,12 +135,22 @@ layout_mode = 2
 label_settings = SubResource("LabelSettings_keys")
 text = "F: Debug Info"
 
+[node name="EscLabel" type="Label" parent="KeyBindings/HBoxContainer"]
+layout_mode = 2
+label_settings = SubResource("LabelSettings_keys")
+text = "ESC: Save/Load"
+
 [node name="SideBar" type="Panel" parent="."]
-offset_left = 10.0
-offset_top = 100.0
-offset_right = 260.0
-offset_bottom = 400.0
-grow_vertical = 2
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -262.0
+offset_top = -150.0
+offset_right = -2.0
+offset_bottom = 150.0
+grow_vertical = 0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="SideBar"]
 layout_mode = 1
@@ -221,3 +232,6 @@ offset_right = -20.0
 offset_bottom = 20.0
 grow_horizontal = 0
 alignment = 2
+
+[node name="StoryObjectivesPanel" parent="." instance=ExtResource("2_story_objectives_panel")]
+visible = false

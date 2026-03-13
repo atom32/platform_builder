@@ -1,13 +1,15 @@
-[gd_scene format=3 uid="uid://77kwjveq12an"]
+[gd_scene load_steps=11 format=3 uid="uid://77kwjveq12an"]
 
 [ext_resource type="Script" uid="uid://dwnr5o56c11f3" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Script" uid="uid://cxf21kixq2cqk" path="res://scripts/base.gd" id="2_base"]
 [ext_resource type="PackedScene" path="res://ui/hud.tscn" id="3_hud"]
-[ext_resource type="PackedScene" path="res://ui/staff_menu.tscn" id="4_staff_menu"]
-[ext_resource type="Shader" uid="uid://rcclf8q1x4ey" path="res://shaders/ocean_shader.gdshader" id="5_shader"]
 [ext_resource type="PackedScene" path="res://ui/base_overview.tscn" id="6_base_overview"]
+[ext_resource type="Shader" uid="uid://rcclf8q1x4ey" path="res://shaders/ocean_shader.gdshader" id="5_shader"]
 [ext_resource type="Script" path="res://scripts/camera_controller.gd" id="7_camera_controller"]
 [ext_resource type="Script" path="res://scripts/ambient_sound_controller.gd" id="8_ambient_sound_controller"]
+[ext_resource type="PackedScene" uid="uid://internal_affairs_panel" path="res://ui/internal_affairs_panel.tscn" id="9_internal_affairs"]
+[ext_resource type="PackedScene" uid="uid://dialogue_box" path="res://ui/dialogue_box.tscn" id="10_dialogue_box"]
+[ext_resource type="PackedScene" uid="uid://save_load_menu" path="res://ui/save_load_menu.tscn" id="11_save_load_menu"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -75,6 +77,10 @@ script = ExtResource("8_ambient_sound_controller")
 
 [node name="HUD" parent="." unique_id=679465694 instance=ExtResource("3_hud")]
 
-[node name="StaffMenu" parent="." unique_id=330149446 instance=ExtResource("4_staff_menu")]
+[node name="InternalAffairsPanel" parent="." unique_id=4488445566 instance=ExtResource("9_internal_affairs")]
 
 [node name="BaseOverview" parent="." unique_id=1105004953 instance=ExtResource("6_base_overview")]
+
+[node name="DialogueBox" parent="." unique_id=9876543210 instance=ExtResource("10_dialogue_box")]
+
+[node name="SaveLoadMenu" parent="." unique_id=9876543211 instance=ExtResource("11_save_load_menu")]

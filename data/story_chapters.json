@@ -243,12 +243,32 @@
       ],
       "completion": {
         "required_objectives": ["obj_all_departments", "obj_total_staff", "obj_expansion"],
-        "next_chapter": null,
+        "next_chapter": "chapter_end",
         "rewards": {
           "materials": 500,
           "fuel": 500,
           "gmp": 500
         }
+      }
+    },
+    {
+      "id": "chapter_end",
+      "name": "Mission Complete",
+      "description": "You have completed all story chapters",
+      "objectives": [],
+      "dialogues": [
+        {
+          "id": "victory_summary",
+          "trigger": "chapter_start",
+          "speaker": "Kaz",
+          "text": "Excellent work! Mother Base is now fully operational. You've built a formidable force. This is just the beginning of our legacy.",
+          "choices": []
+        }
+      ],
+      "completion": {
+        "required_objectives": [],
+        "next_chapter": null,
+        "rewards": {}
       }
     }
   ]

@@ -15,6 +15,7 @@ const CHAPTERS_DATA_PATH = "res://data/story_chapters.json"
 
 ## Chapter completed signal
 signal chapter_completed(chapter_id: String)
+signal chapter_loaded(chapter_id: String)  # New signal for when chapter data is loaded
 signal objective_completed(objective_id: String)
 signal dialogue_requested(dialogue_data: Dictionary)
 
@@ -101,7 +102,7 @@ func _on_staff_assigned(staff_id: int, department: String):
 	_check_all_objectives()
 
 ## Handle expedition completed event
-func _on_expedition_completed(mission_id: String):
+func _on_expedition_completed(mission_id: String, result_data: Dictionary = {}):
 	print("[StorySystem] Expedition completed: ", mission_id)
 
 	# Check if this completes any objectives
@@ -216,6 +217,9 @@ func load_chapter(chapter_id: String) -> bool:
 			chapter_data = chapter
 			print("[StorySystem] Chapter loaded: ", chapter.get("name", "Unknown"))
 
+			# Emit signal that chapter is loaded (for UI updates)
+			chapter_loaded.emit(chapter_id)
+
 			# Trigger chapter start dialogues
 			_trigger_dialogues_by_type("chapter_start")
 
@@ -327,6 +331,10 @@ func _load_next_chapter():
 	var completion = chapter_data["completion"]
 	if completion.has("next_chapter"):
 		var next_chapter = completion["next_chapter"]
+		# Check if next_chapter is null (end of story) or a valid string
+		if next_chapter == null or next_chapter == "":
+			print("[StorySystem] Story complete - no next chapter")
+			return
 		print("[StorySystem] Loading next chapter: ", next_chapter)
 		load_chapter(next_chapter)
 

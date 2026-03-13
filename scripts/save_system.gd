@@ -212,8 +212,10 @@ func _serialize_platform(platform: Platform) -> Dictionary:
 		"children": []
 	}
 
-	for child in platform.child_platforms:
-		data["children"].append(_serialize_platform(child))
+	# Use the get_child_platforms() method instead of direct property access
+	if platform.has_method("get_child_platforms"):
+		for child in platform.get_child_platforms():
+			data["children"].append(_serialize_platform(child))
 
 	return data
 

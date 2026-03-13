@@ -13,6 +13,7 @@ extends CanvasLayer
 @onready var base_size_label = $SideBar/VBoxContainer/BaseSizeLabel
 @onready var combat_power_label = $SideBar/VBoxContainer/CombatPowerLabel
 @onready var combo_label = $SideBar/VBoxContainer/ComboLabel
+@onready var objectives_header = $SideBar/VBoxContainer/ObjectivesHeader
 @onready var objective1_label = $SideBar/VBoxContainer/Objective1Label
 @onready var objective2_label = $SideBar/VBoxContainer/Objective2Label
 @onready var objective3_label = $SideBar/VBoxContainer/Objective3Label
@@ -194,6 +195,23 @@ func update_staff_info():
 
 ## Update objectives display
 func update_objectives():
+	# In Story Mode, StoryObjectivesPanel handles objectives - clear sidebar objectives
+	var game_mode_manager = get_node_or_null("/root/GameModeManager")
+	if game_mode_manager and game_mode_manager.current_mode == 1:  # STORY_MODE
+		# Hide objectives section header and labels to avoid confusion
+		if objectives_header:
+			objectives_header.visible = false
+		for label in objective_labels:
+			label.text = ""
+			label.visible = false
+		return
+
+	# Sandbox Mode: Show objectives in sidebar
+	if objectives_header:
+		objectives_header.visible = true
+	for label in objective_labels:
+		label.visible = true
+
 	if not objective_system:
 		return
 

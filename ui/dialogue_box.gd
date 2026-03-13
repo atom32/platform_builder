@@ -40,6 +40,7 @@ func _ready():
 func show_dialogue(speaker: String, text: String, choices: Array = [], on_close: Callable = Callable(), on_choice: Callable = Callable()):
 	# Store current state
 	was_paused = get_tree().paused
+	print("[DialogueBox] Opening dialogue - was_paused: ", was_paused)
 
 	# Setup dialogue
 	speaker_name.text = speaker
@@ -71,6 +72,7 @@ func show_dialogue(speaker: String, text: String, choices: Array = [], on_close:
 	# Pause game (but keep this node processing)
 	get_tree().paused = true
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	print("[DialogueBox] Game paused - get_tree().paused: ", get_tree().paused)
 
 	# Start typewriter effect
 	typewriter_timer.start(typewriter_speed)
@@ -79,7 +81,7 @@ func show_dialogue(speaker: String, text: String, choices: Array = [], on_close:
 func _add_choice_button(choice_data):
 	var button = Button.new()
 	button.text = choice_data.get("text", "Choice")
-	button.theme_override_font_sizes.font_size = 16
+	button.add_theme_constant_override("font_size", 16)
 	button.custom_minimum_size = Vector2(0, 40)
 
 	# Connect button press
@@ -125,6 +127,8 @@ func _load_next_dialogue(dialogue_id: String):
 
 ## Close dialogue box
 func close_dialogue():
+	print("[DialogueBox] Closing dialogue - was_paused: ", was_paused)
+
 	# Hide dialogue box
 	hide()
 	is_active = false
@@ -134,9 +138,11 @@ func close_dialogue():
 	typewriter_timer.stop()
 	typewriter_active = false
 
-	# Restore game state
-	get_tree().paused = was_paused
+	# Restore game state - ALWAYS unpause when dialogue closes
+	# This prevents the game from getting stuck in paused state
+	get_tree().paused = false
 	process_mode = Node.PROCESS_MODE_INHERIT
+	print("[DialogueBox] Game unpaused - get_tree().paused: ", get_tree().paused)
 
 	# Call closed callback
 	if dialogue_closed_callback.is_valid():

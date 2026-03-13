@@ -7,7 +7,7 @@
 [ext_resource type="Shader" uid="uid://rcclf8q1x4ey" path="res://shaders/ocean_shader.gdshader" id="5_shader"]
 [ext_resource type="Script" path="res://scripts/camera_controller.gd" id="7_camera_controller"]
 [ext_resource type="Script" path="res://scripts/ambient_sound_controller.gd" id="8_ambient_sound_controller"]
-[ext_resource type="PackedScene" uid="uid://internal_affairs_panel" path="res://ui/internal_affairs_panel.tscn" id="9_internal_affairs"]
+[ext_resource type="PackedScene" uid="uid://base_management_panel" path="res://ui/base_management_panel.tscn" id="9_base_management"]
 [ext_resource type="PackedScene" uid="uid://dialogue_box" path="res://ui/dialogue_box.tscn" id="10_dialogue_box"]
 [ext_resource type="PackedScene" uid="uid://save_load_menu" path="res://ui/save_load_menu.tscn" id="11_save_load_menu"]
 
@@ -77,7 +77,7 @@ script = ExtResource("8_ambient_sound_controller")
 
 [node name="HUD" parent="." unique_id=679465694 instance=ExtResource("3_hud")]
 
-[node name="InternalAffairsPanel" parent="." unique_id=4488445566 instance=ExtResource("9_internal_affairs")]
+[node name="BaseManagementPanel" parent="." unique_id=4488445566 instance=ExtResource("9_base_management")]
 
 [node name="BaseOverview" parent="." unique_id=1105004953 instance=ExtResource("6_base_overview")]
 

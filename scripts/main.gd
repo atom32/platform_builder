@@ -5,7 +5,7 @@ extends Node3D
 
 @onready var base = $Base
 @onready var camera = $Camera3D
-@onready var internal_affairs_panel: InternalAffairsPanel = $InternalAffairsPanel as InternalAffairsPanel
+@onready var base_management_panel: BaseManagementPanel = $BaseManagementPanel as BaseManagementPanel
 @onready var base_overview: BaseOverview = $BaseOverview as BaseOverview
 
 # Camera zoom settings
@@ -81,7 +81,6 @@ func _ready():
 		input_manager.overview_key_pressed.connect(_toggle_base_overview)
 		input_manager.debug_info_key_pressed.connect(_toggle_debug_mode)
 		input_manager.debug_mode_key_pressed.connect(_on_debug_mode_key)
-		input_manager.staff_menu_key_pressed.connect(_toggle_internal_affairs)
 		input_manager.expedition_key_pressed.connect(_toggle_internal_affairs)
 		input_manager.save_load_key_pressed.connect(_toggle_save_load_menu)
 
@@ -260,10 +259,10 @@ func _toggle_base_overview():
 	else:
 		base_overview.show_overview()
 
-## Toggle internal affairs panel (staff/expedition)
+## Toggle base management panel (staff/expedition)
 func _toggle_internal_affairs():
-	if internal_affairs_panel:
-		internal_affairs_panel.toggle_panel()
+	if base_management_panel:
+		base_management_panel.toggle_panel()
 
 ## Handle platform selection from overview
 func _on_platform_selected(platform: Platform):

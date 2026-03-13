@@ -84,6 +84,13 @@ This is a **Godot 4.6** prototype game project inspired by the Mother Base syste
 - Staff dismissal system to reduce upkeep costs
 - Productivity multipliers based on skill level and specialty matching
 
+**Iteration 13 - COMPLETE** ✅ (Base Management Panel Refactor)
+- **Unified UI**: Single BaseManagementPanel replaces InternalAffairsPanel, StaffMenu, and ExpeditionMenu
+- **TabContainer Layout**: Two main tabs (Staff and Expeditions) with Staff tab containing nested TabContainer
+- **Simplified Architecture**: All content in one scene, consistent CanvasLayer styling
+- **Keyboard Shortcut**: E key toggles BaseManagementPanel (removed U key staff_menu shortcut)
+- **Backward Compatibility**: Self-reference pattern maintains base.gd expedition_menu connection
+
 **Prototype Complete!** All core systems implemented for the prototype.
 
 ### Scope Limitations (Prototype Only)
@@ -130,8 +137,14 @@ godot --path /Users/ning/proj-0308
     department_system.gd - Department management ✅ (Autoload singleton)
 
 /ui              - User interface scenes
-    hud.tscn     - Resource HUD     hud.gd       - HUD controller     build_menu.tscn - Build menu     build_menu.gd - Build menu controller
-    staff_menu.tscn - Staff management UI     staff_menu.gd - Staff menu controller ```
+    hud.tscn     - Resource HUD     hud.gd       - HUD controller
+    build_menu.tscn - Build menu     build_menu.gd - Build menu controller
+    base_management_panel.tscn - Base Management Panel (unified staff/expedition UI)
+    base_management_panel.gd - Base Management Panel controller
+    dialogue_box.tscn - Dialogue box UI
+    save_load_menu.tscn - Save/Load menu
+    base_overview.tscn - Base overview panel
+```
 
 ## Current Implementation Details
 
@@ -210,13 +223,16 @@ godot --path /Users/ning/proj-0308
 - **Productivity**: Multiplier based on skill level and specialty-department matching
 - **Recruit Pool**: Staff with empty `department` are in the recruit pool
 
-### Staff Menu (`ui/staff_menu.gd` and `ui/staff_menu.tscn`)
-- **Hotkey**: Press U to toggle the staff menu
-- **TabContainer** with three tabs:
-  1. **Recruits Tab**: View unassigned staff, assign to departments with buttons
-  2. **Departments Tab**: View all department assignments
-  3. **Dismiss Tab**: View all staff, dismiss selected to reduce upkeep
+### Base Management Panel (`ui/base_management_panel.gd` and `ui/base_management_panel.tscn`)
+- **Hotkey**: Press E to toggle the base management panel
+- **TabContainer** with two main tabs:
+  1. **Staff Tab**: Nested TabContainer with three sub-tabs:
+     - Recruits: View unassigned staff, assign to departments with buttons
+     - Departments: View all department assignments
+     - Dismiss: View all staff, dismiss selected to reduce upkeep
+  2. **Expeditions Tab**: View combat power, department bonuses, and available missions
 - **Dynamic Updates**: Lists refresh when menu opens or actions are taken
+- **Expedition System**: Launch missions directly from the panel, track active expeditions
 
 ### Department System (`scripts/department_system.gd`)
 - **Global Singleton**: Accessible via `DepartmentSystem`
@@ -232,7 +248,7 @@ godot --path /Users/ning/proj-0308
 - **Zoom Speed**: 5 units per scroll step
 - **Camera Panning**: Right-click + drag to move camera (handled by base.gd)
 - **Starting Resources**: Grants 200 Materials, 100 Fuel, 300 GMP, 10 Beds on game start
-- **Hotkeys**: R (recruit staff), U (open staff menu)
+- **Hotkeys**: R (recruit staff), E (open base management panel)
 
 ### Base System (`scripts/base.gd`) - Tree Architecture
 - **Tree Management**: HQ is root, tracks all platforms in tree structure
@@ -264,7 +280,7 @@ godot --path /Users/ning/proj-0308
 6. **Produce**: All platforms generate resources over time
 7. **Navigate**: Right-click + drag to pan camera, scroll to zoom
 8. **Recruit**: Press R to recruit staff (50 GMP, requires available bed)
-9. **Assign**: Press U to open Staff Management, assign staff to departments
+9. **Manage**: Press E to open Base Management Panel, assign staff to departments, launch expeditions
 10. **Upkeep**: Staff cost 1 Material per minute per staff
 
 ## Tree Expansion Example

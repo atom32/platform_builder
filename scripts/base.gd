@@ -16,9 +16,9 @@ var build_menu: BuildMenu = null
 var department_system: Node = null
 var combo_system: ComboSystem = null
 var expedition_system: ExpeditionManager = null
-var expedition_menu: ExpeditionMenu = null
+var expedition_menu: BaseManagementPanel = null
 var base_overview: BaseOverview = null
-var internal_affairs_panel: InternalAffairsPanel = null
+var base_management_panel: BaseManagementPanel = null
 
 ## Base size limit
 const MAX_PLATFORMS: int = 100
@@ -99,13 +99,13 @@ func _create_base_overview():
 	# Get reference to BaseOverview from Main
 	base_overview = get_node_or_null("../BaseOverview") as BaseOverview
 
-	# Get reference to InternalAffairsPanel
-	internal_affairs_panel = get_node_or_null("../InternalAffairsPanel") as InternalAffairsPanel
-	if internal_affairs_panel:
-		# Get expedition menu reference from InternalAffairsPanel
-		expedition_menu = internal_affairs_panel.expedition_menu
+	# Get reference to BaseManagementPanel
+	base_management_panel = get_node_or_null("../BaseManagementPanel") as BaseManagementPanel
+	if base_management_panel:
+		# Get expedition menu reference from BaseManagementPanel (self-reference)
+		expedition_menu = base_management_panel.expedition_menu
 		if expedition_menu and expedition_menu.has_method("show_menu"):
-			print("[Base] Connected to InternalAffairsPanel expedition menu")
+			print("[Base] Connected to BaseManagementPanel expedition menu")
 			# Connect expedition signals
 			if expedition_menu.has_signal("expedition_launched"):
 				expedition_menu.expedition_launched.connect(_on_expedition_launched)

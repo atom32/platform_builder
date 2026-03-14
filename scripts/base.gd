@@ -16,8 +16,6 @@ var build_menu: BuildMenu = null
 var department_system: Node = null
 var combo_system: ComboSystem = null
 var expedition_system: ExpeditionManager = null
-var expedition_menu: BaseManagementPanel = null
-var base_overview: BaseOverview = null
 var base_management_panel: BaseManagementPanel = null
 
 ## Base size limit
@@ -43,28 +41,27 @@ func _ready():
 	_create_combo_system()
 	_create_expedition_system()
 	_create_build_menu()
-	_create_base_overview()
 	_setup_construction_timer()
 	_setup_production_timer()
 	_setup_click_detection()
-	_connect_input_manager()
+	_get_base_management_panel()
 
 	ResourceSystem.debug_print("=== Mother Base Tree System ===")
 	ResourceSystem.debug_print("HQ with 6 expansion slots created")
 	ResourceSystem.debug_print("Each platform can have 6 children")
 	ResourceSystem.debug_print("Click yellow circles to expand!")
 
-func _connect_input_manager():
-	var input_manager = get_node_or_null("/root/InputManager")
-	if input_manager:
-		input_manager.expedition_key_pressed.connect(_on_expedition_key_pressed)
-
-func _on_expedition_key_pressed():
-	if expedition_menu:
-		if expedition_menu.visible:
-			expedition_menu.hide_menu()
-		else:
-			open_expedition_menu()
+func _get_base_management_panel():
+	# Get reference to BaseManagementPanel from Main
+	base_management_panel = get_node_or_null("../BaseManagementPanel") as BaseManagementPanel
+	if base_management_panel:
+		# Get expedition menu reference from BaseManagementPanel (self-reference)
+		var expedition_menu = base_management_panel.expedition_menu
+		if expedition_menu and expedition_menu.has_method("show_menu"):
+			print("[Base] Connected to BaseManagementPanel expedition menu")
+			# Connect expedition signals
+			if expedition_menu.has_signal("expedition_launched"):
+				expedition_menu.expedition_launched.connect(_on_expedition_launched)
 
 func _create_department_system():
 	# Use the autoload instance
@@ -94,21 +91,6 @@ func _create_expedition_system():
 		# Connect combo system reference
 		if combo_system:
 			expedition_system.combo_system = combo_system
-
-func _create_base_overview():
-	# Get reference to BaseOverview from Main
-	base_overview = get_node_or_null("../BaseOverview") as BaseOverview
-
-	# Get reference to BaseManagementPanel
-	base_management_panel = get_node_or_null("../BaseManagementPanel") as BaseManagementPanel
-	if base_management_panel:
-		# Get expedition menu reference from BaseManagementPanel (self-reference)
-		expedition_menu = base_management_panel.expedition_menu
-		if expedition_menu and expedition_menu.has_method("show_menu"):
-			print("[Base] Connected to BaseManagementPanel expedition menu")
-			# Connect expedition signals
-			if expedition_menu.has_signal("expedition_launched"):
-				expedition_menu.expedition_launched.connect(_on_expedition_launched)
 
 func _setup_construction_timer():
 	# Unified construction tick (updates all construction jobs every second)
@@ -184,9 +166,10 @@ func _on_construction_tick():
 			if game_session:
 				game_session.increment_platforms_built()
 
-			# Refresh base overview if visible
-			if base_overview and base_overview.visible:
-				base_overview.refresh()
+			# Refresh base management panel overview if visible
+			if base_management_panel and base_management_panel.visible:
+				if base_management_panel.tab_container and base_management_panel.tab_container.current_tab == 2:
+					base_management_panel._refresh_overview()
 
 	# Remove completed jobs (in reverse order to maintain indices)
 	for i in range(completed_jobs.size() - 1, -1, -1):
@@ -220,15 +203,15 @@ func _input(event):
 	if event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			# Check if menus are open
-			if not (build_menu and build_menu.visible) and not (expedition_menu and expedition_menu.visible):
+			if not (build_menu and build_menu.visible) and not (base_management_panel and base_management_panel.visible):
 				_handle_click(event.position)
 
 	# Handle menu cancellation with ESC
 	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
 		if build_menu and build_menu.visible:
 			build_menu.hide_menu()
-		elif expedition_menu and expedition_menu.visible:
-			expedition_menu.hide_menu()
+		elif base_management_panel and base_management_panel.visible:
+			base_management_panel.hide_panel()
 
 	# Handle test feedback with T key
 	if event is InputEventKey and event.pressed and event.keycode == KEY_T:
@@ -490,11 +473,6 @@ func _on_expedition_failed(mission_id: String, reason: String):
 ## Handle combo activation feedback
 func _on_combo_activated(combo_name: String, bonus: float, position: Vector3):
 	FeedbackSystem.show_combo_activated(combo_name, bonus, position)
-
-## Open expedition menu (called from UI or hotkey)
-func open_expedition_menu():
-	if expedition_menu:
-		expedition_menu.show_menu()
 
 ## Update bed capacity based on all platforms
 func _update_bed_capacity():

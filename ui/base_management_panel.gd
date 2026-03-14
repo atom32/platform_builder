@@ -25,6 +25,15 @@ signal expedition_launched(mission_id: String)
 @onready var duration_reduction_label = $Panel/VBoxContainer/TabContainer/Expeditions/DepartmentBonuses/DurationReductionLabel
 @onready var mission_list = $Panel/VBoxContainer/TabContainer/Expeditions/ScrollContainer/MissionList
 
+## Overview Tab References
+@onready var overview_tree = $Panel/VBoxContainer/TabContainer/Overview/Tree
+@onready var overview_stats = $Panel/VBoxContainer/TabContainer/Overview/StatsLabel
+
+## Save/Load Tab References
+@onready var save_load_slots = $Panel/VBoxContainer/TabContainer/SaveLoad/SaveSlots
+@onready var save_mode_label = $Panel/VBoxContainer/TabContainer/SaveLoad/Header/ModeLabel
+@onready var return_to_title_button = $Panel/VBoxContainer/TabContainer/SaveLoad/ActionButtons/ReturnToTitleButton
+
 ## Self-reference for backward compatibility with base.gd
 var expedition_menu: BaseManagementPanel
 
@@ -38,6 +47,17 @@ var selected_dismiss_index = -1
 ## Expedition system reference
 var expedition_system: ExpeditionManager = null
 var mission_buttons: Dictionary = {}
+
+## Overview system references
+var base_system: Base = null
+var platform_tree_items: Dictionary = {}
+var _last_click_time: float = 0.0
+var _last_clicked_item: TreeItem = null
+const DOUBLE_CLICK_TIME: float = 0.5
+
+## Save/Load system references
+var save_slots: Array[Dictionary] = []
+var current_mode: int = 0
 
 func _ready():
 	# Set up self-reference for backward compatibility
@@ -62,6 +82,13 @@ func _ready():
 
 	# Create mission buttons
 	_create_mission_buttons()
+
+	# Setup save slots
+	_setup_save_slots()
+
+	# Connect return to title button
+	if return_to_title_button:
+		return_to_title_button.pressed.connect(_on_return_to_title_pressed)
 
 ## Show the panel
 func show_panel():
@@ -94,7 +121,10 @@ func _refresh_current_tab():
 			refresh_lists()
 		1:  # Expeditions tab
 			_refresh_expedition_tab()
-			pass
+		2:  # Overview tab
+			_refresh_overview()
+		3:  # Save/Load tab
+			_refresh_save_slots()
 
 ## Handle close button pressed
 func _on_close_pressed():
@@ -195,13 +225,28 @@ func _refresh_dismiss_list():
 		]
 		dismiss_list.add_item(display_text)
 
-## Handle input for keyboard shortcuts
+## Handle input for keyboard shortcuts and mouse interactions
 func _input(event):
 	if not visible:
 		return
 
+	# ESC closes panel
 	if event.is_action_pressed("ui_cancel"):
 		hide_panel()
+		return
+
+	# Handle mouse clicks on Overview Tree
+	if tab_container and tab_container.current_tab == 2:  # Overview tab
+		if event is InputEventMouseButton and event.pressed:
+			if event.button_index == MOUSE_BUTTON_LEFT:
+				if overview_tree:
+					# Convert screen position to Tree's local coordinate system
+					var local_pos = overview_tree.get_local_mouse_position()
+
+					# Get item at local position
+					var clicked_item = overview_tree.get_item_at_position(local_pos)
+					if clicked_item:
+						_check_overview_double_click(clicked_item)
 
 ## Public method for expedition menu compatibility
 ## Called by base.gd through expedition_menu reference
@@ -418,3 +463,263 @@ func _on_dismiss_selected():
 		refresh_lists()
 	else:
 		ResourceSystem.debug_print("[BaseManagementPanel] Failed to dismiss staff")
+
+## ===== OVERVIEW TAB METHODS =====
+
+## Refresh overview tab
+func _refresh_overview():
+	_build_overview_tree()
+
+## Build overview tree
+func _build_overview_tree():
+	if not base_system:
+		base_system = get_node_or_null("/root/Main/Base") as Base
+		if not base_system:
+			push_error("Base system not found!")
+			return
+
+	if not overview_tree:
+		return
+
+	# Clear existing tree
+	overview_tree.clear()
+	platform_tree_items.clear()
+
+	# Get HQ as root
+	var hq = base_system.get_hq()
+	if not hq:
+		push_error("HQ not found!")
+		return
+
+	# Build tree recursively
+	var root_item = overview_tree.create_item()
+	root_item.set_text(0, "HQ")
+	root_item.set_text(1, "0")
+	root_item.set_metadata(0, hq)
+	platform_tree_items[hq] = root_item
+
+	# Add children recursively
+	_add_platform_children_recursive(hq, root_item)
+
+	# Update stats
+	_update_overview_stats(hq)
+
+	# Expand all items
+	_expand_all_tree_items(root_item)
+
+## Add platform children recursively
+func _add_platform_children_recursive(platform: Platform, parent_item: TreeItem):
+	var child_count = 0
+	for child in platform.get_child_platforms():
+		child_count += 1
+		var child_item = overview_tree.create_item(parent_item)
+		child_item.set_text(0, child.platform_type)
+		child_item.set_text(1, "0")
+		child_item.set_metadata(0, child)
+		platform_tree_items[child] = child_item
+
+		# Recursively add children
+		_add_platform_children_recursive(child, child_item)
+
+	# Update parent's child count
+	var current_count = parent_item.get_text(1).to_int()
+	parent_item.set_text(1, str(current_count + child_count))
+
+## Update overview stats
+func _update_overview_stats(hq: Platform):
+	if not overview_stats or not base_system:
+		return
+
+	var total_platforms = base_system.get_total_platform_count()
+	var max_depth = _calculate_tree_depth(hq)
+	overview_stats.text = "Total Platforms: %d | Tree Depth: %d" % [total_platforms, max_depth]
+
+## Calculate tree depth
+func _calculate_tree_depth(platform: Platform) -> int:
+	var child_platforms = platform.get_child_platforms()
+	if child_platforms.is_empty():
+		return 1
+
+	var max_child_depth = 0
+	for child in child_platforms:
+		var child_depth = _calculate_tree_depth(child)
+		max_child_depth = max(max_child_depth, child_depth)
+
+	return max_child_depth + 1
+
+## Expand all tree items
+func _expand_all_tree_items(item: TreeItem):
+	item.collapsed = false
+	for child in item.get_children():
+		_expand_all_tree_items(child)
+
+## Check for double-click on overview tree
+func _check_overview_double_click(clicked_item: TreeItem):
+	var current_time = Time.get_ticks_msec() / 1000.0
+
+	# Check if same item was clicked recently
+	if clicked_item == _last_clicked_item and (current_time - _last_click_time) < DOUBLE_CLICK_TIME:
+		# Double click detected
+		var platform = clicked_item.get_metadata(0)
+		if platform and platform is Platform:
+			_navigate_to_platform(platform)
+		_last_clicked_item = null  # Reset
+	else:
+		_last_clicked_item = clicked_item
+		_last_click_time = current_time
+
+## Navigate camera to platform
+func _navigate_to_platform(platform: Platform):
+	# Move camera to platform
+	var camera = get_viewport().get_camera_3d()
+	if not camera:
+		return
+
+	# Check if camera has target_position (CameraController)
+	if camera.has_method("get") and camera.has_method("set"):
+		# Use CameraController's target_position system
+		var current_pos = camera.position
+		var target_pos = platform.position
+
+		# Maintain camera's height and viewing angle
+		var new_target = Vector3(target_pos.x, current_pos.y, target_pos.z + 40)
+		camera.set("target_position", new_target)
+		ResourceSystem.debug_print("Navigated to platform: %s (set CameraController target)" % platform.platform_type)
+	else:
+		# Fallback: direct position setting
+		var current_pos = camera.position
+		var target_pos = platform.position
+
+		# Maintain camera's height and viewing angle
+		camera.position.x = target_pos.x
+		camera.position.z = target_pos.z + 40
+		ResourceSystem.debug_print("Navigated to platform: %s (direct position set)" % platform.platform_type)
+
+## ===== SAVE/LOAD TAB METHODS =====
+
+## Setup save slots
+func _setup_save_slots():
+	if not save_load_slots:
+		return
+
+	# Clear existing array
+	save_slots.clear()
+
+	for i in range(3):
+		var slot_panel = save_load_slots.get_child(i)
+		if not slot_panel:
+			continue
+
+		var slot_name = slot_panel.get_node("HBoxContainer/SlotInfo/SlotName")
+		var slot_details = slot_panel.get_node("HBoxContainer/SlotInfo/SlotDetails")
+		var save_button = slot_panel.get_node("HBoxContainer/Buttons/SaveButton")
+		var load_button = slot_panel.get_node("HBoxContainer/Buttons/LoadButton")
+		var delete_button = slot_panel.get_node("HBoxContainer/Buttons/DeleteButton")
+
+		save_slots.append({
+			"index": i,
+			"panel": slot_panel,
+			"name_label": slot_name,
+			"details_label": slot_details,
+			"save_button": save_button,
+			"load_button": load_button,
+			"delete_button": delete_button
+		})
+
+		# Connect button signals
+		var slot_index = i
+		if save_button:
+			save_button.pressed.connect(_on_save_pressed.bind(slot_index))
+		if load_button:
+			load_button.pressed.connect(_on_load_pressed.bind(slot_index))
+		if delete_button:
+			delete_button.pressed.connect(_on_delete_pressed.bind(slot_index))
+
+## Refresh save slots
+func _refresh_save_slots():
+	# Get current game mode
+	var game_mode_manager = get_node_or_null("/root/GameModeManager")
+	if game_mode_manager:
+		current_mode = game_mode_manager.current_mode
+
+	# Update mode label
+	if save_mode_label:
+		save_mode_label.text = "Story Mode" if current_mode == 1 else "Sandbox Mode"
+
+	# Refresh save slot display
+	for slot in save_slots:
+		var slot_index = slot["index"]
+		var save_system = get_node_or_null("/root/SaveSystem")
+
+		if save_system and save_system.has_save(slot_index, current_mode):
+			# Slot has data
+			var info = save_system.get_save_info(slot_index, current_mode)
+			var chapter_name = info.get("chapter_name", "")
+			var save_time = info.get("save_time", "")
+
+			if slot["name_label"]:
+				slot["name_label"].text = "Slot %d: %s" % [slot_index + 1, chapter_name]
+			if slot["details_label"]:
+				slot["details_label"].text = save_time
+			if slot["load_button"]:
+				slot["load_button"].disabled = false
+			if slot["delete_button"]:
+				slot["delete_button"].disabled = false
+		else:
+			# Slot is empty
+			if slot["name_label"]:
+				slot["name_label"].text = "Slot %d: Empty" % [slot_index + 1]
+			if slot["details_label"]:
+				slot["details_label"].text = ""
+			if slot["load_button"]:
+				slot["load_button"].disabled = true
+			if slot["delete_button"]:
+				slot["delete_button"].disabled = true
+
+## Handle save button pressed
+func _on_save_pressed(slot_index: int):
+	print("[BaseManagementPanel] Save to slot %d" % slot_index)
+
+	var save_system = get_node_or_null("/root/SaveSystem")
+	if save_system:
+		if save_system.save_game(slot_index, current_mode):
+			print("[BaseManagementPanel] Game saved successfully")
+			_refresh_save_slots()
+		else:
+			push_error("[BaseManagementPanel] Failed to save game")
+
+## Handle load button pressed
+func _on_load_pressed(slot_index: int):
+	print("[BaseManagementPanel] Load from slot %d" % slot_index)
+
+	var save_system = get_node_or_null("/root/SaveSystem")
+	if save_system:
+		if save_system.load_game(slot_index, current_mode):
+			print("[BaseManagementPanel] Game loaded successfully")
+
+			# Reload scene to apply changes
+			get_tree().reload_current_scene()
+		else:
+			push_error("[BaseManagementPanel] Failed to load game")
+
+## Handle delete button pressed
+func _on_delete_pressed(slot_index: int):
+	print("[BaseManagementPanel] Delete slot %d" % slot_index)
+
+	var save_system = get_node_or_null("/root/SaveSystem")
+	if save_system:
+		if save_system.delete_save(slot_index, current_mode):
+			print("[BaseManagementPanel] Save deleted successfully")
+			_refresh_save_slots()
+		else:
+			push_error("[BaseManagementPanel] Failed to delete save")
+
+## Handle return to title button pressed
+func _on_return_to_title_pressed():
+	print("[BaseManagementPanel] Returning to title menu")
+
+	# Unpause game
+	get_tree().paused = false
+
+	# Switch to main menu
+	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")

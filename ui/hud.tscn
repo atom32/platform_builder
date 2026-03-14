@@ -105,20 +105,10 @@ layout_mode = 2
 label_settings = SubResource("LabelSettings_keys")
 text = "R: Recruit"
 
-[node name="ELabel" type="Label" parent="KeyBindings/HBoxContainer"]
-layout_mode = 2
-label_settings = SubResource("LabelSettings_keys")
-text = "E: Expeditions"
-
 [node name="TabLabel" type="Label" parent="KeyBindings/HBoxContainer"]
 layout_mode = 2
 label_settings = SubResource("LabelSettings_keys")
-text = "TAB: Overview"
-
-[node name="ULabel" type="Label" parent="KeyBindings/HBoxContainer"]
-layout_mode = 2
-label_settings = SubResource("LabelSettings_keys")
-text = "U: Staff"
+text = "TAB: Management"
 
 [node name="HLabel" type="Label" parent="KeyBindings/HBoxContainer"]
 layout_mode = 2
@@ -134,11 +124,6 @@ text = "D: Debug Mode"
 layout_mode = 2
 label_settings = SubResource("LabelSettings_keys")
 text = "F: Debug Info"
-
-[node name="EscLabel" type="Label" parent="KeyBindings/HBoxContainer"]
-layout_mode = 2
-label_settings = SubResource("LabelSettings_keys")
-text = "ESC: Save/Load"
 
 [node name="SideBar" type="Panel" parent="."]
 anchors_preset = 6

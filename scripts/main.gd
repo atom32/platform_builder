@@ -6,7 +6,6 @@ extends Node3D
 @onready var base = $Base
 @onready var camera = $Camera3D
 @onready var base_management_panel: BaseManagementPanel = $BaseManagementPanel as BaseManagementPanel
-@onready var base_overview: BaseOverview = $BaseOverview as BaseOverview
 
 # Camera zoom settings
 var zoom_min_distance: float = 15.0
@@ -64,13 +63,6 @@ func _ready():
 	if base:
 		base.build_failed.connect(_on_build_failed)
 
-	# Connect to base overview signals
-	if base_overview:
-		base_overview.platform_selected.connect(_on_platform_selected)
-		base_overview.overview_closed.connect(_on_overview_closed)
-		# Pass base system reference to overview
-		base_overview.base_system = base
-
 	# Connect to staff recruitment signal
 	ResourceSystem.staff_recruited.connect(_on_staff_recruited)
 
@@ -78,11 +70,9 @@ func _ready():
 	var input_manager = get_node_or_null("/root/InputManager")
 	if input_manager:
 		input_manager.recruit_key_pressed.connect(_recruit_staff)
-		input_manager.overview_key_pressed.connect(_toggle_base_overview)
+		input_manager.base_management_key_pressed.connect(_toggle_base_management)
 		input_manager.debug_info_key_pressed.connect(_toggle_debug_mode)
 		input_manager.debug_mode_key_pressed.connect(_on_debug_mode_key)
-		input_manager.expedition_key_pressed.connect(_toggle_internal_affairs)
-		input_manager.save_load_key_pressed.connect(_toggle_save_load_menu)
 
 func _input(event):
 	# Camera zoom is now handled by CameraController
@@ -249,28 +239,10 @@ func _print_staff_info():
 		info["Unassigned"], info["R&D"], info["Combat"], info["Support"], info["Intel"], info["Medical"]
 	])
 
-## Toggle base overview
-func _toggle_base_overview():
-	if not base_overview:
-		return
-
-	if base_overview.visible:
-		base_overview.hide_overview()
-	else:
-		base_overview.show_overview()
-
-## Toggle base management panel (staff/expedition)
-func _toggle_internal_affairs():
+## Toggle base management panel
+func _toggle_base_management():
 	if base_management_panel:
 		base_management_panel.toggle_panel()
-
-## Handle platform selection from overview
-func _on_platform_selected(platform: Platform):
-	pass
-
-## Handle overview closed
-func _on_overview_closed():
-	pass
 
 ## Handle game over
 func _on_game_over(reason: String):
@@ -298,9 +270,3 @@ func _on_staff_recruited():
 	var game_session = get_node_or_null("/root/GameSession")
 	if game_session:
 		game_session.increment_staff_recruited()
-
-## Toggle save/load menu
-func _toggle_save_load_menu():
-	var save_load_menu = get_node_or_null("SaveLoadMenu")
-	if save_load_menu and save_load_menu.has_method("show_menu"):
-		save_load_menu.show_menu()

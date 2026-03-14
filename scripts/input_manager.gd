@@ -5,12 +5,10 @@ extends Node
 
 ## Signals for each action
 signal recruit_key_pressed()
-signal expedition_key_pressed()
-signal overview_key_pressed()
+signal base_management_key_pressed()
 signal sidebar_toggle_key_pressed()
 signal debug_info_key_pressed()
 signal debug_mode_key_pressed()
-signal save_load_key_pressed()
 
 func _ready():
 	set_process_input(true)
@@ -25,15 +23,11 @@ func _input(event):
 	match event.keycode:
 		KEY_R:
 			recruit_key_pressed.emit()
-		KEY_E:
-			expedition_key_pressed.emit()
 		KEY_TAB:
-			overview_key_pressed.emit()
+			base_management_key_pressed.emit()
 		KEY_H:
 			sidebar_toggle_key_pressed.emit()
 		KEY_D:
 			debug_info_key_pressed.emit()
 		KEY_F:
 			debug_mode_key_pressed.emit()
-		KEY_ESCAPE:
-			save_load_key_pressed.emit()

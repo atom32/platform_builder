@@ -222,6 +222,11 @@ func debug_print(message: String):
 	if debug_mode:
 		print(message)
 
+## Set debug mode (called by ConfigSystem)
+func set_debug_mode(enabled: bool):
+	debug_mode = enabled
+	print("[ResourceSystem] Debug mode set to: ", "ON" if debug_mode else "OFF")
+
 ## Reset all resources to zero (for new game)
 func reset_resources():
 	materials = 0

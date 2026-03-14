@@ -5,6 +5,7 @@ extends Control
 
 @onready var story_mode_button = $CanvasLayer/CenterContainer/VBoxContainer/StoryModeButton
 @onready var sandbox_mode_button = $CanvasLayer/CenterContainer/VBoxContainer/SandboxModeButton
+@onready var settings_button = $CanvasLayer/CenterContainer/VBoxContainer/SettingsButton
 @onready var quit_button = $CanvasLayer/CenterContainer/VBoxContainer/QuitButton
 
 func _ready():
@@ -17,6 +18,9 @@ func _ready():
 
 	if sandbox_mode_button:
 		sandbox_mode_button.pressed.connect(_on_sandbox_mode_button_pressed)
+
+	if settings_button:
+		settings_button.pressed.connect(_on_settings_button_pressed)
 
 	if quit_button:
 		quit_button.pressed.connect(_on_quit_button_pressed)
@@ -48,6 +52,12 @@ func _on_sandbox_mode_button_pressed():
 	if game_mode_manager:
 		game_mode_manager.start_sandbox_mode()
 	get_tree().change_scene_to_file("res://scenes/main.tscn")
+
+func _on_settings_button_pressed():
+	# Create and show settings menu
+	var settings_menu = preload("res://ui/settings_menu.tscn").instantiate()
+	add_child(settings_menu)
+	settings_menu.show_menu()
 
 func _on_quit_button_pressed():
 	get_tree().quit()

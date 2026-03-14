@@ -67,6 +67,11 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "FREE SANDBOX"
 
+[node name="SettingsButton" type="Button" parent="CanvasLayer/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "SETTINGS"
+
 [node name="QuitButton" type="Button" parent="CanvasLayer/CenterContainer/VBoxContainer" unique_id=1533820971]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24

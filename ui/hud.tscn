@@ -115,15 +115,10 @@ layout_mode = 2
 label_settings = SubResource("LabelSettings_keys")
 text = "H: Sidebar"
 
-[node name="DLabel" type="Label" parent="KeyBindings/HBoxContainer"]
-layout_mode = 2
-label_settings = SubResource("LabelSettings_keys")
-text = "D: Debug Mode"
-
 [node name="FLabel" type="Label" parent="KeyBindings/HBoxContainer"]
 layout_mode = 2
 label_settings = SubResource("LabelSettings_keys")
-text = "F: Debug Info"
+text = "F: Debug Info (when enabled)"
 
 [node name="SideBar" type="Panel" parent="."]
 anchors_preset = 6

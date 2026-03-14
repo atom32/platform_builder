@@ -129,6 +129,12 @@ func _setup_localized_text():
 	# Note: "Combos" and "Objectives" headers are shown in the actual labels, not separate headers
 	_set_label_text("SideBar/VBoxContainer/ObjectivesHeader", "ui_objectives_header")
 
+	# Key bindings
+	_set_label_text("KeyBindings/HBoxContainer/RLabel", "ui_keybinding_recruit")
+	_set_label_text("KeyBindings/HBoxContainer/TabLabel", "ui_keybinding_management")
+	_set_label_text("KeyBindings/HBoxContainer/HLabel", "ui_keybinding_sidebar")
+	_set_label_text("KeyBindings/HBoxContainer/FLabel", "ui_keybinding_debug_info")
+
 	# Toggle button text will be set dynamically in _update_toggle_button_text()
 	_update_toggle_button_text()
 

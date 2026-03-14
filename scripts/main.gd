@@ -22,11 +22,24 @@ var camera_tilt: float = -30.0  # Downward tilt angle in degrees
 # Focus point marker (visualization)
 var focus_marker: MeshInstance3D = null
 
-# Debug mode
-var debug_mode: bool = true
+# Debug mode - controlled by ConfigSystem
+var debug_mode: bool = false
 
 func _ready():
-	# Initialize game session FIRST (resets everything to clean state)
+	# Load debug mode from ConfigSystem FIRST
+	var config_system = get_node_or_null("/root/ConfigSystem")
+	if config_system:
+		debug_mode = config_system.debug_mode
+		print("[Main] Debug mode loaded from ConfigSystem: ", debug_mode)
+	else:
+		print("[Main] WARNING: ConfigSystem not found, using default debug_mode: ", debug_mode)
+
+	# Apply debug mode to ResourceSystem
+	var resource_system = get_node_or_null("/root/ResourceSystem")
+	if resource_system:
+		resource_system.debug_mode = debug_mode
+
+	# Initialize game session (resets everything to clean state)
 	var game_session = get_node_or_null("/root/GameSession")
 	var game_mode_manager = get_node_or_null("/root/GameModeManager")
 	var story_system = get_node_or_null("/root/StorySystem")
@@ -71,7 +84,7 @@ func _ready():
 	if input_manager:
 		input_manager.recruit_key_pressed.connect(_recruit_staff)
 		input_manager.base_management_key_pressed.connect(_toggle_base_management)
-		input_manager.debug_info_key_pressed.connect(_toggle_debug_mode)
+		# Debug mode is now controlled only through settings menu, not keyboard toggle
 		input_manager.debug_mode_key_pressed.connect(_on_debug_mode_key)
 
 func _input(event):
@@ -202,18 +215,23 @@ func _print_focus_debug():
 	ResourceSystem.debug_print("Debug mode: " + str(debug_mode))
 	ResourceSystem.debug_print("")
 
-## Toggle debug mode
-func _toggle_debug_mode():
-	debug_mode = !debug_mode
+## Set debug mode (called by ConfigSystem only)
+## This applies the debug mode state from ConfigSystem to the main game
+## NO sync back to ConfigSystem - prevents infinite loop
+func set_debug_mode(enabled: bool):
+	debug_mode = enabled
 
-	# Sync with ResourceSystem
-	ResourceSystem.debug_mode = debug_mode
+	# Update ResourceSystem
+	var resource_system = get_node_or_null("/root/ResourceSystem")
+	if resource_system:
+		resource_system.debug_mode = debug_mode
 
+	# Update focus marker visibility
 	if focus_marker:
 		focus_marker.visible = debug_mode
 
 	# Always print debug mode status (not controlled by debug_mode)
-	print("Debug mode: %s" % ("ON" if debug_mode else "OFF"))
+	print("[Main] Debug mode set to: %s" % ("ON" if debug_mode else "OFF"))
 
 ## Handle debug mode key (F) - print debug info when in debug mode
 func _on_debug_mode_key():

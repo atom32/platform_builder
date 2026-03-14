@@ -7,7 +7,6 @@ extends Node
 signal recruit_key_pressed()
 signal base_management_key_pressed()
 signal sidebar_toggle_key_pressed()
-signal debug_info_key_pressed()
 signal debug_mode_key_pressed()
 
 func _ready():
@@ -27,7 +26,5 @@ func _input(event):
 			base_management_key_pressed.emit()
 		KEY_H:
 			sidebar_toggle_key_pressed.emit()
-		KEY_D:
-			debug_info_key_pressed.emit()
 		KEY_F:
 			debug_mode_key_pressed.emit()

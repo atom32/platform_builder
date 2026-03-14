@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://iyonngdvkv2u"]
 
 [ext_resource type="Script" uid="uid://cvd6o5mwnd16r" path="res://scripts/main_menu.gd" id="1_main_menu"]
-[ext_resource type="Texture2D" uid="uid://cc0k46ndf125j" path="res://assets/textures/bg.png" id="2_bg"]
+[ext_resource type="VideoStream" uid="uid://bg_video" path="res://assets/videos/Static_camera_seamless_loop_foreground_msf_soldier_ec42d38502.mp4" id="1_bg_video"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_title"]
 font_size = 72
@@ -18,19 +18,20 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_main_menu")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1677054996]
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1677054996"]
 
-[node name="Background" type="TextureRect" parent="CanvasLayer" unique_id=1794967755]
+[node name="Background" type="VideoStreamPlayer" parent="CanvasLayer" unique_id=1794967755"]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_bg")
-expand_mode = 1
-stretch_mode = 5
+stream = ExtResource("1_bg_video")
+autoplay = true
+loop = true
 
-[node name="CenterContainer" type="CenterContainer" parent="CanvasLayer" unique_id=1753499002]
+[node name="CenterContainer" type="CenterContainer" parent="CanvasLayer" unique_id=1753499002"]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -43,31 +44,31 @@ offset_bottom = 150.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/CenterContainer" unique_id=1179618708]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/CenterContainer" unique_id=1179618708"]
 layout_mode = 2
 theme_override_constants/separation = 30
 
-[node name="TitleLabel" type="Label" parent="CanvasLayer/CenterContainer/VBoxContainer" unique_id=1723126802]
+[node name="TitleLabel" type="Label" parent="CanvasLayer/CenterContainer/VBoxContainer" unique_id=1723126802"]
 layout_mode = 2
 text = "PHANTOM GEAR"
 label_settings = SubResource("LabelSettings_title")
 horizontal_alignment = 1
 
-[node name="HSeparator" type="HSeparator" parent="CanvasLayer/CenterContainer/VBoxContainer" unique_id=1475893451]
+[node name="HSeparator" type="HSeparator" parent="CanvasLayer/CenterContainer/VBoxContainer" unique_id=1475893451"]
 layout_mode = 2
 theme_override_constants/separation = 0
 
-[node name="StoryModeButton" type="Button" parent="CanvasLayer/CenterContainer/VBoxContainer" unique_id=1637495278]
+[node name="StoryModeButton" type="Button" parent="CanvasLayer/CenterContainer/VBoxContainer" unique_id=1637495278"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "STORY MODE"
 
-[node name="SandboxModeButton" type="Button" parent="CanvasLayer/CenterContainer/VBoxContainer" unique_id="1837495279"]
+[node name="SandboxModeButton" type="Button" parent="CanvasLayer/CenterContainer/VBoxContainer" unique_id=1837495279"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "FREE SANDBOX"
 
-[node name="QuitButton" type="Button" parent="CanvasLayer/CenterContainer/VBoxContainer" unique_id=1533820971]
+[node name="QuitButton" type="Button" parent="CanvasLayer/CenterContainer/VBoxContainer" unique_id=1533820971"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "QUIT"

@@ -116,6 +116,27 @@ func _ready():
 			# Hide in sandbox mode (or if GameModeManager not available)
 			story_objectives_panel.hide_panel()
 
+	# Setup localized HUD text
+	_setup_localized_text()
+
+## Setup localized HUD text
+func _setup_localized_text():
+	# Resource panel header
+	_set_label_text("ResourcePanel/VBoxContainer/ResourcesHeader", "ui_resources_header")
+
+	# Side bar
+	_set_label_text("SideBar/VBoxContainer/SideBarHeader", "ui_base_status_header")
+	# Note: "Combos" and "Objectives" headers are shown in the actual labels, not separate headers
+	_set_label_text("SideBar/VBoxContainer/ObjectivesHeader", "ui_objectives_header")
+
+	# Toggle button text will be set dynamically in _update_toggle_button_text()
+	_update_toggle_button_text()
+
+## Helper function
+func _set_label_text(node_path: String, text_key: String):
+	if has_node(node_path):
+		get_node(node_path).text = TextData.get_raw(text_key)
+
 func _process(delta):
 	update_timer += delta
 	if update_timer >= update_interval:
@@ -140,10 +161,10 @@ func update_resource_display():
 
 		# Red text if in debt
 		if gmp < 0:
-			gmp_label.text = "GMP: %d" % gmp
+			gmp_label.text = TextData.format("ui_gmp_format", [gmp])
 			gmp_label.modulate = Color(1.0, 0.0, 0.0)  # Red
 		else:
-			gmp_label.text = "GMP: %d" % gmp
+			gmp_label.text = TextData.format("ui_gmp_format", [gmp])
 			gmp_label.modulate = Color(1.0, 1.0, 1.0)  # White
 
 ## Update base information (size and combos)
@@ -159,7 +180,7 @@ func update_base_info():
 			var combo_count = base_system.combo_system.get_combo_count()
 			if combo_count > 0:
 				# Show combo details
-				var combo_text = "Combos: %d\n" % combo_count
+				var combo_text = TextData.format("ui_combos_format", [combo_count])
 				var active_combos = base_system.combo_system.get_active_combos()
 				for combo_id in active_combos:
 					var combo = active_combos[combo_id]
@@ -173,7 +194,7 @@ func update_base_info():
 					]
 				combo_label.text = combo_text
 			else:
-				combo_label.text = "Combos: 0"
+				combo_label.text = TextData.get_raw("ui_combos_none")
 
 ## Update expedition information
 func update_expedition_info():
@@ -191,7 +212,7 @@ func update_staff_info():
 	if staff_label:
 		var staff = ResourceSystem.get_staff_count()
 		var beds = ResourceSystem.get_bed_capacity()
-		staff_label.text = "Staff: %d/%d" % [staff, beds]
+		staff_label.text = TextData.format("ui_staff_count_format", [staff, beds])
 
 ## Update objectives display
 func update_objectives():
@@ -224,7 +245,7 @@ func update_objectives():
 			if i < objective_labels.size():
 				objective_labels[i].text = ""
 		if objective1_label:
-			objective1_label.text = "All objectives complete!"
+			objective1_label.text = TextData.get_raw("ui_all_objectives_complete")
 		return
 
 	# Display up to 3 active objectives
@@ -233,14 +254,14 @@ func update_objectives():
 			var label = objective_labels[i]
 			if i < active_objectives.size():
 				var objective = active_objectives[i]
-				label.text = "[ ] " + objective["description"]
+				label.text = TextData.get_raw("ui_objective_incomplete_prefix") + objective["description"]
 			else:
 				# Check if this objective was completed
 				var all_ids = all_objectives.keys()
 				if i < all_ids.size():
 					var obj_id = all_ids[i]
 					if all_objectives[obj_id]["completed"]:
-						label.text = "[X] " + all_objectives[obj_id]["description"]
+						label.text = TextData.get_raw("ui_objective_complete_prefix") + all_objectives[obj_id]["description"]
 					else:
 						label.text = ""
 				else:
@@ -264,11 +285,15 @@ func _on_toggle_sidebar():
 	if side_bar:
 		side_bar.visible = side_bar_visible
 
+	_update_toggle_button_text()
+
+## Update toggle button text
+func _update_toggle_button_text():
 	if toggle_sidebar_button:
 		if side_bar_visible:
-			toggle_sidebar_button.text = "Hide (H)"
+			toggle_sidebar_button.text = TextData.get_raw("ui_hide_sidebar")
 		else:
-			toggle_sidebar_button.text = "Show (H)"
+			toggle_sidebar_button.text = TextData.get_raw("ui_show_sidebar")
 
 ## ===== NOTIFICATION SYSTEM =====
 

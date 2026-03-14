@@ -80,7 +80,7 @@ func show_dialogue(speaker: String, text: String, choices: Array = [], on_close:
 ## Add a choice button
 func _add_choice_button(choice_data):
 	var button = Button.new()
-	button.text = choice_data.get("text", "Choice")
+	button.text = choice_data.get("text", TextData.get_raw("ui_choice_default"))
 	button.add_theme_constant_override("font_size", 16)
 	button.custom_minimum_size = Vector2(0, 40)
 
@@ -116,7 +116,7 @@ func _load_next_dialogue(dialogue_id: String):
 	if story_system and story_system.has_method("get_dialogue"):
 		var next_dialogue = story_system.get_dialogue(dialogue_id)
 		if not next_dialogue.is_empty():
-			var speaker = next_dialogue.get("speaker", "Unknown")
+			var speaker = next_dialogue.get("speaker", TextData.get_raw("ui_speaker_unknown"))
 			var text = next_dialogue.get("text", "")
 			var choices = next_dialogue.get("choices", [])
 			show_dialogue(speaker, text, choices, dialogue_closed_callback, choice_made_callback)

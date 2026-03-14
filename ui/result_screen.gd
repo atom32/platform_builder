@@ -29,6 +29,17 @@ func _ready():
 	# Configure labels
 	_configure_labels()
 
+	# Setup localized UI text
+	_setup_localized_text()
+
+## Setup localized UI text
+func _setup_localized_text():
+	# Set button texts
+	if restart_button:
+		restart_button.text = "Restart"  # Keep button text simple for now
+	if main_menu_button:
+		main_menu_button.text = "Main Menu"  # Keep button text simple for now
+
 func _connect_signals():
 	# Find buttons by traversing the scene tree
 	var restart_btn = $Control/CenterContainer/Panel/VBoxContainer/ButtonContainer/RestartButton
@@ -104,32 +115,32 @@ func _configure_labels():
 func show_result(victory: bool, stats: Dictionary, reason: String = ""):
 	# Update statistics
 	if days_survived_label:
-		days_survived_label.text = "Days Survived: %d" % stats.get("days_survived", 0)
+		days_survived_label.text = TextData.format("ui_days_survived", [stats.get("days_survived", 0)])
 	if platforms_built_label:
-		platforms_built_label.text = "Platforms Built: %d" % stats.get("platforms_built", 0)
+		platforms_built_label.text = TextData.format("ui_platforms_built", [stats.get("platforms_built", 0)])
 	if staff_recruited_label:
-		staff_recruited_label.text = "Staff Recruited: %d" % stats.get("staff_recruited", 0)
+		staff_recruited_label.text = TextData.format("ui_staff_recruited_count", [stats.get("staff_recruited", 0)])
 	if expeditions_sent_label:
-		expeditions_sent_label.text = "Expeditions Sent: %d" % stats.get("expeditions_sent", 0)
+		expeditions_sent_label.text = TextData.format("ui_expeditions_sent_count", [stats.get("expeditions_sent", 0)])
 
 	# Set title and colors based on victory/defeat
 	if result_title_label:
 		if victory:
-			result_title_label.text = "VICTORY"
+			result_title_label.text = TextData.get_raw("ui_result_victory")
 			result_title_label.modulate = Color(0.0, 1.0, 0.0)  # Green
 		else:
-			result_title_label.text = "GAME OVER"
+			result_title_label.text = TextData.get_raw("ui_result_game_over")
 			result_title_label.modulate = Color(1.0, 0.0, 0.0)  # Red
 
 	# Set message based on result
 	if message_label:
 		if victory:
-			message_label.text = "Congratulations! You completed all objectives!"
+			message_label.text = TextData.get_raw("ui_victory_message")
 		else:
 			if reason.is_empty():
-				message_label.text = "Your base has been lost."
+				message_label.text = TextData.get_raw("ui_defeat_message")
 			else:
-				message_label.text = "Reason: %s" % reason
+				message_label.text = TextData.format("ui_defeat_reason", [reason])
 
 	visible = true
 

@@ -38,7 +38,7 @@ func refresh_objectives():
 
 	# Check if chapter data is loaded
 	if chapter_data.is_empty():
-		chapter_header.text = "CHAPTER 1: Loading..."
+		chapter_header.text = TextData.get_raw("ui_chapter_loading")
 		return
 
 	var chapter_id = chapter_data.get("id", "chapter_01")
@@ -46,7 +46,7 @@ func refresh_objectives():
 
 	# Extract chapter number from ID (chapter_01 -> 1, chapter_02 -> 2, etc.)
 	var chapter_num = _extract_chapter_number_from_id(chapter_id)
-	chapter_header.text = "CHAPTER %s: %s" % [chapter_num, chapter_name]
+	chapter_header.text = TextData.format("ui_chapter_format", [chapter_num, chapter_name])
 
 	# Clear existing objective labels
 	for label in objectives_list.get_children():
@@ -65,7 +65,7 @@ func refresh_objectives():
 		complete_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		complete_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		complete_label.add_theme_color_override("font_color", Color(0.2, 1.0, 0.4))  # Green color
-		complete_label.text = "✓ ALL MISSIONS COMPLETE ✓"
+		complete_label.text = TextData.get_raw("ui_missions_complete")
 		objectives_list.add_child(complete_label)
 		objective_labels.append(complete_label)
 
@@ -76,7 +76,7 @@ func refresh_objectives():
 		continue_label.custom_minimum_size = Vector2(290, 0)
 		continue_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		continue_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))  # Gray color
-		continue_label.text = "Continue building your base in Sandbox Mode"
+		continue_label.text = TextData.get_raw("ui_continue_sandbox")
 		objectives_list.add_child(continue_label)
 		objective_labels.append(continue_label)
 		return
@@ -101,7 +101,7 @@ func refresh_objectives():
 ## Extract chapter number from chapter ID
 func _extract_chapter_number_from_id(chapter_id: String) -> String:
 	if chapter_id == "chapter_end":
-		return "END"  # Special case for final chapter
+		return TextData.get_raw("ui_chapter_end")  # Special case for final chapter
 
 	if chapter_id.contains("chapter_"):
 		var parts = chapter_id.split("_")

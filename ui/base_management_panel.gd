@@ -90,6 +90,73 @@ func _ready():
 	if return_to_title_button:
 		return_to_title_button.pressed.connect(_on_return_to_title_pressed)
 
+	# Setup localized UI text
+	_setup_localized_ui_text()
+
+## Setup localized UI text
+func _setup_localized_ui_text():
+	# Title and close button
+	if title_label:
+		title_label.text = TextData.get_raw("ui_base_management_title")
+	if close_button:
+		close_button.text = TextData.get_raw("ui_close")
+
+	# Recruit tab initial text (will be updated dynamically)
+	if recruit_info:
+		recruit_info.text = TextData.get_raw("ui_recruit_pool")
+
+	# Assignment buttons
+	_set_button_text("Panel/VBoxContainer/TabContainer/Staff/StaffTabContainer/Recruits/RecruitButtons/AssignToRD", "ui_assign_to_rd")
+	_set_button_text("Panel/VBoxContainer/TabContainer/Staff/StaffTabContainer/Recruits/RecruitButtons/AssignToCombat", "ui_assign_to_combat")
+	_set_button_text("Panel/VBoxContainer/TabContainer/Staff/StaffTabContainer/Recruits/RecruitButtons/AssignToSupport", "ui_assign_to_support")
+	_set_button_text("Panel/VBoxContainer/TabContainer/Staff/StaffTabContainer/Recruits/RecruitButtons/AssignToIntel", "ui_assign_to_intel")
+	_set_button_text("Panel/VBoxContainer/TabContainer/Staff/StaffTabContainer/Recruits/RecruitButtons/AssignToMedical", "ui_assign_to_medical")
+
+	# Department tab
+	_set_label_text("Panel/VBoxContainer/TabContainer/Staff/StaffTabContainer/Departments/DeptLabel", "ui_department_assignments")
+
+	# Dismiss tab
+	_set_label_text("Panel/VBoxContainer/TabContainer/Staff/StaffTabContainer/Dismiss/DismissInfo", "ui_dismiss_staff")
+	_set_button_text("Panel/VBoxContainer/TabContainer/Staff/StaffTabContainer/Dismiss/DismissButtons/DismissSelected", "ui_dismiss_selected")
+
+	# Save/Load tab
+	_set_label_text("Panel/VBoxContainer/TabContainer/SaveLoad/Header/TitleLabel", "ui_save_load")
+	_set_button_text("Panel/VBoxContainer/TabContainer/SaveLoad/ActionButtons/ReturnToTitleButton", "ui_return_to_title")
+
+	# Save slot buttons
+	_setup_save_slot_buttons()
+
+## Helper to set button text from TextData key
+func _set_button_text(node_path: String, text_key: String):
+	if has_node(node_path):
+		get_node(node_path).text = TextData.get_raw(text_key)
+
+## Helper to set label text from TextData key
+func _set_label_text(node_path: String, text_key: String):
+	if has_node(node_path):
+		get_node(node_path).text = TextData.get_raw(text_key)
+
+## Setup save slot button texts
+func _setup_save_slot_buttons():
+	if not save_load_slots:
+		return
+
+	for i in range(3):
+		var slot_panel = save_load_slots.get_child(i)
+		if not slot_panel:
+			continue
+
+		var save_button = slot_panel.get_node("HBoxContainer/Buttons/SaveButton")
+		var load_button = slot_panel.get_node("HBoxContainer/Buttons/LoadButton")
+		var delete_button = slot_panel.get_node("HBoxContainer/Buttons/DeleteButton")
+
+		if save_button:
+			save_button.text = TextData.get_raw("ui_save")
+		if load_button:
+			load_button.text = TextData.get_raw("ui_load")
+		if delete_button:
+			delete_button.text = TextData.get_raw("ui_delete")
+
 ## Show the panel
 func show_panel():
 	visible = true
@@ -171,14 +238,14 @@ func _refresh_recruit_list():
 
 	var pool = dept_system.get_recruit_pool()
 	if recruit_info:
-		recruit_info.text = "Recruit Pool - %d Available Staff" % pool.size()
+		recruit_info.text = TextData.format("ui_recruit_pool_format", [pool.size()])
 
 	for staff in pool:
-		var display_text = "%s | Skill: %d | %s" % [
+		var display_text = TextData.format("ui_staff_display_format", [
 			staff.get_display_name(),
 			staff.skill_level,
-			staff.specialty if staff.specialty != "" else "No Specialty"
-		]
+			staff.specialty if staff.specialty != "" else TextData.get_raw("ui_no_specialty")
+		])
 		recruit_list.add_item(display_text)
 
 ## Refresh the department assignments list
@@ -196,13 +263,13 @@ func _refresh_department_list():
 		var count = dept_system.get_department_staff(dept)
 		var dept_staff = dept_system.get_staff_in_department(dept)
 
-		dept_list.add_item("%s Department - %d Staff" % [dept, count])
+		dept_list.add_item(TextData.format("ui_department_header_format", [dept, count]))
 		for staff in dept_staff:
-			var display_text = "  %s | Skill: %d | %s" % [
+			var display_text = "  " + TextData.format("ui_staff_display_format", [
 				staff.get_display_name(),
 				staff.skill_level,
-				staff.specialty if staff.specialty != "" else "No Specialty"
-			]
+				staff.specialty if staff.specialty != "" else TextData.get_raw("ui_no_specialty")
+			])
 			dept_list.add_item(display_text)
 
 ## Refresh the dismiss list (all staff)
@@ -359,7 +426,7 @@ func _update_combat_power():
 		return
 
 	var combat_power = expedition_system.get_combat_power()
-	combat_power_label.text = "Combat Power: %d" % combat_power
+	combat_power_label.text = TextData.format("ui_expedition_combat_power", [combat_power])
 
 ## Update department bonuses display
 func _update_department_bonuses():
@@ -370,19 +437,19 @@ func _update_department_bonuses():
 
 	if success_chance_label:
 		var chance_percent = int(bonuses["success_chance"] * 100)
-		success_chance_label.text = "Success Chance: %d%%" % chance_percent
+		success_chance_label.text = TextData.format("ui_expedition_success_chance", [chance_percent])
 
 	if resource_bonus_label:
 		var resource_percent = int(bonuses["resource_multiplier"] * 100)
-		resource_bonus_label.text = "Resource Yield: %d%%" % resource_percent
+		resource_bonus_label.text = TextData.format("ui_expedition_resource_yield", [resource_percent])
 
 	if casualty_reduction_label:
 		var casualty_percent = int(bonuses["casualty_reduction"] * 100)
-		casualty_reduction_label.text = "Casualty Reduction: %d%%" % casualty_percent
+		casualty_reduction_label.text = TextData.format("ui_expedition_casualty_reduction", [casualty_percent])
 
 	if duration_reduction_label:
 		var duration_percent = int((1.0 - bonuses["duration_reduction"]) * 100)
-		duration_reduction_label.text = "Duration: %d%%" % duration_percent
+		duration_reduction_label.text = TextData.format("ui_expedition_duration_reduction", [duration_percent])
 
 ## Staff assignment handlers
 func _on_assign_to_rd():
@@ -459,7 +526,7 @@ func _on_dismiss_selected():
 	if dept_system.dismiss_staff(staff_member):
 		var notification_system = get_node_or_null("/root/NotificationSystem")
 		if notification_system:
-			notification_system.show("Staff dismissed: %s" % staff_member.get_display_name())
+			notification_system.show(TextData.format("ui_staff_dismissed", [staff_member.get_display_name()]))
 		refresh_lists()
 	else:
 		ResourceSystem.debug_print("[BaseManagementPanel] Failed to dismiss staff")
@@ -532,7 +599,7 @@ func _update_overview_stats(hq: Platform):
 
 	var total_platforms = base_system.get_total_platform_count()
 	var max_depth = _calculate_tree_depth(hq)
-	overview_stats.text = "Total Platforms: %d | Tree Depth: %d" % [total_platforms, max_depth]
+	overview_stats.text = TextData.format("ui_overview_stats", [total_platforms, max_depth])
 
 ## Calculate tree depth
 func _calculate_tree_depth(platform: Platform) -> int:
@@ -644,7 +711,7 @@ func _refresh_save_slots():
 
 	# Update mode label
 	if save_mode_label:
-		save_mode_label.text = "Story Mode" if current_mode == 1 else "Sandbox Mode"
+		save_mode_label.text = TextData.get_raw("ui_story_mode" if current_mode == 1 else "ui_sandbox_mode")
 
 	# Refresh save slot display
 	for slot in save_slots:
@@ -658,7 +725,7 @@ func _refresh_save_slots():
 			var save_time = info.get("save_time", "")
 
 			if slot["name_label"]:
-				slot["name_label"].text = "Slot %d: %s" % [slot_index + 1, chapter_name]
+				slot["name_label"].text = TextData.format("ui_save_slot_format", [slot_index + 1, chapter_name])
 			if slot["details_label"]:
 				slot["details_label"].text = save_time
 			if slot["load_button"]:
@@ -668,7 +735,7 @@ func _refresh_save_slots():
 		else:
 			# Slot is empty
 			if slot["name_label"]:
-				slot["name_label"].text = "Slot %d: Empty" % [slot_index + 1]
+				slot["name_label"].text = TextData.format("ui_save_slot_empty", [slot_index + 1])
 			if slot["details_label"]:
 				slot["details_label"].text = ""
 			if slot["load_button"]:

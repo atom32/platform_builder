@@ -25,6 +25,87 @@ static func _get_raw_text(key: String) -> String:
 		"ui_combos": return "Combos: %d"
 		"ui_expeditions": return "Expeditions: %d (Press E)"
 		"ui_combat": return "Combat: %d"
+		"ui_resources_header": return "RESOURCES"
+		"ui_gmp_format": return "GMP: %d"
+		"ui_staff_count_format": return "Staff: %d/%d"
+		"ui_base_status_header": return "BASE STATUS"
+		"ui_combos_header": return "Combos"
+		"ui_combos_format": return "Combos: %d\n"
+		"ui_combos_none": return "Combos: 0"
+		"ui_objectives_header": return "OBJECTIVES"
+		"ui_objective_complete_prefix": return "[X] "
+		"ui_objective_incomplete_prefix": return "[ ] "
+		"ui_all_objectives_complete": return "All objectives complete!"
+		"ui_hide_sidebar": return "Hide (H)"
+		"ui_show_sidebar": return "Show (H)"
+
+		# UI - Base Management Panel
+		"ui_base_management_title": return "BASE MANAGEMENT"
+		"ui_close": return "X"
+		"ui_recruit_pool": return "Recruit Pool - Available Staff"
+		"ui_recruit_pool_format": return "Recruit Pool - %d Available Staff"
+		"ui_assign_to_rd": return "Assign to R&D"
+		"ui_assign_to_combat": return "Assign to Combat"
+		"ui_assign_to_support": return "Assign to Support"
+		"ui_assign_to_intel": return "Assign to Intel"
+		"ui_assign_to_medical": return "Assign to Medical"
+		"ui_department_assignments": return "Department Assignments"
+		"ui_dismiss_staff": return "Dismiss Staff - Reduce Upkeep Costs"
+		"ui_dismiss_selected": return "Dismiss Selected"
+		"ui_no_specialty": return "No Specialty"
+		"ui_staff_display_format": return "%s | Skill: %d | %s"
+		"ui_department_header_format": return "%s Department - %d Staff"
+		"ui_staff_dismissed": return "Staff dismissed: %s"
+
+		# UI - Expeditions
+		"ui_expedition_success_chance": return "Success Chance: %d%%"
+		"ui_expedition_resource_yield": return "Resource Yield: %d%%"
+		"ui_expedition_casualty_reduction": return "Casualty Reduction: %d%%"
+		"ui_expedition_duration_reduction": return "Duration: %d%%"
+
+		# UI - Overview
+		"ui_overview_stats": return "Total Platforms: %d | Tree Depth: %d"
+
+		# UI - Save/Load
+		"ui_save_load": return "SAVE / LOAD"
+		"ui_story_mode": return "Story Mode"
+		"ui_sandbox_mode": return "Sandbox Mode"
+		"ui_save_slot_format": return "Slot %d: %s"
+		"ui_save_slot_empty": return "Slot %d: Empty"
+		"ui_save": return "Save"
+		"ui_load": return "Load"
+		"ui_delete": return "Delete"
+		"ui_return_to_title": return "Return to Title Menu"
+
+		# UI - Result Screen
+		"ui_result_victory": return "VICTORY"
+		"ui_result_game_over": return "GAME OVER"
+		"ui_days_survived": return "Days Survived: %d"
+		"ui_platforms_built": return "Platforms Built: %d"
+		"ui_staff_recruited_count": return "Staff Recruited: %d"
+		"ui_expeditions_sent_count": return "Expeditions Sent: %d"
+		"ui_victory_message": return "Congratulations! You completed all objectives!"
+		"ui_defeat_message": return "Your base has been lost."
+		"ui_defeat_reason": return "Reason: %s"
+
+		# UI - Story Objectives
+		"ui_chapter_loading": return "CHAPTER 1: Loading..."
+		"ui_chapter_format": return "CHAPTER %s: %s"
+		"ui_missions_complete": return "✓ ALL MISSIONS COMPLETE ✓"
+		"ui_continue_sandbox": return "Continue building your base in Sandbox Mode"
+		"ui_chapter_end": return "END"
+
+		# UI - Dialogue
+		"ui_choice_default": return "Choice"
+		"ui_speaker_unknown": return "Unknown"
+
+		# UI - Build Menu
+		"ui_select_platform_type": return "Select Platform Type"
+		"ui_build_button_rd": return "R&D (%d Mat, %d Fuel)"
+		"ui_build_button_support": return "Support (%d Mat, %d Fuel)"
+		"ui_build_button_combat": return "Combat (%d Mat, %d Fuel)"
+		"ui_build_button_intel": return "Intel (%d Mat, %d Fuel)"
+		"ui_build_button_medical": return "Medical (%d Mat, %d Fuel)"
 
 		# UI - Build Menu
 		"ui_build_parent_full": return "%s (Parent Full)"

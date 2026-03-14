@@ -60,7 +60,7 @@ func show_menu():
 		current_mode = game_mode_manager.current_mode
 
 	# Update title
-	mode_label.text = "Story Mode" if current_mode == 1 else "Sandbox Mode"
+	mode_label.text = TextData.get_raw("ui_story_mode" if current_mode == 1 else "ui_sandbox_mode")
 
 	# Refresh save slots
 	_refresh_slots()
@@ -92,13 +92,13 @@ func _refresh_slots():
 			var chapter_name = info.get("chapter_name", "")
 			var save_time = info.get("save_time", "")
 
-			slot["name_label"].text = "Slot %d: %s" % [slot_index + 1, chapter_name]
+			slot["name_label"].text = TextData.format("ui_save_slot_format", [slot_index + 1, chapter_name])
 			slot["details_label"].text = save_time
 			slot["load_button"].disabled = false
 			slot["delete_button"].disabled = false
 		else:
 			# Slot is empty
-			slot["name_label"].text = "Slot %d: Empty" % [slot_index + 1]
+			slot["name_label"].text = TextData.format("ui_save_slot_empty", [slot_index + 1])
 			slot["details_label"].text = ""
 			slot["load_button"].disabled = true
 			slot["delete_button"].disabled = true

@@ -47,7 +47,6 @@ func _load_config():
 		print("[ConfigSystem] No config file found, using defaults")
 		_current_config = ConfigData.new()
 		_save_config()
-		_apply_to_game()  # Apply defaults to game systems
 		return
 
 	# Load settings from file into ConfigData
@@ -59,8 +58,9 @@ func _load_config():
 	_current_config = ConfigData.new(lang, debug, audio, music)
 	print("[ConfigSystem] Config loaded: ", _current_config.get_as_string())
 
-	# Apply loaded configuration to all game systems
-	_apply_to_game()
+	# NOTE: Don't apply here in _init()
+	# Other autoloads may not be ready yet
+	# Application happens in _ready() after all autoloads are initialized
 
 ## Save configuration to file
 func _save_config():
@@ -97,12 +97,22 @@ func save_config(config: ConfigData):
 	_save_config()
 	print("[ConfigSystem] Config saved: ", _current_config.get_as_string())
 
+## Called when all autoloads are ready
+## Apply configuration to all game systems
+func _ready():
+	# Apply loaded configuration to all game systems
+	# This is called after all autoloads are initialized
+	_apply_to_game()
+
 ## Internal: Apply current config to all game systems
 func _apply_to_game():
+	print("[ConfigSystem] Applying configuration to all game systems...")
+
 	# Apply language to TextData
 	var text_data = get_node_or_null("/root/TextData")
 	if text_data and text_data.has_method("set_language"):
 		text_data.set_language(_current_config.language)
+		print("[ConfigSystem] Applied language: ", _current_config.language)
 
 	# Apply debug mode to all systems
 	_apply_debug_mode(_current_config.debug_mode)

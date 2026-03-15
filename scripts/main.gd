@@ -29,18 +29,17 @@ var focus_marker: MeshInstance3D = null
 var debug_mode: bool = false
 
 func _ready():
-	# Load debug mode from ConfigSystem FIRST
+	# NOTE: Configuration is now applied by ConfigSystem._ready()
+	# All settings (language, debug mode, etc.) are already initialized
+	# No need to manually apply debug_mode here
+
+	# Get current debug mode from ConfigSystem for local use
 	var config_system = get_node_or_null("/root/ConfigSystem")
 	if config_system:
 		debug_mode = config_system.debug_mode
-		print("[Main] Debug mode loaded from ConfigSystem: ", debug_mode)
+		print("[Main] Debug mode from ConfigSystem: ", debug_mode)
 	else:
 		print("[Main] WARNING: ConfigSystem not found, using default debug_mode: ", debug_mode)
-
-	# Apply debug mode to ResourceSystem
-	var resource_system = get_node_or_null("/root/ResourceSystem")
-	if resource_system:
-		resource_system.debug_mode = debug_mode
 
 	# Initialize game session (resets everything to clean state)
 	var game_session = get_node_or_null("/root/GameSession")

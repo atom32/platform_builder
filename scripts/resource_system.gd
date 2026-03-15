@@ -30,16 +30,20 @@ var efficiency_penalty: bool = false
 var debug_timer: Timer
 var upkeep_timer: Timer
 
-## Staff recruitment cost
-const RECRUIT_COST: int = 50  # GMP cost per staff
+## Staff economy constants (loaded from JSON)
+var RECRUIT_COST: int = 50  # GMP cost per staff
+var UPKEEP_COST: int = 1  # Materials per staff per minute
+var SALARY_COST: int = 1  # GMP per staff per day
 
-## Staff upkeep per minute
-const UPKEEP_COST: int = 1  # Materials per staff per minute
+## Debt thresholds (loaded from JSON)
+var DEBT_WARNING_THRESHOLD: int = -200
+var DEBT_LIMIT: int = -500
 
-## GMP salary per staff per day (60 seconds)
-const SALARY_COST: int = 1  # GMP per staff per day
+## Bed capacity by platform type (loaded from JSON)
+var bed_capacity_by_type: Dictionary = {}
 
 func _ready():
+	_load_constants()
 	_setup_debug_timer()
 	_setup_upkeep_timer()
 
@@ -142,13 +146,18 @@ func calculate_bed_capacity(platforms: Array) -> int:
 	for platform in platforms:
 		if platform.has_method("get_type"):
 			var type = platform.get_type()
-			match type:
-				"HQ":
-					capacity += 5  # HQ provides basic living quarters
-				"Support":
-					capacity += 5
-				"Medical":
-					capacity += 3
+			# Use loaded bed capacity values, or fallback to hardcoded defaults
+			if bed_capacity_by_type.has(type.to_lower()):
+				capacity += bed_capacity_by_type[type.to_lower()]
+			else:
+				# Fallback defaults if JSON data is missing
+				match type:
+					"HQ":
+						capacity += 5  # HQ provides basic living quarters
+					"Support":
+						capacity += 5
+					"Medical":
+						capacity += 3
 	bed_capacity = capacity
 	return capacity
 
@@ -189,7 +198,8 @@ func _on_upkeep_timeout():
 	gmp_changed.emit(gmp)
 
 	# Check debt threshold for warning (only once, with tolerance)
-	if gmp <= -200 and gmp > -210:
+	var warning_tolerance = 10
+	if gmp <= DEBT_WARNING_THRESHOLD and gmp > DEBT_WARNING_THRESHOLD - warning_tolerance:
 		debt_warning_reached.emit()
 
 ## Check if in debt
@@ -198,11 +208,11 @@ func is_in_debt() -> bool:
 
 ## Get debt warning threshold
 func get_debt_warning_threshold() -> int:
-	return -200
+	return DEBT_WARNING_THRESHOLD
 
 ## Get debt limit (game over threshold)
 func get_debt_limit() -> int:
-	return -500
+	return DEBT_LIMIT
 
 ## Setup debug timer to print resources every 5 seconds
 func _setup_debug_timer():
@@ -243,3 +253,36 @@ func reset_resources():
 	if upkeep_timer:
 		upkeep_timer.stop()
 		upkeep_timer.start()
+
+## Load game constants from JSON configuration file
+func _load_constants():
+	var loader = load("res://scripts/game_constants_loader.gd").new()
+	var data = loader.load_constants()
+
+	if data.is_empty():
+		print("[ResourceSystem] WARNING: Failed to load constants, using defaults")
+		return
+
+	# Load staff economy constants
+	if data.has("staff_economy"):
+		var economy = data["staff_economy"]
+		if economy.has("recruit_cost_gmp"):
+			RECRUIT_COST = economy["recruit_cost_gmp"]
+		if economy.has("upkeep_cost_materials_per_minute"):
+			UPKEEP_COST = economy["upkeep_cost_materials_per_minute"]
+		if economy.has("salary_cost_gmp_per_day"):
+			SALARY_COST = economy["salary_cost_gmp_per_day"]
+
+	# Load debt thresholds
+	if data.has("debt_thresholds"):
+		var thresholds = data["debt_thresholds"]
+		if thresholds.has("warning_threshold"):
+			DEBT_WARNING_THRESHOLD = thresholds["warning_threshold"]
+		if thresholds.has("game_over_threshold"):
+			DEBT_LIMIT = thresholds["game_over_threshold"]
+
+	# Load bed capacity by platform type
+	if data.has("bed_capacity"):
+		bed_capacity_by_type = data["bed_capacity"].duplicate()
+
+	print("[ResourceSystem] Constants loaded from JSON")

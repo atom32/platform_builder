@@ -1,0 +1,96 @@
+{
+  "version": "1.0",
+  "description": "Platform type definitions including production rates, build costs, and properties",
+  "platform_types": [
+    {
+      "type": "HQ",
+      "display_name": "Headquarters",
+      "description": "Central command of the base",
+      "production": {
+        "materials": 0,
+        "fuel": 0
+      },
+      "costs": {
+        "materials": 0,
+        "fuel": 0
+      },
+      "construction_time": 0.0,
+      "tags": ["hq", "command"]
+    },
+    {
+      "type": "R&D",
+      "display_name": "Research & Development",
+      "description": "Advanced technology research facility",
+      "production": {
+        "materials": 2,
+        "fuel": 0
+      },
+      "costs": {
+        "materials": 50,
+        "fuel": 10
+      },
+      "construction_time": 5.0,
+      "tags": ["research"]
+    },
+    {
+      "type": "Combat",
+      "display_name": "Combat Platform",
+      "description": "Military operations and defense",
+      "production": {
+        "materials": 1,
+        "fuel": 1
+      },
+      "costs": {
+        "materials": 40,
+        "fuel": 30
+      },
+      "construction_time": 5.0,
+      "tags": ["combat", "military"]
+    },
+    {
+      "type": "Support",
+      "display_name": "Support Platform",
+      "description": "Logistics and supply operations",
+      "production": {
+        "materials": 0,
+        "fuel": 2
+      },
+      "costs": {
+        "materials": 30,
+        "fuel": 40
+      },
+      "construction_time": 5.0,
+      "tags": ["support", "logistics"]
+    },
+    {
+      "type": "Intel",
+      "display_name": "Intel Platform",
+      "description": "Intelligence gathering and analysis",
+      "production": {
+        "materials": 0,
+        "fuel": 1
+      },
+      "costs": {
+        "materials": 35,
+        "fuel": 25
+      },
+      "construction_time": 5.0,
+      "tags": ["intel"]
+    },
+    {
+      "type": "Medical",
+      "display_name": "Medical Platform",
+      "description": "Medical treatment and research",
+      "production": {
+        "materials": 1,
+        "fuel": 0
+      },
+      "costs": {
+        "materials": 25,
+        "fuel": 25
+      },
+      "construction_time": 5.0,
+      "tags": ["medical", "support"]
+    }
+  ]
+}

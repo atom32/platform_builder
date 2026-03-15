@@ -1,0 +1,27 @@
+{
+  "version": "1.0",
+  "description": "Core game constants including platform limits, staff economy, and department bonuses",
+  "platform_limits": {
+    "max_platforms_per_department": 6,
+    "max_children_per_platform": 6,
+    "max_total_platforms": 100
+  },
+  "staff_economy": {
+    "recruit_cost_gmp": 50,
+    "upkeep_cost_materials_per_minute": 1,
+    "salary_cost_gmp_per_day": 1
+  },
+  "department_bonuses": {
+    "research_speed_per_staff": 0.1,
+    "combat_power_per_staff": 0.5
+  },
+  "bed_capacity": {
+    "hq": 5,
+    "support": 5,
+    "medical": 3
+  },
+  "debt_thresholds": {
+    "warning_threshold": -200,
+    "game_over_threshold": -500
+  }
+}

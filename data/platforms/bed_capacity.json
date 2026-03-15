@@ -1,0 +1,12 @@
+{
+  "version": "1.0",
+  "description": "Bed capacity provided by each platform type",
+  "bed_capacity": {
+    "hq": 5,
+    "support": 5,
+    "medical": 3,
+    "rnd": 0,
+    "combat": 0,
+    "intel": 0
+  }
+}

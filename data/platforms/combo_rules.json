@@ -1,0 +1,38 @@
+{
+  "version": "1.0",
+  "description": "Platform combo rules for adjacency bonuses",
+  "combo_rules": [
+    {
+      "id": "research_intel",
+      "parent": "R&D",
+      "child": "Intel",
+      "effect_type": "research_speed",
+      "bonus": 0.2,
+      "description": "Faster Research"
+    },
+    {
+      "id": "medical_combat",
+      "parent": "Medical",
+      "child": "Combat",
+      "effect_type": "casualty_reduction",
+      "bonus": 0.2,
+      "description": "Reduced Casualties"
+    },
+    {
+      "id": "combat_support",
+      "parent": "Combat",
+      "child": "Support",
+      "effect_type": "expedition_resource_reward",
+      "bonus": 0.1,
+      "description": "Better Looting"
+    },
+    {
+      "id": "support_research",
+      "parent": "Support",
+      "child": "R&D",
+      "effect_type": "resource_production",
+      "bonus": 0.1,
+      "description": "Efficient Production"
+    }
+  ]
+}

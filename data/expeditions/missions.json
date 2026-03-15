@@ -1,0 +1,62 @@
+{
+  "version": "1.0",
+  "description": "Expedition mission definitions",
+  "missions": [
+    {
+      "id": "supply_raid",
+      "name": "Supply Raid",
+      "description": "Raid enemy supply lines for resources",
+      "duration": 60,
+      "required_combat_power": 2,
+      "difficulty": "Easy",
+      "rewards": {
+        "materials": 100,
+        "fuel": 40,
+        "gmp": 30,
+        "recruits": 0
+      }
+    },
+    {
+      "id": "resource_scavenge",
+      "name": "Resource Scavenge",
+      "description": "Scavenge for resources in the area",
+      "duration": 45,
+      "required_combat_power": 1,
+      "difficulty": "Easy",
+      "rewards": {
+        "materials": 80,
+        "fuel": 30,
+        "gmp": 20,
+        "recruits": 0
+      }
+    },
+    {
+      "id": "intel_gathering",
+      "name": "Intel Gathering",
+      "description": "Gather intelligence from the region",
+      "duration": 90,
+      "required_combat_power": 3,
+      "difficulty": "Medium",
+      "rewards": {
+        "materials": 50,
+        "fuel": 60,
+        "gmp": 40,
+        "recruits": 1
+      }
+    },
+    {
+      "id": "heavy_assault",
+      "name": "Heavy Assault",
+      "description": "Launch a major assault operation",
+      "duration": 120,
+      "required_combat_power": 5,
+      "difficulty": "Hard",
+      "rewards": {
+        "materials": 200,
+        "fuel": 100,
+        "gmp": 80,
+        "recruits": 2
+      }
+    }
+  ]
+}

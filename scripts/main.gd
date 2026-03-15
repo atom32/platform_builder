@@ -56,10 +56,8 @@ func _ready():
 		if game_mode_manager.current_mode == 1:  # STORY_MODE
 			story_system.initialize_story_mode()
 
-	# Give player starting resources (after reset)
-	ResourceSystem.add_materials(200)
-	ResourceSystem.add_fuel(100)
-	ResourceSystem.add_gmp(300)  # Starting GMP for recruiting
+	# Give player starting resources (after reset) - loaded from JSON
+	_load_starting_resources()
 	# Beds are provided by platforms (HQ provides 5)
 
 	# Register starting objectives
@@ -288,3 +286,28 @@ func _on_staff_recruited():
 	var game_session = get_node_or_null("/root/GameSession")
 	if game_session:
 		game_session.increment_staff_recruited()
+
+## Load starting resources from JSON configuration file
+func _load_starting_resources():
+	var loader = load("res://scripts/game_constants_loader.gd").new()
+	var data = loader.load_starting_resources()
+
+	if data.is_empty():
+		print("[Main] ERROR: Failed to load starting resources, using fallback values")
+		ResourceSystem.add_materials(200)
+		ResourceSystem.add_fuel(100)
+		ResourceSystem.add_gmp(300)
+		return
+
+	if data.has("resources"):
+		var resources = data["resources"]
+		if resources.has("materials"):
+			ResourceSystem.add_materials(resources["materials"])
+		if resources.has("fuel"):
+			ResourceSystem.add_fuel(resources["fuel"])
+		if resources.has("gmp"):
+			ResourceSystem.add_gmp(resources["gmp"])
+
+		print("[Main] Starting resources loaded from JSON: Materials=%d, Fuel=%d, GMP=%d" % [
+			ResourceSystem.get_materials(), ResourceSystem.get_fuel(), ResourceSystem.get_gmp()
+		])

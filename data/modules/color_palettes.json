@@ -1,0 +1,50 @@
+{
+  "version": "1.0",
+  "description": "Color palettes for procedural module generation",
+  "palettes": [
+    {
+      "name": "Industrial",
+      "description": "Industrial colors for manufacturing platforms",
+      "colors": {
+        "primary": "#969696",
+        "secondary": "#808080",
+        "accent": "#4d4d59",
+        "highlight": "#b2804d",
+        "neutral": "#666680"
+      }
+    },
+    {
+      "name": "Tech",
+      "description": "High-tech colors for research platforms",
+      "colors": {
+        "primary": "#4d6680",
+        "secondary": "#334d66",
+        "accent": "#9999a6",
+        "highlight": "#668080",
+        "neutral": "#80808d"
+      }
+    },
+    {
+      "name": "Military",
+      "description": "Military colors for combat platforms",
+      "colors": {
+        "primary": "#66594d",
+        "secondary": "#596659",
+        "accent": "#4d4d52",
+        "highlight": "#736a61",
+        "neutral": "#404044"
+      }
+    },
+    {
+      "name": "Medical",
+      "description": "Clean medical colors for medical platforms",
+      "colors": {
+        "primary": "#e6f2ff",
+        "secondary": "#b3ccE6",
+        "accent": "#ccb3b3",
+        "highlight": "#d9d9d9",
+        "neutral": "#99a6b3"
+      }
+    }
+  ]
+}

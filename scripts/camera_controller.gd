@@ -14,16 +14,21 @@ var base_pan_speed: float = 1.0  # Base speed at reference height
 var pan_speed: float = 1.0
 var is_panning: bool = false
 var last_mouse_position: Vector2
+var reference_height: float = 40.0  # Reference height for pan speed calculation
 
 # ========== SMOOTH MOVEMENT ==========
 var target_position: Vector3
 var smooth_speed: float = 10.0
+var smooth_enabled: bool = true
 
 # ========== FOCUS MARKER (DEBUG) ==========
 var focus_marker: MeshInstance3D = null
 var debug_mode: bool = false
 
 func _ready():
+	# Load camera settings from JSON configuration
+	_load_camera_settings()
+
 	# Initialize target position to current position
 	target_position = position
 
@@ -109,7 +114,6 @@ func _pan_camera(delta: Vector2):
 	# Adjust pan speed based on camera height (zoom level)
 	# Higher camera = faster pan, Lower camera = slower pan
 	var camera_height = position.y
-	var reference_height = 40.0  # Starting height from main.tscn
 	var zoom_factor = camera_height / reference_height
 	pan_speed = base_pan_speed * zoom_factor
 
@@ -158,3 +162,40 @@ func focus_on_position(target: Vector3):
 	# Maintain current height and offset
 	target_position.x = target.x
 	target_position.z = target.z + 40  # Keep the offset from main.tscn
+
+## Load camera settings from JSON configuration file
+func _load_camera_settings():
+	var loader = load("res://scripts/game_constants_loader.gd").new()
+	var data = loader.load_camera_settings()
+
+	if data.is_empty():
+		print("[CameraController] WARNING: Failed to load camera settings, using defaults")
+		return
+
+	# Load zoom settings
+	if data.has("zoom"):
+		var zoom = data["zoom"]
+		if zoom.has("min_distance"):
+			zoom_min_distance = zoom["min_distance"]
+		if zoom.has("max_distance"):
+			zoom_max_distance = zoom["max_distance"]
+		if zoom.has("step"):
+			zoom_speed = zoom["step"]
+
+	# Load pan settings
+	if data.has("pan"):
+		var pan = data["pan"]
+		if pan.has("base_speed"):
+			base_pan_speed = pan["base_speed"]
+		if pan.has("reference_height"):
+			reference_height = pan["reference_height"]
+
+	# Load smooth settings
+	if data.has("smooth"):
+		var smooth = data["smooth"]
+		if smooth.has("enabled"):
+			smooth_enabled = smooth["enabled"]
+		if smooth.has("speed"):
+			smooth_speed = smooth["speed"]
+
+	print("[CameraController] Camera settings loaded from JSON")

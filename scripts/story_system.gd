@@ -10,8 +10,8 @@ var chapter_data: Dictionary = {}
 var completed_chapters: Array[String] = []
 var story_flags: Dictionary = {}
 
-## JSON data file path
-const CHAPTERS_DATA_PATH = "res://data/story_chapters.json"
+## Current story language (from ConfigSystem)
+var current_language: String = "en"
 
 ## Chapter completed signal
 signal chapter_completed(chapter_id: String)
@@ -19,12 +19,27 @@ signal chapter_loaded(chapter_id: String)  # New signal for when chapter data is
 signal objective_completed(objective_id: String)
 signal dialogue_requested(dialogue_data: Dictionary)
 
+## Set language for story chapters
+func set_story_language(language: String):
+	current_language = language
+	print("[StorySystem] Story language set to: ", language)
+
+## Get current story language
+func get_story_language() -> String:
+	return current_language
+
 func _ready():
 	print("[StorySystem] Initialized")
 
 ## Initialize StorySystem when game starts (called from main.gd)
 func initialize_story_mode():
 	print("[StorySystem] Initializing Story Mode")
+
+	# Load language setting from ConfigSystem
+	var config_system = get_node_or_null("/root/ConfigSystem")
+	if config_system:
+		current_language = config_system.language
+		print("[StorySystem] Loaded language from ConfigSystem: ", current_language)
 
 	# Subscribe to game events (signal-driven architecture)
 	# Note: We subscribe to existing signals without modifying the source
@@ -187,31 +202,24 @@ func _get_platform_depth(platform: Platform) -> int:
 
 	return depth
 
-## Load chapter data from JSON
+## Load chapter data from JSON (multi-language support)
 func load_chapter(chapter_id: String) -> bool:
-	print("[StorySystem] Loading chapter: ", chapter_id)
+	print("[StorySystem] Loading chapter: ", chapter_id, " (language: ", current_language, ")")
 
-	var json_file = FileAccess.open(CHAPTERS_DATA_PATH, FileAccess.READ)
-	if not json_file:
-		push_error("[StorySystem] Failed to open chapters data file: " + CHAPTERS_DATA_PATH)
+	# Use StoryLoader to load chapter data for current language
+	var loader = load("res://scripts/story_loader.gd").new()
+	var all_data = loader.load_story_chapters(current_language)
+
+	if all_data.is_empty():
+		push_error("[StorySystem] Failed to load story data for language: " + current_language)
 		return false
 
-	var json_text = json_file.get_as_text()
-	json_file.close()
-
-	var json = JSON.new()
-	var error = json.parse(json_text)
-	if error != OK:
-		push_error("[StorySystem] Failed to parse JSON: " + json.get_error_message())
-		return false
-
-	var data = json.data
-	if not data.has("chapters"):
-		push_error("[StorySystem] Invalid chapter data format")
+	if not all_data.has("chapters"):
+		push_error("[StorySystem] Invalid story data format: missing 'chapters' array")
 		return false
 
 	# Find the requested chapter
-	for chapter in data["chapters"]:
+	for chapter in all_data["chapters"]:
 		if chapter["id"] == chapter_id:
 			current_chapter_id = chapter_id
 			chapter_data = chapter

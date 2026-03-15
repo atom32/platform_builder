@@ -1,0 +1,10 @@
+{
+  "version": "1.0",
+  "description": "Starting resources for new game",
+  "resources": {
+    "materials": 200,
+    "fuel": 100,
+    "gmp": 300,
+    "beds": 10
+  }
+}

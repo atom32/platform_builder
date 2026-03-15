@@ -5,8 +5,8 @@ extends Node
 ## Signals
 signal staff_assigned(staff_id: int, department: String)
 
-## Maximum platforms per department
-const MAX_PLATFORMS_PER_DEPT: int = 6
+## Maximum platforms per department (loaded from JSON)
+var MAX_PLATFORMS_PER_DEPT: int = 6
 
 ## Reference to combo system for adjacency bonuses
 var combo_system: ComboSystem = null
@@ -42,12 +42,12 @@ var department_staff = {
 var staff_list: Array = []  # All staff in the base
 var next_staff_id: int = 1  # Auto-incrementing ID for new staff
 
-## Department bonuses
-const RESEARCH_SPEED_BONUS_PER_STAFF: float = 0.1  # 10% per staff
-const COMBAT_POWER_BONUS_PER_STAFF: float = 0.5   # 0.5 per staff
+## Department bonuses (loaded from JSON)
+var RESEARCH_SPEED_BONUS_PER_STAFF: float = 0.1  # 10% per staff
+var COMBAT_POWER_BONUS_PER_STAFF: float = 0.5   # 0.5 per staff
 
 func _ready():
-	pass
+	_load_constants()
 
 ## Check if a department can accept a new platform
 func can_build(department_type: String) -> bool:
@@ -306,3 +306,28 @@ func reset_department_system():
 	for dept in departments:
 		departments[dept].clear()
 		department_counts[dept] = 0
+
+## Load game constants from JSON configuration file
+func _load_constants():
+	var loader = load("res://scripts/game_constants_loader.gd").new()
+	var data = loader.load_constants()
+
+	if data.is_empty():
+		print("[DepartmentSystem] WARNING: Failed to load constants, using defaults")
+		return
+
+	# Load platform limits
+	if data.has("platform_limits"):
+		var limits = data["platform_limits"]
+		if limits.has("max_platforms_per_department"):
+			MAX_PLATFORMS_PER_DEPT = limits["max_platforms_per_department"]
+
+	# Load department bonuses
+	if data.has("department_bonuses"):
+		var bonuses = data["department_bonuses"]
+		if bonuses.has("research_speed_per_staff"):
+			RESEARCH_SPEED_BONUS_PER_STAFF = bonuses["research_speed_per_staff"]
+		if bonuses.has("combat_power_per_staff"):
+			COMBAT_POWER_BONUS_PER_STAFF = bonuses["combat_power_per_staff"]
+
+	print("[DepartmentSystem] Constants loaded from JSON")

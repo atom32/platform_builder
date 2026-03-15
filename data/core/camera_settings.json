@@ -1,0 +1,19 @@
+{
+  "version": "1.0",
+  "description": "Camera settings for zoom and pan controls",
+  "zoom": {
+    "min_distance": 15.0,
+    "max_distance": 80.0,
+    "step": 5.0
+  },
+  "pan": {
+    "enabled": true,
+    "base_speed": 1.0,
+    "speed_multiplier": 1.0,
+    "reference_height": 40.0
+  },
+  "smooth": {
+    "enabled": true,
+    "speed": 10.0
+  }
+}

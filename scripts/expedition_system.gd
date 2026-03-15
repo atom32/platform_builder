@@ -7,53 +7,8 @@ signal expedition_started(mission_id: String)
 signal expedition_completed(mission_id: String, rewards: Dictionary)
 signal expedition_failed(mission_id: String, reason: String)
 
-## Mission data (data-driven)
-var mission_data: Dictionary = {
-	"supply_raid": {
-		"display_name": "Supply Raid",
-		"description": "Raid enemy supply lines for resources",
-		"duration": 60,  # seconds
-		"materials_reward": 100,
-		"fuel_reward": 40,
-		"gmp_reward": 30,
-		"recruit_reward": 0,
-		"required_combat_power": 2,
-		"difficulty": "Easy"
-	},
-	"resource_scavenge": {
-		"display_name": "Resource Scavenge",
-		"description": "Scavenge for resources in the area",
-		"duration": 45,
-		"materials_reward": 80,
-		"fuel_reward": 30,
-		"gmp_reward": 20,
-		"recruit_reward": 0,
-		"required_combat_power": 1,
-		"difficulty": "Easy"
-	},
-	"intel_gathering": {
-		"display_name": "Intel Gathering",
-		"description": "Gather intelligence from the region",
-		"duration": 90,
-		"materials_reward": 50,
-		"fuel_reward": 60,
-		"gmp_reward": 40,
-		"recruit_reward": 1,
-		"required_combat_power": 3,
-		"difficulty": "Medium"
-	},
-	"heavy_assault": {
-		"display_name": "Heavy Assault",
-		"description": "Launch a major assault operation",
-		"duration": 120,
-		"materials_reward": 200,
-		"fuel_reward": 100,
-		"gmp_reward": 80,
-		"recruit_reward": 2,
-		"required_combat_power": 5,
-		"difficulty": "Hard"
-	}
-}
+## Mission data (loaded from JSON)
+var mission_data: Dictionary = {}
 
 ## Active expeditions
 var active_expeditions: Dictionary = {}
@@ -68,12 +23,47 @@ var combo_system: ComboSystem = null
 var expedition_timer: Timer = null
 
 func _ready():
+	# Load mission data from JSON
+	_load_missions()
+
 	# Create timer for checking expedition completion
 	expedition_timer = Timer.new()
 	expedition_timer.wait_time = 1.0  # Check every second
 	expedition_timer.timeout.connect(_on_expedition_timer)
 	add_child(expedition_timer)
 	expedition_timer.start()
+
+## Load mission data from JSON file
+func _load_missions():
+	var loader = load("res://scripts/expedition_data_loader.gd").new()
+	var data = loader.load_missions()
+
+	if data.is_empty() or not data.has("missions"):
+		print("[ExpeditionManager] WARNING: Failed to load missions, using fallback")
+		_load_fallback_missions()
+		return
+
+	# Convert array to dictionary by mission ID
+	for mission in data["missions"]:
+		if mission.has("id"):
+			var id = mission["id"]
+			mission_data[id] = mission
+
+	print("[ExpeditionManager] Missions loaded from JSON: %d missions" % mission_data.size())
+
+## Fallback missions if JSON loading fails
+func _load_fallback_missions():
+	mission_data = {
+		"supply_raid": {
+			"id": "supply_raid",
+			"name": "Supply Raid",
+			"description": "Raid enemy supply lines for resources",
+			"duration": 60,
+			"required_combat_power": 2,
+			"difficulty": "Easy",
+			"rewards": {"materials": 100, "fuel": 40, "gmp": 30, "recruits": 0}
+		}
+	}
 
 ## Set base system reference
 func set_base_system(base: Base):

@@ -4,96 +4,63 @@ class_name PlatformDataSystem
 ## Data-driven platform configuration system
 ## Centralizes all platform stats and properties
 
-## Platform type data dictionary
-var platform_data: Dictionary = {
-	"HQ": {
-		"display_name": "Headquarters",
-		"description": "Central command of the base",
-		"materials_production": 0,
-		"fuel_production": 0,
-		"build_cost": {"materials": 0, "fuel": 0},
-		"construction_time": 0.0,  # HQ builds instantly
-		"tags": ["hq", "command"]
-	},
+## Platform type data dictionary (loaded from JSON)
+var platform_data: Dictionary = {}
 
-	"R&D": {
-		"display_name": "Research & Development",
-		"description": "Advanced technology research facility",
-		"materials_production": 2,
-		"fuel_production": 0,
-		"build_cost": {"materials": 50, "fuel": 10},
-		"construction_time": 5.0,  # seconds
-		"tags": ["research"]
-	},
+## Combo rules: tag combinations and their effects (loaded from JSON)
+var combo_rules: Dictionary = {}
 
-	"Combat": {
-		"display_name": "Combat Platform",
-		"description": "Military operations and defense",
-		"materials_production": 1,
-		"fuel_production": 1,
-		"build_cost": {"materials": 40, "fuel": 30},
-		"construction_time": 5.0,  # seconds
-		"tags": ["combat", "military"]
-	},
+func _ready():
+	_load_platform_data()
+	_load_combo_rules()
 
-	"Support": {
-		"display_name": "Support Platform",
-		"description": "Logistics and supply operations",
-		"materials_production": 0,
-		"fuel_production": 2,
-		"build_cost": {"materials": 30, "fuel": 40},
-		"construction_time": 5.0,  # seconds
-		"tags": ["support", "logistics"]
-	},
+## Load platform data from JSON file
+func _load_platform_data():
+	var loader = load("res://scripts/platform_data_loader.gd").new()
+	var data = loader.load_platform_types()
 
-	"Intel": {
-		"display_name": "Intel Platform",
-		"description": "Intelligence gathering and analysis",
-		"materials_production": 0,
-		"fuel_production": 1,
-		"build_cost": {"materials": 35, "fuel": 25},
-		"construction_time": 5.0,  # seconds
-		"tags": ["intel"]
-	},
+	if data.is_empty() or not data.has("platform_types"):
+		print("[PlatformDataSystem] WARNING: Failed to load platform data, using fallback")
+		_load_fallback_data()
+		return
 
-	"Medical": {
-		"display_name": "Medical Platform",
-		"description": "Medical treatment and research",
-		"materials_production": 1,
-		"fuel_production": 0,
-		"build_cost": {"materials": 25, "fuel": 25},
-		"construction_time": 5.0,  # seconds
-		"tags": ["medical", "support"]
+	# Convert array to dictionary for easier lookup
+	for platform in data["platform_types"]:
+		if platform.has("type"):
+			var type_key = platform["type"]
+			platform_data[type_key] = platform
+
+	print("[PlatformDataSystem] Platform data loaded from JSON")
+
+## Load combo rules from JSON file
+func _load_combo_rules():
+	var loader = load("res://scripts/platform_data_loader.gd").new()
+	var data = loader.load_combo_rules()
+
+	if data.is_empty() or not data.has("combo_rules"):
+		print("[PlatformDataSystem] WARNING: Failed to load combo rules")
+		return
+
+	# Convert array to dictionary for easier lookup
+	for rule in data["combo_rules"]:
+		if rule.has("id"):
+			var rule_id = rule["id"]
+			combo_rules[rule_id] = rule
+
+	print("[PlatformDataSystem] Combo rules loaded from JSON")
+
+## Fallback data if JSON loading fails
+func _load_fallback_data():
+	platform_data = {
+		"HQ": {
+			"display_name": "Headquarters",
+			"description": "Central command of the base",
+			"production": {"materials": 0, "fuel": 0},
+			"costs": {"materials": 0, "fuel": 0},
+			"construction_time": 0.0,
+			"tags": ["hq", "command"]
+		}
 	}
-}
-
-## Combo rules: tag combinations and their effects
-var combo_rules: Dictionary = {
-	"research_intel": {
-		"required_tags": ["research", "intel"],
-		"effect_type": "research_speed",
-		"bonus": 0.2,  # +20%
-		"description": "Faster Research"
-	},
-	"medical_combat": {
-		"required_tags": ["medical", "combat"],
-		"effect_type": "casualty_reduction",
-		"bonus": 0.2,  # +20%
-		"description": "Reduced Casualties"
-	},
-	"combat_support": {
-		"required_tags": ["combat", "support"],
-		"effect_type": "expedition_resource_reward",
-		"bonus": 0.1,  # +10%
-		"description": "Better Looting"
-	},
-	"support_research": {
-		"required_tags": ["support", "research"],
-		"effect_type": "resource_production",
-		"bonus": 0.1,  # +10%
-		"description": "Efficient Production"
-	}
-}
 
 ## Get platform data by type
 func get_platform_data(platform_type: String) -> Dictionary:
@@ -104,12 +71,18 @@ func get_platform_data(platform_type: String) -> Dictionary:
 ## Get production rates for a platform type
 func get_materials_production(platform_type: String) -> int:
 	var data = get_platform_data(platform_type)
+	if data.has("production"):
+		return data["production"].get("materials", 0)
+	# Backward compatibility with old structure
 	if data.has("materials_production"):
 		return data["materials_production"]
 	return 0
 
 func get_fuel_production(platform_type: String) -> int:
 	var data = get_platform_data(platform_type)
+	if data.has("production"):
+		return data["production"].get("fuel", 0)
+	# Backward compatibility with old structure
 	if data.has("fuel_production"):
 		return data["fuel_production"]
 	return 0
@@ -117,6 +90,9 @@ func get_fuel_production(platform_type: String) -> int:
 ## Get build cost for a platform type
 func get_build_cost(platform_type: String) -> Dictionary:
 	var data = get_platform_data(platform_type)
+	if data.has("costs"):
+		return data["costs"]
+	# Backward compatibility with old structure
 	if data.has("build_cost"):
 		return data["build_cost"]
 	return {"materials": 0, "fuel": 0}
@@ -146,21 +122,49 @@ func get_display_name(platform_type: String) -> String:
 func get_all_platform_types() -> Array:
 	return platform_data.keys()
 
-## Check if a combo exists between two tag sets
-func check_combo(tags_a: Array, tags_b: Array) -> Dictionary:
+## Check if a combo exists between two platform types
+func check_combo(parent_type: String, child_type: String) -> Dictionary:
 	for combo_id in combo_rules:
 		var combo = combo_rules[combo_id]
-		var required_tags = combo["required_tags"]
 
-		# Check if both required tags are present across the two platforms
-		var has_all_tags = true
-		for tag in required_tags:
-			if not (tag in tags_a or tag in tags_b):
-				has_all_tags = false
-				break
+		# New JSON structure uses parent/child
+		if combo.has("parent") and combo.has("child"):
+			if combo["parent"] == parent_type and combo["child"] == child_type:
+				return combo
+		# Backward compatibility with old tag-based structure
+		elif combo.has("required_tags"):
+			var parent_data = get_platform_data(parent_type)
+			var child_data = get_platform_data(child_type)
+			var parent_tags = parent_data.get("tags", [])
+			var child_tags = child_data.get("tags", [])
 
-		if has_all_tags:
-			return combo
+			var required_tags = combo["required_tags"]
+			var has_all_tags = true
+			for tag in required_tags:
+				if not (tag in parent_tags or tag in child_tags):
+					has_all_tags = false
+					break
+
+			if has_all_tags:
+				return combo
+
+	return {}
+
+## Backward compatibility: Check if a combo exists between two tag sets
+func check_combo_by_tags(tags_a: Array, tags_b: Array) -> Dictionary:
+	for combo_id in combo_rules:
+		var combo = combo_rules[combo_id]
+
+		if combo.has("required_tags"):
+			var required_tags = combo["required_tags"]
+			var has_all_tags = true
+			for tag in required_tags:
+				if not (tag in tags_a or tag in tags_b):
+					has_all_tags = false
+					break
+
+			if has_all_tags:
+				return combo
 
 	return {}
 

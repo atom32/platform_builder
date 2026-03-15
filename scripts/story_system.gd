@@ -4,6 +4,9 @@ extends Node
 ## Manages story chapters, objectives, and dialogue progression
 ## This is an autoload singleton that handles all story-related content
 
+# Preload loader classes for safe initialization
+const StoryLoader = preload("res://scripts/story_loader.gd")
+
 ## Current chapter data
 var current_chapter_id: String = ""
 var chapter_data: Dictionary = {}
@@ -207,7 +210,7 @@ func load_chapter(chapter_id: String) -> bool:
 	print("[StorySystem] Loading chapter: ", chapter_id, " (language: ", current_language, ")")
 
 	# Use StoryLoader to load chapter data for current language
-	var loader = load("res://scripts/story_loader.gd").new()
+	var loader = StoryLoader.new()
 	var all_data = loader.load_story_chapters(current_language)
 
 	if all_data.is_empty():

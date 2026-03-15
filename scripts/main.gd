@@ -3,6 +3,9 @@ extends Node3D
 # Main game controller
 # The Base system now handles platform and slot management
 
+# Preload loader classes for safe initialization
+const GameConstantsLoader = preload("res://scripts/game_constants_loader.gd")
+
 @onready var base = $Base
 @onready var camera = $Camera3D
 @onready var base_management_panel: BaseManagementPanel = $BaseManagementPanel as BaseManagementPanel
@@ -289,7 +292,7 @@ func _on_staff_recruited():
 
 ## Load starting resources from JSON configuration file
 func _load_starting_resources():
-	var loader = load("res://scripts/game_constants_loader.gd").new()
+	var loader = GameConstantsLoader.new()
 	var data = loader.load_starting_resources()
 
 	if data.is_empty():

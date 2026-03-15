@@ -4,6 +4,9 @@ class_name CameraController
 ## Camera controller - handles zoom, pan, and smooth movement
 ## Separated from Main.gd and Base.gd for better code organization
 
+# Preload loader classes for safe initialization
+const GameConstantsLoader = preload("res://scripts/game_constants_loader.gd")
+
 # ========== ZOOM SETTINGS ==========
 var zoom_min_distance: float = 15.0
 var zoom_max_distance: float = 80.0
@@ -165,7 +168,7 @@ func focus_on_position(target: Vector3):
 
 ## Load camera settings from JSON configuration file
 func _load_camera_settings():
-	var loader = load("res://scripts/game_constants_loader.gd").new()
+	var loader = GameConstantsLoader.new()
 	var data = loader.load_camera_settings()
 
 	if data.is_empty():

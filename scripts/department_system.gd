@@ -2,6 +2,10 @@ extends Node
 
 ## Manages platform departments with capacity limits and staff assignments
 
+# Preload loader classes for safe initialization
+const StaffClass = preload("res://scripts/staff.gd")
+const GameConstantsLoader = preload("res://scripts/game_constants_loader.gd")
+
 ## Signals
 signal staff_assigned(staff_id: int, department: String)
 
@@ -109,7 +113,6 @@ func get_total_platform_count() -> int:
 
 ## Add a new staff member (recruitment)
 func add_staff():
-	var StaffClass = load("res://scripts/staff.gd")
 	var new_staff = StaffClass.new(next_staff_id)
 	next_staff_id += 1
 	staff_list.append(new_staff)
@@ -309,7 +312,7 @@ func reset_department_system():
 
 ## Load game constants from JSON configuration file
 func _load_constants():
-	var loader = load("res://scripts/game_constants_loader.gd").new()
+	var loader = GameConstantsLoader.new()
 	var data = loader.load_constants()
 
 	if data.is_empty():

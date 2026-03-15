@@ -83,8 +83,3 @@ func get_combo_bonus(parent_type: String, child_type: String) -> float:
 				return rule["bonus"]
 
 	return 1.0  # No bonus
-
-## Validate platform type data structure
-func validate_platform_data(data: Dictionary) -> bool:
-	var required_fields = ["type", "display_name", "description", "production", "costs"]
-	return validate_required_fields(data, required_fields)

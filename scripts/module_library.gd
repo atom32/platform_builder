@@ -3,6 +3,9 @@ extends Node
 ## Library of available modules for platform generation
 ## Each module defines its visual properties and placement rules
 
+# Preload loader classes for safe initialization
+const ModuleLibraryLoader = preload("res://scripts/module_library_loader.gd")
+
 ## Module categories for organization
 enum ModuleCategory {
 	TOP,        # Modules placed on top of platform
@@ -40,7 +43,7 @@ func _ready():
 
 ## Load color palettes from JSON file
 func _load_color_palettes():
-	var loader = load("res://scripts/module_library_loader.gd").new()
+	var loader = ModuleLibraryLoader.new()
 	var data = loader.load_color_palettes()
 
 	if data.is_empty() or not data.has("palettes"):
@@ -58,7 +61,7 @@ func _load_color_palettes():
 
 ## Load modules from JSON file
 func _load_modules():
-	var loader = load("res://scripts/module_library_loader.gd").new()
+	var loader = ModuleLibraryLoader.new()
 	var data = loader.load_module_library()
 
 	if data.is_empty() or not data.has("modules"):

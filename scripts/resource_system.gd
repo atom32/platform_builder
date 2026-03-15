@@ -3,6 +3,9 @@ extends Node
 ## Global resource management system
 ## Tracks Materials, Fuel, Staff, and GMP for the entire base
 
+# Preload loader classes for safe initialization
+const GameConstantsLoader = preload("res://scripts/game_constants_loader.gd")
+
 ## Debug mode (global setting for all debug output)
 var debug_mode: bool = false
 
@@ -256,7 +259,7 @@ func reset_resources():
 
 ## Load game constants from JSON configuration file
 func _load_constants():
-	var loader = load("res://scripts/game_constants_loader.gd").new()
+	var loader = GameConstantsLoader.new()
 	var data = loader.load_constants()
 
 	if data.is_empty():

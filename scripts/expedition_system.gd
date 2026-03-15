@@ -3,6 +3,9 @@ class_name ExpeditionManager
 
 ## Manages expeditions and missions
 
+# Preload loader classes for safe initialization
+const ExpeditionDataLoader = preload("res://scripts/expedition_data_loader.gd")
+
 signal expedition_started(mission_id: String)
 signal expedition_completed(mission_id: String, rewards: Dictionary)
 signal expedition_failed(mission_id: String, reason: String)
@@ -35,7 +38,7 @@ func _ready():
 
 ## Load mission data from JSON file
 func _load_missions():
-	var loader = load("res://scripts/expedition_data_loader.gd").new()
+	var loader = ExpeditionDataLoader.new()
 	var data = loader.load_missions()
 
 	if data.is_empty() or not data.has("missions"):

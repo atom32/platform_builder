@@ -4,6 +4,9 @@ class_name PlatformDataSystem
 ## Data-driven platform configuration system
 ## Centralizes all platform stats and properties
 
+# Preload loader classes for safe initialization
+const PlatformDataLoader = preload("res://scripts/platform_data_loader.gd")
+
 ## Platform type data dictionary (loaded from JSON)
 var platform_data: Dictionary = {}
 
@@ -16,7 +19,7 @@ func _ready():
 
 ## Load platform data from JSON file
 func _load_platform_data():
-	var loader = load("res://scripts/platform_data_loader.gd").new()
+	var loader = PlatformDataLoader.new()
 	var data = loader.load_platform_types()
 
 	if data.is_empty() or not data.has("platform_types"):
@@ -34,7 +37,7 @@ func _load_platform_data():
 
 ## Load combo rules from JSON file
 func _load_combo_rules():
-	var loader = load("res://scripts/platform_data_loader.gd").new()
+	var loader = PlatformDataLoader.new()
 	var data = loader.load_combo_rules()
 
 	if data.is_empty() or not data.has("combo_rules"):

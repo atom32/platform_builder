@@ -92,11 +92,6 @@ func get_module_color(module_type: String, palette_name: String = "") -> Color:
 
 	return Color.WHITE  # Fallback
 
-## Validate module data structure
-func validate_module_data(data: Dictionary) -> bool:
-	var required_fields = ["name", "type", "mesh_scale", "position_range"]
-	return validate_required_fields(data, required_fields)
-
 ## Default color palette (fallback)
 func _get_default_palette() -> Dictionary:
 	return {

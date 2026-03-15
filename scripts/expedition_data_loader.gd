@@ -57,8 +57,3 @@ func get_available_missions(combat_power: int) -> Array:
 					available.append(mission["id"])
 
 	return available
-
-## Validate mission data structure
-func validate_mission_data(data: Dictionary) -> bool:
-	var required_fields = ["id", "name", "description", "required_combat_power", "duration", "rewards"]
-	return validate_required_fields(data, required_fields)

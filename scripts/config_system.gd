@@ -47,6 +47,7 @@ func _load_config():
 		print("[ConfigSystem] No config file found, using defaults")
 		_current_config = ConfigData.new()
 		_save_config()
+		_apply_to_game()  # Apply defaults to game systems
 		return
 
 	# Load settings from file into ConfigData
@@ -57,6 +58,9 @@ func _load_config():
 
 	_current_config = ConfigData.new(lang, debug, audio, music)
 	print("[ConfigSystem] Config loaded: ", _current_config.get_as_string())
+
+	# Apply loaded configuration to all game systems
+	_apply_to_game()
 
 ## Save configuration to file
 func _save_config():

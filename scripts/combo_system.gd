@@ -23,7 +23,6 @@ func check_combos(all_platforms: Array[Platform]) -> Dictionary:
 
 	for platform in all_platforms:
 		var neighbors = platform.get_neighbors(all_platforms)
-		var platform_tags = platform.get_tags()
 
 		for neighbor in neighbors:
 			# Skip if we've already checked this pair
@@ -32,10 +31,8 @@ func check_combos(all_platforms: Array[Platform]) -> Dictionary:
 				continue
 			checked_pairs[pair_id] = true
 
-			var neighbor_tags = neighbor.get_tags()
-
-			# Check if this pair creates a combo
-			var combo = PlatformData.check_combo(platform_tags, neighbor_tags)
+			# Check if this pair creates a combo (pass platform types, not tags)
+			var combo = PlatformData.check_combo(platform.platform_type, neighbor.platform_type)
 			if not combo.is_empty():
 				active_combos[pair_id] = {
 					"platform_a": platform,
@@ -94,11 +91,8 @@ func get_platform_production_bonus(platform: Platform, all_platforms: Array[Plat
 	var neighbors = platform.get_neighbors(all_platforms)
 
 	for neighbor in neighbors:
-		var platform_tags = platform.get_tags()
-		var neighbor_tags = neighbor.get_tags()
-
-		# Check if this pair creates a resource production combo
-		var combo = PlatformData.check_combo(platform_tags, neighbor_tags)
+		# Check if this pair creates a resource production combo (pass platform types, not tags)
+		var combo = PlatformData.check_combo(platform.platform_type, neighbor.platform_type)
 		if not combo.is_empty() and combo["effect_type"] == "resource_production":
 			bonus += combo["bonus"]
 

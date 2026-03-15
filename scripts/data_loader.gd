@@ -3,6 +3,7 @@
 # Provides common JSON loading functionality with error handling and fallback support.
 
 extends Node
+class_name DataLoader
 
 const DATA_PATH = "res://data/"
 const VERSION_KEY = "version"

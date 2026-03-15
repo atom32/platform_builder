@@ -97,7 +97,8 @@ func get_module_id(module: Dictionary) -> String:
 	return module.get("id", "")
 
 func get_mesh_type(module: Dictionary) -> int:
-	return module.get("mesh_type", MeshType.BOX)
+	var mesh_type_str = module.get("mesh_type", "BOX")
+	return _mesh_type_string_to_enum(mesh_type_str)
 
 func get_scale(module: Dictionary) -> Vector3:
 	var scale_data = module.get("scale", [1.0, 1.0, 1.0])
@@ -155,6 +156,38 @@ func _to_color_array(arr: Array) -> Array[Color]:
 	var result: Array[Color] = []
 	result.assign(arr)
 	return result
+
+## Helper: Convert mesh type string to enum
+func _mesh_type_string_to_enum(mesh_type_str: String) -> int:
+	match mesh_type_str.to_upper():
+		"CYLINDER":
+			return MeshType.CYLINDER
+		"BOX":
+			return MeshType.BOX
+		"DISH":
+			return MeshType.DISH
+		"ANTENNA":
+			return MeshType.ANTENNA
+		"CRANE":
+			return MeshType.CRANE
+		"PIPE_CLUSTER":
+			return MeshType.PIPE_CLUSTER
+		"CONTAINER":
+			return MeshType.CONTAINER
+		"SOLAR_PANEL":
+			return MeshType.SOLAR_PANEL
+		"VENT":
+			return MeshType.VENT
+		"SATELLITE_DISH":
+			return MeshType.SATELLITE_DISH
+		"HELIPAD":
+			return MeshType.HELIPAD
+		"TURRET":
+			return MeshType.TURRET
+		"COMMS_ARRAY":
+			return MeshType.COMMS_ARRAY
+		_:
+			return MeshType.BOX  # Default fallback
 
 ## Get all modules in category
 func get_modules_by_category(category: ModuleCategory) -> Array[Dictionary]:

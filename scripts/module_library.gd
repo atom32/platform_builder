@@ -356,7 +356,7 @@ func _hex_dict_to_color_array(colors_dict: Dictionary) -> Array[Color]:
 	for color_key in colors_dict:
 		var hex_color = colors_dict[color_key]
 		if hex_color is String:
-			result.append(Color(html_color=hex_color))
+			result.append(Color.from_string(hex_color, Color.WHITE))
 		elif hex_color is Color:
 			result.append(hex_color)
 	return result

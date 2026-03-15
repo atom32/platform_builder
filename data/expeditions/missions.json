@@ -4,59 +4,51 @@
   "missions": [
     {
       "id": "supply_raid",
-      "name": "Supply Raid",
+      "display_name": "Supply Raid",
       "description": "Raid enemy supply lines for resources",
       "duration": 60,
       "required_combat_power": 2,
       "difficulty": "Easy",
-      "rewards": {
-        "materials": 100,
-        "fuel": 40,
-        "gmp": 30,
-        "recruits": 0
-      }
+      "materials_reward": 100,
+      "fuel_reward": 40,
+      "gmp_reward": 30,
+      "recruit_reward": 0
     },
     {
       "id": "resource_scavenge",
-      "name": "Resource Scavenge",
+      "display_name": "Resource Scavenge",
       "description": "Scavenge for resources in the area",
       "duration": 45,
       "required_combat_power": 1,
       "difficulty": "Easy",
-      "rewards": {
-        "materials": 80,
-        "fuel": 30,
-        "gmp": 20,
-        "recruits": 0
-      }
+      "materials_reward": 80,
+      "fuel_reward": 30,
+      "gmp_reward": 20,
+      "recruit_reward": 0
     },
     {
       "id": "intel_gathering",
-      "name": "Intel Gathering",
+      "display_name": "Intel Gathering",
       "description": "Gather intelligence from the region",
       "duration": 90,
       "required_combat_power": 3,
       "difficulty": "Medium",
-      "rewards": {
-        "materials": 50,
-        "fuel": 60,
-        "gmp": 40,
-        "recruits": 1
-      }
+      "materials_reward": 50,
+      "fuel_reward": 60,
+      "gmp_reward": 40,
+      "recruit_reward": 1
     },
     {
       "id": "heavy_assault",
-      "name": "Heavy Assault",
+      "display_name": "Heavy Assault",
       "description": "Launch a major assault operation",
       "duration": 120,
       "required_combat_power": 5,
       "difficulty": "Hard",
-      "rewards": {
-        "materials": 200,
-        "fuel": 100,
-        "gmp": 80,
-        "recruits": 2
-      }
+      "materials_reward": 200,
+      "fuel_reward": 100,
+      "gmp_reward": 80,
+      "recruit_reward": 2
     }
   ]
 }

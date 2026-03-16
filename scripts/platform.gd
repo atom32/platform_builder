@@ -17,6 +17,7 @@ enum PlatformState {
 
 @onready var mesh_node = $Mesh
 @onready var construction_progress_label = $ConstructionProgress
+@onready var dungeon_info_label = $DungeonInfoLabel
 
 ## Production rates per second (base values, multiplied by level)
 var materials_production: int = 0
@@ -96,6 +97,18 @@ func _create_build_slots():
 ## Called every second by the ProductionTimer (old system, DISABLED FOR TESTING)
 ## Produce resources (called by unified production system)
 func produce_resources():
+	# ⚠️ CURRENT: Called every second by Base._on_production_tick()
+	# 🔄 FUTURE (Turn-based): Called once per turn by TurnManager
+	#
+	# Implementation notes for turn-based conversion:
+	# 1. Remove Timer dependency, use turn event signals instead
+	# 2. Multiply base production by turn duration (e.g., ×60 if 1 turn = 1 minute)
+	# 3. Consider adding "Stored Resources" that accumulate until player collects them
+	#
+	# Example:
+	#   NOW:  R&D Level 1 → +2 Materials every second → +120 Materials/minute
+	#   THEN: R&D Level 1 → +120 Materials per turn (assuming 1 turn = 1 minute)
+
 	# Only produce if operational and production is active
 	if not production_active or state != PlatformState.OPERATIONAL:
 		return
@@ -308,3 +321,20 @@ func get_neighbors(all_platforms: Array[Platform], range: float = 20.0) -> Array
 			neighbors.append(platform)
 
 	return neighbors
+
+## Show dungeon deployment info as 3D label
+func show_dungeon_info(info: Dictionary):
+	if dungeon_info_label:
+		var text = ""
+		text += "[出征到 %s]\n" % get_type()
+		text += "路径: %s\n" % info.get("path_str", "")
+		text += "层数: %d\n" % info.get("layers", 0)
+		text += "难度: %s" % info.get("difficulty", "")
+
+		dungeon_info_label.text = text
+		dungeon_info_label.visible = true
+
+## Hide dungeon deployment info
+func hide_dungeon_info():
+	if dungeon_info_label:
+		dungeon_info_label.visible = false

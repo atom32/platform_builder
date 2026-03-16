@@ -11,12 +11,19 @@ var hq_platform: Platform = null
 
 var platform_scene = preload("res://scenes/platform.tscn")
 var build_menu_scene = preload("res://ui/build_menu.tscn")
+var dungeon_deployment_menu_scene = preload("res://ui/dungeon_deployment_menu.tscn")
+var dungeon_party_select_scene = preload("res://ui/dungeon_party_select.tscn")
+var dungeon_combat_ui_scene = preload("res://ui/dungeon_combat_ui.tscn")
 
 var build_menu: BuildMenu = null
+var dungeon_deployment_menu: DungeonDeploymentMenu = null
+var dungeon_party_select: Control = null
+var dungeon_combat_ui: Control = null
 var department_system: Node = null
 var combo_system: ComboSystem = null
 var expedition_system: ExpeditionManager = null
 var base_management_panel: BaseManagementPanel = null
+var dungeon_system: DungeonCrawlerSystem = null
 
 ## Base size limit
 const MAX_PLATFORMS: int = 100
@@ -40,7 +47,9 @@ func _ready():
 	_create_department_system()
 	_create_combo_system()
 	_create_expedition_system()
+	_create_dungeon_system()
 	_create_build_menu()
+	_create_dungeon_menus()
 	_setup_construction_timer()
 	_setup_production_timer()
 	_setup_click_detection()
@@ -92,6 +101,30 @@ func _create_expedition_system():
 		if combo_system:
 			expedition_system.combo_system = combo_system
 
+func _create_dungeon_system():
+	# Use the autoload instance
+	dungeon_system = get_node_or_null("/root/DungeonCrawlerSystem")
+	if dungeon_system:
+		print("[Base] Connected to DungeonCrawlerSystem")
+
+func _create_dungeon_menus():
+	# Create dungeon deployment menu
+	dungeon_deployment_menu = dungeon_deployment_menu_scene.instantiate() as DungeonDeploymentMenu
+	add_child(dungeon_deployment_menu)
+	dungeon_deployment_menu.deployment_confirmed.connect(_on_dungeon_deployment_confirmed)
+	dungeon_deployment_menu.deployment_cancelled.connect(_on_dungeon_deployment_cancelled)
+	print("[Base] Dungeon deployment menu created")
+
+	# Create party selection menu
+	dungeon_party_select = dungeon_party_select_scene.instantiate()
+	add_child(dungeon_party_select)
+	dungeon_party_select.party_selected.connect(_on_party_selected)
+	dungeon_party_select.selection_cancelled.connect(_on_party_selection_cancelled)
+
+	# Create combat UI
+	dungeon_combat_ui = dungeon_combat_ui_scene.instantiate()
+	add_child(dungeon_combat_ui)
+
 func _setup_construction_timer():
 	# Unified construction tick (updates all construction jobs every second)
 	construction_timer = Timer.new()
@@ -101,6 +134,21 @@ func _setup_construction_timer():
 	add_child(construction_timer)
 
 func _setup_production_timer():
+	# ⚠️ CURRENT: Real-time production (1-second ticks)
+	# 🔄 FUTURE (Turn-based): Convert to turn event handler
+	#
+	# Migration plan:
+	# 1. Remove Timer, connect to TurnManager.turn_ended signal instead
+	# 2. Change wait_time from 1.0s to turn duration
+	# 3. Update _on_production_tick to calculate turn-based production
+	#
+	# Example code for turn-based:
+	#   func _on_turn_completed(turn_duration_minutes: int):
+	#       for platform in get_all_platforms():
+	#           var per_second_production = platform.materials_production * platform.level
+	#           var turn_production = per_second_production * turn_duration_minutes
+	#           ResourceSystem.add_materials(turn_production)
+
 	# Unified production tick (updates all operational platforms every second)
 	production_timer = Timer.new()
 	production_timer.wait_time = 1.0
@@ -109,6 +157,10 @@ func _setup_production_timer():
 	add_child(production_timer)
 
 func _on_production_tick():
+	# ⚠️ CURRENT: Called every second, adds per-second production
+	# 🔄 FUTURE (Turn-based): Called at end of each turn
+	#   Would receive turn_duration as parameter and calculate total turn production
+
 	# Produce resources for all operational platforms
 	var all_platforms = get_all_platforms()
 	for platform in all_platforms:
@@ -202,8 +254,8 @@ func _input(event):
 	# Handle left click for slot/platform interaction
 	if event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT:
-			# Check if menus are open
-			if not (build_menu and build_menu.visible) and not (base_management_panel and base_management_panel.visible):
+			# Check if menus are open (including dungeon deployment menu)
+			if not (build_menu and build_menu.visible) and not (base_management_panel and base_management_panel.visible) and not (dungeon_deployment_menu and dungeon_deployment_menu.visible):
 				_handle_click(event.position)
 
 	# Handle menu cancellation with ESC
@@ -212,6 +264,10 @@ func _input(event):
 			build_menu.hide_menu()
 		elif base_management_panel and base_management_panel.visible:
 			base_management_panel.hide_panel()
+		elif dungeon_deployment_menu and dungeon_deployment_menu.visible:
+			if dungeon_deployment_menu.target_platform and is_instance_valid(dungeon_deployment_menu.target_platform):
+				dungeon_deployment_menu.target_platform.hide_dungeon_info()
+			dungeon_deployment_menu.hide()
 
 	# Handle test feedback with T key
 	if event is InputEventKey and event.pressed and event.keycode == KEY_T:
@@ -229,6 +285,14 @@ func _drag_camera(delta: Vector2):
 	camera.position.z -= delta.y * move_speed
 
 func _handle_click(mouse_pos: Vector2):
+	# Hide dungeon deployment menu if open
+	if dungeon_deployment_menu and dungeon_deployment_menu.visible:
+		print("[Base] _handle_click: Hiding dungeon deployment menu")
+		# Clear platform info bubble
+		if dungeon_deployment_menu.target_platform and is_instance_valid(dungeon_deployment_menu.target_platform):
+			dungeon_deployment_menu.target_platform.hide_dungeon_info()
+		dungeon_deployment_menu.hide()
+
 	var camera = get_viewport().get_camera_3d()
 	if not camera:
 		push_error("Camera not found in scene!")
@@ -278,7 +342,12 @@ func _handle_click(mouse_pos: Vector2):
 	if platform_result and platform_result.collider:
 		var platform = platform_result.collider.get_parent() as Platform
 		if platform:
+			# Always show build slots first
 			_show_platform_slots(platform)
+
+			# If platform is operational and not HQ, also show dungeon menu
+			if platform.is_operational() and platform.platform_type != "HQ":
+				_show_dungeon_deployment_menu(platform)
 			return
 
 	# If didn't click on slot or platform, hide all slots
@@ -473,6 +542,59 @@ func _on_expedition_failed(mission_id: String, reason: String):
 ## Handle combo activation feedback
 func _on_combo_activated(combo_name: String, bonus: float, position: Vector3):
 	FeedbackSystem.show_combo_activated(combo_name, bonus, position)
+
+## ===== DUNGEON SYSTEM HANDLERS =====
+
+## Show dungeon deployment menu for a platform
+func _show_dungeon_deployment_menu(platform: Platform):
+	# Check if dungeon is already active
+	if dungeon_system and dungeon_system.is_dungeon_active():
+		print("[Base] Dungeon already active, cannot start new one")
+		return
+
+	if dungeon_deployment_menu:
+		dungeon_deployment_menu.show_for_platform(platform)
+
+## Handle dungeon deployment confirmation
+func _on_dungeon_deployment_confirmed(platform: Platform):
+	print("[Base] Dungeon deployment confirmed! Platform: ", platform)
+
+	if dungeon_party_select:
+		# Calculate recommended party size
+		var path = DungeonPathfinder.get_path_to_hq(platform)
+		var difficulty_info = DungeonPathfinder.calculate_difficulty(path)
+		var recommended = DungeonPathfinder.get_recommended_staff(difficulty_info["difficulty"])
+
+		print("[Base] Showing party selection, recommended: ", recommended)
+
+		# Show party selection
+		dungeon_party_select.show_party_selection(recommended)
+	else:
+		print("[Base] ERROR: dungeon_party_select is null!")
+
+## Handle dungeon deployment cancellation
+func _on_dungeon_deployment_cancelled():
+	print("[Base] Dungeon deployment cancelled")
+
+## Handle party selection confirmation
+func _on_party_selected(party: Array[Staff]):
+	if dungeon_system and dungeon_combat_ui:
+		# Start dungeon expedition
+		var target_platform = dungeon_deployment_menu.target_platform if dungeon_deployment_menu else null
+		if target_platform and is_instance_valid(target_platform):
+			var success = dungeon_system.start_dungeon(target_platform, party)
+			if success:
+				# Show combat UI
+				dungeon_combat_ui.show_combat()
+				print("[Base] Dungeon expedition started with party of %d" % party.size())
+			else:
+				print("[Base] Failed to start dungeon expedition")
+		else:
+			print("[Base] ERROR: Invalid target platform for dungeon expedition")
+
+## Handle party selection cancellation
+func _on_party_selection_cancelled():
+	print("[Base] Party selection cancelled")
 
 ## Update bed capacity based on all platforms
 func _update_bed_capacity():

@@ -1,0 +1,18 @@
+{
+  "version": "1.0",
+  "description": "Dungeon templates by difficulty level",
+  "templates": {
+    "easy": [
+      {"enemy_id": "mutated_fish", "weight": 1.0}
+    ],
+    "medium": [
+      {"enemy_id": "mutated_fish", "weight": 0.6},
+      {"enemy_id": "coral_guardian", "weight": 0.4}
+    ],
+    "hard": [
+      {"enemy_id": "deep_sea_giant", "weight": 0.4},
+      {"enemy_id": "void_stalker", "weight": 0.3},
+      {"enemy_id": "abyssal_horror", "weight": 0.3}
+    ]
+  }
+}

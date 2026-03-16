@@ -2,6 +2,21 @@ extends Node
 
 ## Global resource management system
 ## Tracks Materials, Fuel, Staff, and GMP for the entire base
+##
+## =========================== RESOURCE TIMING ===========================
+## ⚠️ CURRENT: Real-time resource system (production every second)
+## 🔄 FUTURE (Turn-based): Production happens at turn start/end
+##
+## Migration plan for turn-based implementation:
+## 1. Change Timer from 1.0s to turn events (on_turn_start/on_turn_end)
+## 2. Update Platform.produce_resources() to be called per-turn
+## 3. Adjust amounts: per_second → per_turn (e.g., ×60 for 1 turn = 1 minute)
+## 4. Modify UI to show "Turn production: +X" instead of "+X/s"
+##
+## Example transformation:
+##   NOW:  R&D produces 2 Materials per second
+##   THEN: R&D produces 120 Materials per turn (assuming 1 turn = 1 minute)
+## ========================================================================
 
 # Preload loader classes for safe initialization
 const GameConstantsLoader = preload("res://scripts/game_constants_loader.gd")
@@ -166,6 +181,18 @@ func calculate_bed_capacity(platforms: Array) -> int:
 
 ## Setup upkeep timer (runs every 60 seconds)
 func _setup_upkeep_timer():
+	# ⚠️ CURRENT: Real-time upkeep (every 60 seconds)
+	# 🔄 FUTURE (Turn-based): Deduct at end of each turn
+	#
+	# Migration plan:
+	# 1. Connect to TurnManager.turn_ended instead of Timer
+	# 2. Calculate upkeep based on turns passed (1 turn = 1 minute?)
+	# 3. Or change to per-turn flat cost instead of per-minute
+	#
+	# Example:
+	#   NOW:  1 upkeep/minute → 60 upkeeps per hour
+	#   THEN: 1 upkeep/turn (if 1 turn = 1 minute) OR configurable upkeep/turn
+
 	upkeep_timer = Timer.new()
 	upkeep_timer.wait_time = 60.0
 	upkeep_timer.autostart = true

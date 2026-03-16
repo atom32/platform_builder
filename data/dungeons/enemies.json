@@ -1,0 +1,46 @@
+{
+  "version": "1.0",
+  "description": "Enemy definitions for dungeon crawler system",
+  "enemies": [
+    {
+      "id": "mutated_fish",
+      "name": "变异鱼群",
+      "base_hp": 80,
+      "base_attack": 8,
+      "special": "swarm",
+      "special_chance": 0.1
+    },
+    {
+      "id": "deep_sea_giant",
+      "name": "深海巨兽",
+      "base_hp": 150,
+      "base_attack": 15,
+      "special": "tentacle_slam",
+      "special_chance": 0.2
+    },
+    {
+      "id": "abyssal_horror",
+      "name": "深渊恐惧",
+      "base_hp": 300,
+      "base_attack": 25,
+      "special": "psychic_scream",
+      "special_chance": 0.3
+    },
+    {
+      "id": "coral_guardian",
+      "name": "珊瑚守卫",
+      "base_hp": 120,
+      "base_attack": 12,
+      "special": "barrier_reef",
+      "special_chance": 0.15
+    },
+    {
+      "id": "void_stalker",
+      "name": "虚空潜行者",
+      "base_hp": 100,
+      "base_attack": 18,
+      "special": "shadow_strike",
+      "special_chance": 0.25
+    }
+  ]
+}

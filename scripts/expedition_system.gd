@@ -340,7 +340,7 @@ func _complete_expedition(mission_id: String, expedition: Dictionary):
 
 	# Handle casualties
 	if casualties > 0:
-		var casualty_info = _remove_random_staff()
+		_apply_casualties(casualties)
 
 		# Show notification
 		var notification_system = get_node_or_null("/root/NotificationSystem")
@@ -416,36 +416,33 @@ func get_expedition_time_remaining(mission_id: String) -> int:
 	var remaining = expedition["duration"] - elapsed_time
 	return int(max(0, remaining))
 
-## Remove a random staff member (casualties)
-func _remove_random_staff() -> Dictionary:
+## Apply casualties as injuries instead of death
+func _apply_casualties(casualties: int):
 	var dept_system = get_node_or_null("/root/DepartmentSystem")
 	if not dept_system:
-		return {}
+		return
 
-	var staff_list = dept_system.get_all_staff()
-	if staff_list.size() == 0:
-		return {}
+	var all_staff = dept_system.get_all_staff()
+	for i in range(min(casualties, all_staff.size())):
+		var staff = all_staff.pick_random()
 
-	# Prefer to remove from combat staff first, then others
-	var combat_staff = dept_system.get_staff_in_department("Combat")
-	var staff_to_remove = null
+		# Apply wound (30% stat penalty)
+		staff.apply_wound(0.3)
 
-	if combat_staff.size() > 0:
-		staff_to_remove = combat_staff[randi() % combat_staff.size()]
-	else:
-		staff_to_remove = staff_list[randi() % staff_list.size()]
+		# Add expedition injury debuff
+		var debuff = {
+			"id": "expedition_injury",
+			"name": "远征受伤",
+			"type": "persistent",
+			"stat_penalty": {"attack": 0.3, "defense": 0.3},
+			"duration": 300  # 5 minutes
+		}
+		staff.apply_status_effect(debuff)
 
-	var staff_name = staff_to_remove.get_display_name()
-	var staff_dept = staff_to_remove.department
-	var staff_id = staff_to_remove.id
+		# Mark as unavailable
+		staff.is_available = false
 
-	dept_system.remove_staff(staff_to_remove)
-
-	return {
-		"name": staff_name,
-		"department": staff_dept,
-		"id": staff_id
-	}
+		print("Staff %s injured in expedition (30%% stat penalty)" % staff.get_display_name())
 
 ## Get all active expeditions info
 func get_active_expeditions_info() -> Array:

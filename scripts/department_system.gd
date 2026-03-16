@@ -16,7 +16,7 @@ var MAX_PLATFORMS_PER_DEPT: int = 6
 var combo_system: ComboSystem = null
 
 ## Department tracking - stores platforms per department
-var departments = {
+var departments: Dictionary = {
 	"R&D": [],
 	"Combat": [],
 	"Support": [],
@@ -43,7 +43,7 @@ var department_staff = {
 }
 
 ## Individual staff tracking
-var staff_list: Array = []  # All staff in the base
+var staff_list: Array[Staff] = []  # All staff in the base
 var next_staff_id: int = 1  # Auto-incrementing ID for new staff
 
 ## Department bonuses (loaded from JSON)
@@ -120,23 +120,23 @@ func add_staff():
 	return new_staff
 
 ## Get all staff in recruit pool (department is empty string)
-func get_recruit_pool() -> Array:
-	var pool: Array = []
+func get_recruit_pool() -> Array[Staff]:
+	var pool: Array[Staff] = []
 	for staff in staff_list:
 		if staff.is_in_recruit_pool():
 			pool.append(staff)
 	return pool
 
 ## Get all staff assigned to a specific department
-func get_staff_in_department(department_type: String) -> Array:
-	var dept_staff: Array = []
+func get_staff_in_department(department_type: String) -> Array[Staff]:
+	var dept_staff: Array[Staff] = []
 	for staff in staff_list:
 		if staff.department == department_type:
 			dept_staff.append(staff)
 	return dept_staff
 
 ## Assign a specific staff member to a department
-func assign_staff_member(staff_member, department_type: String) -> bool:
+func assign_staff_member(staff_member: Staff, department_type: String) -> bool:
 	if not department_staff.has(department_type):
 		push_error("Unknown department type: %s" % department_type)
 		return false
@@ -190,7 +190,7 @@ func unassign_staff_member(staff_member) -> bool:
 	return true
 
 ## Dismiss a staff member entirely
-func dismiss_staff(staff_member) -> bool:
+func dismiss_staff(staff_member: Staff) -> bool:
 	if not staff_member in staff_list:
 		return false
 
@@ -209,7 +209,7 @@ func dismiss_staff(staff_member) -> bool:
 	return true
 
 ## Remove a staff member due to casualties (same as dismiss but different message)
-func remove_staff(staff_member) -> bool:
+func remove_staff(staff_member: Staff) -> bool:
 	if not staff_member in staff_list:
 		return false
 
@@ -248,8 +248,49 @@ func get_unassigned_staff() -> int:
 	return get_recruit_pool().size()
 
 ## Get all staff in the base
-func get_all_staff() -> Array:
+func get_all_staff() -> Array[Staff]:
 	return staff_list
+
+## Get available staff (not wounded or incapacitated)
+func get_available_staff() -> Array[Staff]:
+	var available: Array[Staff] = []
+	for staff in staff_list:
+		if staff.is_available:
+			available.append(staff)
+	return available
+
+## Heal wounded staff member
+func heal_wounded_staff(staff_member: Staff):
+	if staff_member in staff_list:
+		staff_member.heal(50)  # Restore 50 HP
+		if staff_member.hp >= staff_member.max_hp * 0.8:
+			staff_member.is_wounded = false
+			staff_member.is_available = true
+			staff_member.remove_status_effect("injury_penalty")
+			print("Healed %s to full health" % staff_member.get_display_name())
+
+## Update staff status effects (called periodically)
+func update_staff_status(delta: float):
+	for staff in staff_list:
+		for i in range(staff.status_effects.size() - 1, -1, -1):
+			var effect = staff.status_effects[i]
+			if effect.has("duration") and effect["duration"] > 0:
+				effect["duration"] -= delta
+				if effect["duration"] <= 0:
+					staff.remove_status_effect(effect["id"])
+					print("%s's status effect %s has worn off" % [staff.get_display_name(), effect["name"]])
+
+## Get all staff members (legacy alias for get_all_staff)
+func get_staff_list() -> Array[Staff]:
+	return staff_list
+
+## Get department staff excluding wounded/unavailable
+func get_available_department_staff(department_type: String) -> Array[Staff]:
+	var dept_staff: Array[Staff] = []
+	for staff in staff_list:
+		if staff.department == department_type and staff.is_available:
+			dept_staff.append(staff)
+	return dept_staff
 
 ## ===== DEPARTMENT BONUSES =====
 

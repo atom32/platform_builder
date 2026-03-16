@@ -1,0 +1,176 @@
+{
+  "version": "1.0",
+  "description": "Staff skills by department and level",
+  "skills": {
+    "Combat": [
+      {
+        "id": "combat_basic_training",
+        "name": "基础训练",
+        "type": "passive",
+        "required_level": 1,
+        "effects": {"attack": 0.1},
+        "description": "攻击力+10%"
+      },
+      {
+        "id": "combat_morale_boost",
+        "name": "士气提升",
+        "type": "aura",
+        "required_level": 2,
+        "effects": {"party_attack": 0.15},
+        "description": "全队攻击力+15%"
+      },
+      {
+        "id": "combat_veteran_instincts",
+        "name": "老兵直觉",
+        "type": "passive",
+        "required_level": 3,
+        "effects": {"crit_chance": 0.1},
+        "description": "暴击率+10%"
+      },
+      {
+        "id": "combat_berserker_rage",
+        "name": "狂暴",
+        "type": "active",
+        "required_level": 4,
+        "cooldown": 3,
+        "effects": {"attack": 0.5, "defense": -0.2},
+        "description": "攻击力+50%, 防御力-20%, 持续1回合"
+      },
+      {
+        "id": "combat_final_stand",
+        "name": "背水一战",
+        "type": "ultimate",
+        "required_level": 5,
+        "cooldown": 8,
+        "effects": {"damage_multiplier": 3.0, "hp_cost": 0.2},
+        "description": "造成300%伤害, 消耗20% HP"
+      }
+    ],
+    "Intel": [
+      {
+        "id": "intel_weakness_analysis",
+        "name": "弱点分析",
+        "type": "aura",
+        "required_level": 2,
+        "effects": {"accuracy": 0.15, "crit": 0.10},
+        "description": "全队命中+15%, 暴击+10%"
+      },
+      {
+        "id": "intel_tactical_analysis",
+        "name": "战术分析",
+        "type": "active",
+        "required_level": 4,
+        "cooldown": 4,
+        "effects": {"damage": 0.20, "duration": 2},
+        "description": "2回合内全队伤害+20%"
+      },
+      {
+        "id": "intel_precognition",
+        "name": "预知未来",
+        "type": "ultimate",
+        "required_level": 5,
+        "cooldown": 8,
+        "effects": {"dodge": 0.30},
+        "description": "30%闪避率, 持续3回合"
+      }
+    ],
+    "Medical": [
+      {
+        "id": "medical_basic_healing",
+        "name": "基础治疗",
+        "type": "passive",
+        "required_level": 1,
+        "effects": {"heal_per_turn": 5},
+        "description": "每回合恢复5 HP"
+      },
+      {
+        "id": "medical_aura",
+        "name": "治疗光环",
+        "type": "aura",
+        "required_level": 2,
+        "effects": {"party_regen": 3},
+        "description": "全队每回合恢复3 HP"
+      },
+      {
+        "id": "medical_field_medicine",
+        "name": "战地医疗",
+        "type": "passive",
+        "required_level": 3,
+        "effects": {"heal_bonus": 0.2},
+        "description": "所有治疗效果+20%"
+      },
+      {
+        "id": "medical_group_heal",
+        "name": "群体治疗",
+        "type": "active",
+        "required_level": 4,
+        "cooldown": 5,
+        "effects": {"heal_amount": 30},
+        "description": "恢复全队30 HP"
+      },
+      {
+        "id": "medical_resurrection",
+        "name": "起死回生",
+        "type": "ultimate",
+        "required_level": 5,
+        "cooldown": 15,
+        "effects": {"revive_chance": 0.5, "revive_hp_percent": 0.3},
+        "description": "50%几率复活一名队友, 恢复30% HP"
+      }
+    ],
+    "Support": [
+      {
+        "id": "support_logistics_expert",
+        "name": "后勤专家",
+        "type": "passive",
+        "required_level": 1,
+        "effects": {"defense": 0.1},
+        "description": "防御力+10%"
+      },
+      {
+        "id": "support_suppression_fire",
+        "name": "火力压制",
+        "type": "aura",
+        "required_level": 2,
+        "effects": {"enemy_damage_reduction": 0.1},
+        "description": "敌人伤害-10%"
+      },
+      {
+        "id": "support_reinforcements",
+        "name": "增援呼叫",
+        "type": "active",
+        "required_level": 4,
+        "cooldown": 6,
+        "effects": {"bonus_attack": 15},
+        "description": "额外造成15点伤害"
+      }
+    ],
+    "R&D": [
+      {
+        "id": "rd_weapon_tuning",
+        "name": "武器调校",
+        "type": "passive",
+        "required_level": 1,
+        "effects": {"attack": 0.08},
+        "description": "攻击力+8%"
+      },
+      {
+        "id": "rd_armor_modification",
+        "name": "装甲改装",
+        "type": "aura",
+        "required_level": 2,
+        "effects": {"party_defense": 0.1},
+        "description": "全队防御力+10%"
+      },
+      {
+        "id": "rd_experimental_weaponry",
+        "name": "实验武器",
+        "type": "active",
+        "required_level": 4,
+        "cooldown": 5,
+        "effects": {"damage": 25, "variance": 10},
+        "description": "造成25-35点不稳定伤害"
+      }
+    ]
+  }
+}

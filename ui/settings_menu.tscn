@@ -93,6 +93,76 @@ text = "Enable Debug Mode"
 [node name="HSeparator2" type="HSeparator" parent="CanvasLayer/Panel/VBoxContainer"]
 layout_mode = 2
 
+[node name="DisplaySeparator" type="HSeparator" parent="CanvasLayer/Panel/VBoxContainer"]
+layout_mode = 2
+
+[node name="ResolutionSection" type="HBoxContainer" parent="CanvasLayer/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ResolutionLabel" type="Label" parent="CanvasLayer/Panel/VBoxContainer/ResolutionSection"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+text = "Resolution:"
+
+[node name="ResolutionOptionButton" type="OptionButton" parent="CanvasLayer/Panel/VBoxContainer/ResolutionSection"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 40)
+theme_override_font_sizes/font_size = 16
+size_flags_horizontal = 3
+
+[node name="DisplayModeSection" type="HBoxContainer" parent="CanvasLayer/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="DisplayModeLabel" type="Label" parent="CanvasLayer/Panel/VBoxContainer/DisplayModeSection"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+text = "Display Mode:"
+
+[node name="DisplayModeOptionButton" type="OptionButton" parent="CanvasLayer/Panel/VBoxContainer/DisplayModeSection"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 40)
+theme_override_font_sizes/font_size = 16
+size_flags_horizontal = 3
+
+[node name="VSyncSection" type="HBoxContainer" parent="CanvasLayer/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="VSyncLabel" type="Label" parent="CanvasLayer/Panel/VBoxContainer/VSyncSection"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+text = "V-Sync:"
+
+[node name="VSyncCheckButton" type="CheckBox" parent="CanvasLayer/Panel/VBoxContainer/VSyncSection"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 40)
+theme_override_font_sizes/font_size = 16
+text = "Enable V-Sync"
+
+[node name="BorderlessSection" type="HBoxContainer" parent="CanvasLayer/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="BorderlessLabel" type="Label" parent="CanvasLayer/Panel/VBoxContainer/BorderlessSection"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+text = "Borderless:"
+
+[node name="BorderlessCheckButton" type="CheckBox" parent="CanvasLayer/Panel/VBoxContainer/BorderlessSection"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 40)
+theme_override_font_sizes/font_size = 16
+text = "Enable Borderless"
+
+[node name="HSeparator3" type="HSeparator" parent="CanvasLayer/Panel/VBoxContainer"]
+layout_mode = 2
+
 [node name="ApplyButton" type="Button" parent="CanvasLayer/Panel/VBoxContainer"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 50)

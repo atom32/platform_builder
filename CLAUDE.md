@@ -11,6 +11,32 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Commit messages
 - Any other text content in this repository
 
+## Documentation Structure
+
+**New Architecture Documentation (March 2026)**:
+
+The project has comprehensive documentation in the `docs/` directory:
+
+### Essential Reading for Development
+- **[docs/README.md](docs/README.md)** - Documentation hub and quick start guide
+- **[docs/AUTOLOAD_ARCHITECTURE.md](docs/AUTOLOAD_ARCHITECTURE.md)** - Complete autoload system architecture (16 singletons)
+- **[docs/EXPEDITION_SYSTEMS.md](docs/EXPEDITION_SYSTEMS.md)** - Why two expedition/combat systems exist
+
+### Planning Documents (Not Yet Implemented)
+- **[docs/BASE_GD_REFACTOR_PLAN.md](docs/BASE_GD_REFACTOR_PLAN.md)** - Plan to reduce base.gd complexity
+- **[docs/UI_REFACTOR_PLAN.md](docs/UI_REFACTOR_PLAN.md)** - Plan to reduce UI complexity
+
+### Reference Documentation
+- **[docs/api.md](docs/api.md)** - System API documentation
+- **[docs/i18n.md](docs/i18n.md)** - Internationalization guide
+- **[docs/roadmap.md](docs/roadmap.md)** - Development roadmap
+
+**When working on this project**:
+1. Check `docs/README.md` first for documentation index
+2. Read `AUTOLOAD_ARCHITECTURE.md` before adding new systems
+3. Refer to `EXPEDITION_SYSTEMS.md` when working on combat features
+4. Review refactoring plans before making architectural changes
+
 ## Project Overview
 
 This is a **Godot 4.6** prototype game project inspired by the Mother Base system from Metal Gear Solid V.

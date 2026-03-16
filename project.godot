@@ -18,6 +18,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 ConfigSystem="*res://scripts/config_system.gd"
+DisplayManager="*res://scripts/display_manager.gd"
 ResourceSystem="*res://scripts/resource_system.gd"
 ObjectiveSystem="*res://scripts/objective_system.gd"
 PlatformData="*res://scripts/platform_data.gd"

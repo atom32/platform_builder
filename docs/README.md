@@ -1,160 +1,48 @@
-# Platform Builder Documentation Hub
+# Documentation Index
 
-Welcome to the comprehensive documentation for the Platform Builder project, a Godot 4.6 base-building simulation game inspired by Mother Base from Metal Gear Solid V.
+Complete documentation for the Platform Builder project.
 
-**Last Updated**: 2026-03-16
+**Last Updated**: March 16, 2026
 
 ## Quick Start
 
-### New Developers?
-Start here:
-1. [Project README](../README.md) - Project overview and setup
-2. [Autoload Architecture](AUTOLOAD_ARCHITECTURE.md) ⭐ **System architecture overview**
-3. [Game Loop](#game-loop) - Understanding how the game works
+### For New Developers
+1. Start with [README.md](../README.md) - Project overview
+2. Read [Autoload Architecture](#new-architecture-documentation) for system overview ⭐ **NEW**
+3. Check [CLAUDE.md](../CLAUDE.md) for AI assistant usage
 
-### Need System Details?
-See [System Documentation](#system-documentation) below
+### For Feature Implementation
+1. Review [REFACTOR_PLAN.md](../REFACTOR_PLAN.md) for roadmap
+2. Check corresponding design documents in `design/`
+3. Review system documentation in `systems/`
 
-### Planning Changes?
-Check [Architecture Decisions](#architecture-decisions)
-
----
-
-## Game Loop
-
-### Core Gameplay
-1. **Start**: Player receives starting resources (200 Materials, 100 Fuel, 300 GMP, 10 Beds)
-2. **Explore**: HQ has 6 expansion slots (visible as yellow circles)
-3. **Build**: Click slot → Select platform type → Check capacities → Platform appears
-4. **Expand**: New platforms also have 6 expansion slots
-5. **Grow**: Base expands in tree structure (HQ → children → grandchildren...)
-6. **Produce**: All platforms generate resources over time
-7. **Navigate**: Right-click + drag to pan camera, scroll to zoom
-8. **Recruit**: Press R to recruit staff (50 GMP, requires available bed)
-9. **Manage**: Press E to open Base Management Panel
-10. **Upkeep**: Staff cost 1 Material per minute
-
-### Controls
-- **Mouse Wheel** - Zoom in/out
-- **Right-click + Drag** - Pan camera
-- **R** - Recruit staff (50 GMP)
-- **E** - Open Base Management Panel
-- **F** - Toggle debug info (when debug mode enabled)
-- **H** - Hide/Show HUD sidebar
-
-### Resources
-- **Materials** - Used for building platforms and staff upkeep
-- **Fuel** - Used for building platforms and expeditions
-- **GMP** - Currency for recruiting staff
-- **Staff Count** - Current staff vs bed capacity
-- **Bed Capacity** - Maximum staff based on platforms
-
-### Platform Types
-- **HQ** - Root of tree, provides 5 beds
-- **R&D** - Produces Materials, research bonuses
-- **Combat** - Produces Materials + Fuel, combat power
-- **Support** - Produces Fuel, bed capacity
-- **Intel** - Produces Fuel, intel bonuses
-- **Medical** - Produces Materials, bed capacity
+### For Recent Changes
+- See [CHANGELOG.md](../CHANGELOG.md) for version history
+- Check [Display Settings README](../DISPLAY_SETTINGS_README.md) for latest feature
 
 ---
 
-## System Documentation
+## Core Documentation (Project Root)
 
-### [Autoload Architecture](AUTOLOAD_ARCHITECTURE.md) ⭐ **NEW**
-**Overview**: Complete documentation of the 16 autoload singletons that power the game.
-
-**Key Topics**:
-- Why each system is an autoload
-- Intentional design decisions (dual expedition systems)
-- Usage guidelines and best practices
-- Future improvement recommendations
-
-**Read This When**: You're new to the project, need to understand system architecture, or planning to add a new system.
-
-### [Expedition Systems](EXPEDITION_SYSTEMS.md) ⭐ **NEW**
-**Overview**: Detailed explanation of the two expedition/combat systems and why they exist separately.
-
-**Key Topics**:
-- ExpeditionSystem (automated resource generation)
-- DungeonCrawlerSystem (interactive turn-based combat)
-- Why both exist: Different gameplay purposes
-- Future evolution plans
-
-**Read This When**: You're working on expedition/combat features or confused about having two systems.
-
-### [API Reference](api.md)
-**Overview**: Detailed API documentation for game systems.
-
-**Read This When**: You need to use a specific system API or implementing a new feature.
-
-### [Internationalization](i18n.md)
-**Overview**: Multi-language support (English and Chinese).
-
-**Read This When**: You're adding UI text, translating content, or working with TextData.
-
-### [Legacy Architecture](architecture.md)
-**Overview**: Older base system architecture documentation (March 9).
-
-**Note**: For current architecture, see [Autoload Architecture](AUTOLOAD_ARCHITECTURE.md).
+- **[README.md](../README.md)** - Project overview and quick start
+- **[CLAUDE.md](../CLAUDE.md)** - Claude Code usage guide
+- **[ARCHITECTURE.md](../ARCHITECTURE.md)** - System architecture design
+- **[CHANGELOG.md](../CHANGELOG.md)** - Version history and changes
+- **[REFACTOR_PLAN.md](../REFACTOR_PLAN.md)** - Refactoring roadmap
 
 ---
 
-## Architecture Decisions
+## New Architecture Documentation ⭐ **MARCH 2026**
 
-### [Base.gd Refactoring Plan](BASE_GD_REFACTOR_PLAN.md) ⭐ **PLANNED**
-**Overview**: 3-phase plan to reduce base.gd from 638 to ~293 lines.
+### Essential Reading
+- **[Autoload Architecture](AUTOLOAD_ARCHITECTURE.md)** - Complete analysis of 16 autoload singletons
+- **[Expedition Systems](EXPEDITION_SYSTEMS.md)** - Why two expedition/combat systems exist
 
-**Key Topics**:
-- Current complexity analysis (9 distinct responsibilities)
-- Extraction plan for 8 subsystems
-- Risk assessment and mitigation
-- Implementation timeline (4 weeks)
+### Refactoring Plans (Not Yet Implemented)
+- **[Base.gd Refactoring Plan](BASE_GD_REFACTOR_PLAN.md)** - Reduce base.gd from 638 to ~293 lines
+- **[UI Refactoring Plan](UI_REFACTOR_PLAN.md)** - Reduce UI complexity from 792 to ~150 lines
 
-**Status**: Planning complete, not yet implemented.
-
-### [UI Refactoring Plan](UI_REFACTOR_PLAN.md) ⭐ **PLANNED**
-**Overview**: 3-phase plan to reduce base_management_panel.gd from 792 to ~150 lines.
-
-**Key Topics**:
-- Current UI complexity analysis (4 major tabs, 3 nested)
-- Panel extraction plan (Staff, Expeditions, Overview, Save/Load)
-- State management improvements
-- Implementation timeline (3 weeks)
-
-**Status**: Planning complete, not yet implemented.
-
----
-
-## Planning & Roadmap
-
-### [Project Roadmap](roadmap.md)
-**Overview**: Development milestones and future goals.
-
-**Read This When**: You're new to the project, planning features, or want to know what's coming next.
-
----
-
-## Design Philosophy
-
-### Core Principles
-
-1. **Tree-Based Expansion**
-   - Platforms expand in a tree structure (not grid-based)
-   - Each platform can have up to 6 child platforms
-   - Unlimited growth potential
-
-2. **Strategic Depth**
-   - Combo system rewards intelligent layout planning
-   - Different platforms provide different bonuses
-   - Expeditions require strategic force composition
-
-3. **Accessibility**
-   - Simple controls
-   - Clear visual feedback
-   - Easy to understand, hard to master
-
-### Game Loop Summary
+### Game Loop Reference
 
 **Build** → Construct platforms to expand base
 **Produce** → Platforms generate resources over time
@@ -162,95 +50,57 @@ Check [Architecture Decisions](#architecture-decisions)
 **Expedition** → Launch missions for more resources
 **Expand** → Repeat and grow
 
----
-
-## Quick Reference
-
-### Common Tasks
-
-**Add a new autoload system**:
-1. Read [Autoload Architecture](AUTOLOAD_ARCHITECTURE.md) for guidelines
-2. Check if autoload is truly necessary
-3. Add to project.godot [autoload] section
-4. Document in autoload architecture
-
-**Modify UI components**:
-1. Read [UI Refactoring Plan](UI_REFACTOR_PLAN.md) for current structure
-2. Check if component should be extracted
-3. Update documentation after changes
-
-**Work on expedition/combat**:
-1. Read [Expedition Systems](EXPEDITION_SYSTEMS.md) first
-2. Understand why two systems exist
-3. Plan changes based on future combat system vision
-
-**Debug system issues**:
-1. Check [Autoload Architecture](AUTOLOAD_ARCHITECTURE.md) for system overview
-2. Review [API Reference](api.md) for system APIs
-3. Use debug mode (F key when enabled)
-
-### System Dependencies
-
-**Core Systems** (most depended upon):
-- ResourceSystem - Resource management
-- DepartmentSystem - Staff management
-- PlatformData - Platform definitions
-- TextData - Translations
-
-**UI Systems** (user interface):
-- InputManager - Keyboard shortcuts
-- NotificationSystem - In-game messages
-- FeedbackSystem - Visual effects
-
-**Game Mode Systems**:
-- GameModeManager - Sandbox vs Story mode
-- StorySystem - Story progression
-- ObjectiveSystem - Tutorial/objectives
+**Controls**:
+- Mouse Wheel - Zoom in/out
+- Right-click + Drag - Pan camera
+- R - Recruit staff (50 GMP)
+- E - Open Base Management Panel
+- F - Toggle debug info (when debug mode enabled)
+- H - Hide/Show HUD sidebar
 
 ---
 
-## Development Status
+## Feature Documentation
 
-**Current Phase**: Prototype Complete (v0.1.0)
-
-**All Core Systems Implemented**:
-- ✅ Tree-based platform expansion
-- ✅ Resource production and management
-- ✅ Staff recruitment and assignment
-- ✅ Expedition systems (both automated and interactive)
-- ✅ Combo system
-- ✅ Base management UI
-- ✅ Save/Load system
-
-**Next Milestones**:
-- Documentation and cleanup (current)
-- Visual polish and UI improvements
-- Balance adjustments
-- Potential combat system unification
+### Display Settings
+- **[Display Settings README](../DISPLAY_SETTINGS_README.md)** - Complete display settings system documentation
+- **[Display Settings Quick Start](../DISPLAY_SETTINGS_QUICK_START.md)** - Quick start guide
 
 ---
 
-## Contributing to Documentation
+## Design Documents
 
-### Adding New Documentation
-1. Create new .md files in this directory
-2. Update this README.md with a link
-3. Add clear "Last Updated" dates
-4. Cross-reference related documents
-
-### Documentation Standards
-- **Clear Titles**: Descriptive, searchable titles
-- **Last Updated**: Always include update dates
-- **Cross-References**: Link to related documents
-- **Code Examples**: Use proper syntax highlighting
-- **No Emojis**: Follow project's no-emoji policy
+### Game Design Analysis
+- **[Deep Sea Development Plan](design/DEEP_SEA_DEVELOPMENT_PLAN.md)** - Deep sea mode implementation plan
+- **[Dungeon System Summary](design/DUNGEON_SYSTEM_SUMMARY.md)** - Dungeon crawler system overview
+- **[Procedural Platform Dungeon](design/PROCEDURAL_PLATFORM_DUNGEON.md)** - Procedural dungeon generation
+- **[Roguelike Tower Climb](design/ROGUELIKE_TOWER_CLIMB.md)** - Roguelike mode design
+- **[Mercenary Base Combat](design/MERCENARY_BASE_COMBAT.md)** - Combat system design
+- **[PvP Analysis](design/PVP_ANALYSIS.md)** - Player vs Player mechanics
+- **[Fun Analysis](design/FUN_ANALYSIS.md)** - Gameplay fun factor analysis
+- **[Gameplay Analysis](design/GAMEPLAY_ANALYSIS.md)** - Core gameplay analysis
 
 ---
 
-**Last Updated**: 2026-03-16
-**Documentation Maintainer**: Development Team
-**Project Version**: Prototype Phase (Pre-Alpha)
+## System Documentation
+
+### Architecture
+- **[Architecture Analysis](architecture/ARCHITECTURE_ANALYSIS.md)** - Comprehensive architecture review (Chinese)
+- **[Godot Architecture Analysis](architecture/ARCHITECTURE_ANALYSIS_GODOT.md)** - Godot-specific architecture review (Chinese)
+- **[Architecture Improvement](architecture/ARCHITECTURE_IMPROVEMENT.md)** - Settings architecture improvements
+
+### Assets & UI
+- **[Assets Integrated](assets/ASSETS_INTEGRATED.md)** - Asset integration guide (Chinese)
+- **[Asset Quick Start](assets/ASSET_QUICK_START.md)** - Asset integration quick start (Chinese)
+- **[UI Asset Specifications](assets/UI_ASSET_SPECIFICATIONS.md)** - UI asset requirements (Chinese)
+- **[Combat UI Upgrade Summary](assets/COMBAT_UI_UPGRADE_SUMMARY.md)** - Combat UI improvements (Chinese)
+
+### Systems
+- **[Resource System Turn-Based Migration](systems/RESOURCE_SYSTEM_TURN_BASED_MIGRATION.md)** - Turn-based resource system refactoring
+- **[ConfigSystem Refactor](systems/CONFIGSYSTEM_REFACTOR.md)** - Configuration system improvements
+- **[Verification Checklist](systems/VERIFICATION_CHECKLIST.md)** - System verification checklist
 
 ---
 
-**Return to [Project README](../README.md)** | **Return to [Project Root](../)**
+**Documentation Version**: 1.1
+**Maintainer**: Development Team

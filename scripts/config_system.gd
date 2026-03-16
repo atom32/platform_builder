@@ -10,10 +10,16 @@ const CONFIG_FILE_PATH = "user://settings.cfg"
 
 ## Section and key constants
 const SECTION_GENERAL = "general"
+const SECTION_DISPLAY = "display"
 const KEY_LANGUAGE = "language"
 const KEY_DEBUG_MODE = "debug_mode"
 const KEY_AUDIO_VOLUME = "audio_volume"
 const KEY_MUSIC_VOLUME = "music_volume"
+const KEY_RESOLUTION_X = "resolution_x"
+const KEY_RESOLUTION_Y = "resolution_y"
+const KEY_FULLSCREEN_MODE = "fullscreen_mode"
+const KEY_VSYNC_ENABLED = "vsync_enabled"
+const KEY_BORDERLESS_WINDOW = "borderless_window"
 
 ## Internal storage (private)
 var _current_config: ConfigData
@@ -35,6 +41,21 @@ var music_volume: float:
 	get:
 		return _current_config.music_volume
 
+var resolution_x: int:
+	get: return _current_config.resolution_x
+
+var resolution_y: int:
+	get: return _current_config.resolution_y
+
+var fullscreen_mode: int:
+	get: return _current_config.fullscreen_mode
+
+var vsync_enabled: bool:
+	get: return _current_config.vsync_enabled
+
+var borderless_window: bool:
+	get: return _current_config.borderless_window
+
 func _init():
 	_load_config()
 
@@ -55,7 +76,14 @@ func _load_config():
 	var audio = config.get_value(SECTION_GENERAL, KEY_AUDIO_VOLUME, 1.0)
 	var music = config.get_value(SECTION_GENERAL, KEY_MUSIC_VOLUME, 1.0)
 
-	_current_config = ConfigData.new(lang, debug, audio, music)
+	# Load display settings
+	var res_x = config.get_value(SECTION_DISPLAY, KEY_RESOLUTION_X, 1920)
+	var res_y = config.get_value(SECTION_DISPLAY, KEY_RESOLUTION_Y, 1080)
+	var fs_mode = config.get_value(SECTION_DISPLAY, KEY_FULLSCREEN_MODE, 0)
+	var vsync = config.get_value(SECTION_DISPLAY, KEY_VSYNC_ENABLED, true)
+	var borderless = config.get_value(SECTION_DISPLAY, KEY_BORDERLESS_WINDOW, false)
+
+	_current_config = ConfigData.new(lang, debug, audio, music, res_x, res_y, fs_mode, vsync, borderless)
 	print("[ConfigSystem] Config loaded: ", _current_config.get_as_string())
 
 	# NOTE: Don't apply here in _init()
@@ -71,6 +99,13 @@ func _save_config():
 	config.set_value(SECTION_GENERAL, KEY_DEBUG_MODE, _current_config.debug_mode)
 	config.set_value(SECTION_GENERAL, KEY_AUDIO_VOLUME, _current_config.audio_volume)
 	config.set_value(SECTION_GENERAL, KEY_MUSIC_VOLUME, _current_config.music_volume)
+
+	# Save display settings
+	config.set_value(SECTION_DISPLAY, KEY_RESOLUTION_X, _current_config.resolution_x)
+	config.set_value(SECTION_DISPLAY, KEY_RESOLUTION_Y, _current_config.resolution_y)
+	config.set_value(SECTION_DISPLAY, KEY_FULLSCREEN_MODE, _current_config.fullscreen_mode)
+	config.set_value(SECTION_DISPLAY, KEY_VSYNC_ENABLED, _current_config.vsync_enabled)
+	config.set_value(SECTION_DISPLAY, KEY_BORDERLESS_WINDOW, _current_config.borderless_window)
 
 	var err = config.save(CONFIG_FILE_PATH)
 	if err == OK:
@@ -116,6 +151,22 @@ func _apply_to_game():
 
 	# Apply debug mode to all systems
 	_apply_debug_mode(_current_config.debug_mode)
+
+	# Apply display settings
+	_apply_display_settings()
+
+## Internal: Apply display settings specifically
+func _apply_display_settings():
+	# Skip display settings on mobile platforms
+	if OS.has_feature("mobile"):
+		print("[ConfigSystem] Mobile platform, skipping display settings application")
+		return
+
+	# Apply through DisplayManager to keep concerns separated
+	DisplayManager.apply_resolution(_current_config.resolution_x, _current_config.resolution_y)
+	DisplayManager.apply_fullscreen_mode(_current_config.fullscreen_mode)
+	DisplayManager.apply_vsync(_current_config.vsync_enabled)
+	DisplayManager.apply_borderless(_current_config.borderless_window)
 
 ## Internal: Apply debug mode specifically
 func _apply_debug_mode(debug_enabled: bool):
